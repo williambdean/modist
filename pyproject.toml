@@ -35,7 +35,14 @@ Documentation = "https://github.com/williambdean/modist#readme"
 [project.optional-dependencies]
 scipy = ["scipy>=1.12"]
 pymc = ["pymc>=5.10", "pymc-extras>=0.0.4"]
-dev = ["pytest>=8", "marimo>=0.9", "conjugate-models"]
+dev = [
+    "pytest>=8",
+    "marimo>=0.9",
+    "conjugate-models",
+    "jupyter>=1.0",
+    "ipykernel>=7.3.0",
+    "jupytext>=1.19.5",
+]
 
 [build-system]
 requires = ["uv_build>=0.8.22,<0.9.0"]
