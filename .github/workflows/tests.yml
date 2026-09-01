@@ -1,0 +1,91 @@
+name: Tests
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "src/modist/**"
+      - "js/**"
+      - "pyproject.toml"
+      - "package.json"
+      - "package-lock.json"
+      - "tests/**"
+  pull_request: # no path filters -- filtering happens in the changes job
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      src: ${{ steps.filter.outputs.src }}
+      js: ${{ steps.filter.outputs.js }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dorny/paths-filter@v4
+        id: filter
+        with:
+          filters: |
+            src:
+              - "src/modist/**"
+              - "js/**"
+              - "pyproject.toml"
+              - "tests/**"
+            js:
+              - "js/**"
+              - "src/modist/static/**"
+              - "package.json"
+              - "package-lock.json"
+              - "tests/js/**"
+
+  test:
+    needs: [changes]
+    if: needs.changes.outputs.src == 'true'
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        python-version: ["3.12", "3.13", "3.14"]
+
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install Python dependencies
+        run: uv sync --all-extras
+      - name: Test with pytest
+        run: uv run pytest
+
+  js:
+    needs: [changes]
+    if: needs.changes.outputs.js == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install Node dependencies
+        run: npm ci
+      - name: Install Playwright Chromium
+        run: npx playwright install chromium --with-deps
+      - name: Run JS integration probes
+        run: npm run test:js
+
+  tests-result:
+    runs-on: ubuntu-latest
+    if: always()
+    needs: [test, js]
+    steps:
+      - name: Tests passed or skipped
+        run: |
+          result="${{ needs.test.result }} ${{ needs.js.result }}"
+          if [[ "$result" =~ failure|cancelled ]]; then
+            echo "Some tests failed: $result"
+            exit 1
+          fi
+          echo "Tests passed or were skipped"
+          exit 0

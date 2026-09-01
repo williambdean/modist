@@ -1,0 +1,17 @@
+---
+name: "Pull Request Labeler"
+on:
+- pull_request_target
+
+jobs:
+  sync:
+    permissions:
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+    - name: Sync labels with closing issues
+      uses: williambdean/closing-labels@v0.0.7
+      with:
+        exclude: "duplicate,help wanted,question"
+      env:
+        GH_TOKEN: ${{ github.token }}
