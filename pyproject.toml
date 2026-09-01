@@ -1,0 +1,42 @@
+[project]
+name = "modist"
+version = "0.1.0"
+description = "Interactive distribution widgets for marimo, in the style of wigglystuff"
+readme = "README.md"
+authors = [
+    { name = "Will Dean", email = "wd60622@gmail.com" }
+]
+license = "MIT"
+keywords = [
+    "marimo",
+    "anywidget",
+    "statistics",
+    "distribution",
+    "visualization",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Scientific/Engineering :: Visualization",
+]
+requires-python = ">=3.12,<3.15"
+dependencies = ["anywidget>=0.11.0"]
+
+[project.urls]
+Homepage = "https://github.com/williambdean/modist"
+Repository = "https://github.com/williambdean/modist"
+Documentation = "https://github.com/williambdean/modist#readme"
+
+[project.optional-dependencies]
+scipy = ["scipy>=1.12"]
+pymc = ["pymc>=5.10"]
+dev = ["pytest>=8", "marimo>=0.9", "conjugate-models"]
+
+[build-system]
+requires = ["uv_build>=0.8.22,<0.9.0"]
+build-backend = "uv_build"

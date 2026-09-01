@@ -1,0 +1,71 @@
+.mroot { font-family: var(--marimo-font, ui-sans-serif, system-ui, sans-serif); }
+.mroot svg { display: block; border-radius: 10px; }
+.mroot svg text { font-family: var(--marimo-font, ui-sans-serif, system-ui, sans-serif); }
+
+.mgrid { stroke: var(--m-grid, #e5e7eb); stroke-width: 1; }
+.maxis { stroke: var(--m-mut, #9ca3af); stroke-width: 1.5; }
+.mtick { fill: var(--m-mut, #6b7280); font-size: 13px; font-variant-numeric: tabular-nums; }
+
+.mhitline { fill: transparent; cursor: ew-resize; }
+.mhitline:hover { fill: var(--m-mut, #d1d5db); opacity: 0.18; }
+.mhandle { pointer-events: none; }
+
+.mpan { fill: transparent; cursor: ew-resize; }
+.mpan:hover { fill: var(--m-mut, #d1d5db); opacity: 0.25; }
+.mpantip { fill: var(--m-mut, #9ca3af); font-size: 12px; font-weight: 600; pointer-events: none; }
+
+.mzoombtn { fill: var(--m-card, #eef2f7); stroke: var(--m-border, #cbd5e1); stroke-width: 1; }
+.mzoombtn:hover { fill: var(--m-acc, #bae6fd); }
+.mzoomtxt { fill: var(--m-mut, #475569); font-size: 16px; font-weight: 800; pointer-events: none; }
+
+.mresetbtn { fill: var(--m-card, #eef2f7); stroke: var(--m-border, #cbd5e1); stroke-width: 1; }
+.mresetbtn:hover { fill: var(--m-acc, #fecaca); }
+.mresetxt { fill: var(--m-mut, #475569); font-size: 16px; font-weight: 800; pointer-events: none; }
+
+.mfitbtn { fill: var(--m-card, #eef2f7); stroke: var(--m-border, #cbd5e1); stroke-width: 1; }
+.mfitbtn:hover { fill: var(--m-acc, #bae6fd); }
+.mfitxt { fill: var(--m-mut, #475569); font-size: 16px; font-weight: 800; pointer-events: none; }
+
+.mline { fill: none; stroke: var(--m-acc, #0891b2); stroke-width: 3.5; stroke-linejoin: round; stroke-linecap: round; }
+.marea { stroke: none; }
+
+.mmu { stroke: var(--m-mu, #0ea5e9); stroke-width: 2; stroke-dasharray: 5 4; opacity: 0.9; }
+.mstd { stroke: var(--m-std, #f97316); stroke-width: 2; stroke-dasharray: 3 3; opacity: 0.9; }
+
+.mlabeltxt { font-size: 14px; font-weight: 700; fill: #fff; }
+.mchipgroup { transition: opacity 0.15s ease; }
+.mchip-dim { opacity: 0.25; }
+.mchip { stroke: rgba(0,0,0,0.15); stroke-width: 1; }
+
+.mstem { stroke: var(--m-mut, #9ca3af); stroke-width: 1.5; stroke-dasharray: 2 2; }
+.mdot { fill: var(--m-acc, #0891b2); stroke: #fff; stroke-width: 2.5; }
+.msq { fill: var(--m-std, #f97316); stroke: #fff; stroke-width: 2.5; }
+.msqgrip { stroke: #fff; stroke-width: 2; }
+.mhandle:hover .mdot, .mhandle:hover .msq { filter: brightness(1.15); }
+
+.mtip { margin-top: 8px; color: var(--m-mut, #6b7280); font-size: 12px; text-align: center; }
+
+@media (prefers-color-scheme: dark) {
+  .mgrid { stroke: var(--m-grid, #374151); }
+  .maxis { stroke: var(--m-mut, #6b7280); }
+  .mtick { fill: var(--m-mut, #9ca3af); }
+  .mline { stroke: var(--m-acc, #22d3ee); }
+  .mmu { stroke: var(--m-mu, #38bdf8); }
+  .mstd { stroke: var(--m-std, #fb923c); }
+  .mdot { stroke: #0b1220; }
+  .msq { stroke: #0b1220; }
+  .msqgrip { stroke: #0b1220; }
+  .mtip { color: var(--m-mut, #9ca3af); }
+  .mpan:hover { fill: var(--m-mut, #374151); }
+  .mhitline:hover { fill: var(--m-mut, #374151); }
+  .mpantip { fill: var(--m-mut, #6b7280); }
+  .mzoombtn { fill: var(--m-card, #1f2937); stroke: var(--m-border, #374151); }
+  .mzoombtn:hover { fill: var(--m-acc, #164e63); }
+  .mzoomtxt { fill: var(--m-mut, #cbd5e1); }
+  .mresetbtn { fill: var(--m-card, #1f2937); stroke: var(--m-border, #374151); }
+  .mresetbtn:hover { fill: var(--m-acc, #7f1d1d); }
+  .mresetxt { fill: var(--m-mut, #cbd5e1); }
+  .mfitbtn { fill: var(--m-card, #1f2937); stroke: var(--m-border, #374151); }
+  .mfitbtn:hover { fill: var(--m-acc, #164e63); }
+  .mfitxt { fill: var(--m-mut, #cbd5e1); }
+}
