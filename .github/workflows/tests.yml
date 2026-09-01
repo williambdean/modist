@@ -12,6 +12,7 @@ on:
       - "package-lock.json"
       - "tests/**"
   pull_request: # no path filters -- filtering happens in the changes job
+  workflow_dispatch:
 
 jobs:
   changes:
