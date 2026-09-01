@@ -56,5 +56,12 @@ class DistMixin:
         kwargs = {p: pt.scalar(f"{name}_{p}") for p in self._param_names}
         return getattr(pm, self._dist_name).dist(**kwargs)
 
+    @property
+    def prior(self) -> Any:
+        """A ``pymc_extras.Prior`` built from the current dist name and params (lazy import)."""
+        from pymc_extras.prior import Prior  # type: ignore[import-not-found]
+
+        return Prior(self._dist_name, **self.params)
+
     def _make_scipy(self, stats: Any) -> Any:
         raise NotImplementedError

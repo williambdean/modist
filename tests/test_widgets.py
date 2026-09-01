@@ -98,6 +98,15 @@ def test_create_variable_compiles_and_draws():
     assert np.isfinite(b)
 
 
+def test_prior_property():
+    pe = pytest.importorskip("pymc_extras")
+    from pymc_extras.prior import Prior
+
+    n = md.Normal(mu=0.0, sigma=1.0)
+    assert isinstance(n.prior, Prior)
+    assert n.prior.to_dict() == {"dist": "Normal", "kwargs": {"mu": 0.0, "sigma": 1.0}}
+
+
 def test_esm_pointing_at_self_contained_bundle():
     # anywidget resolves a Path _esm into a FileContents; str() returns the JS.
     for cls in (md.Normal, md.Beta, md.Gamma):
