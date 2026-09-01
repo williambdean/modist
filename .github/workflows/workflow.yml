@@ -1,4 +1,7 @@
 ---
+# Publish modist to PyPI via OIDC trusted publishing whenever a v*.*.* tag is
+# pushed (typically by creating a GitHub release). The file MUST be named
+# workflow.yml -- this matches the pypi.org trusted-publisher registration.
 name: Python package
 on:
   push:
