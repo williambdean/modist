@@ -56,6 +56,38 @@ g.scipy   # scipy.stats.gamma(a=2.0, scale=1/3)  -- rate handled for you
 `w.value` is a plain dict of the synced traits, so `pm.X.dist(**w.value)` works
 with no conversion.
 
+## Jupyter
+
+The widgets are anywidget/ipywidgets under the hood, so they run in plain
+Jupyter too — no marimo required. Just `display()` the widget and read its
+`.params` (or `.scipy`) instead of wrapping it in `mo.ui.anywidget(...)`:
+
+```python
+import modist as md
+from IPython.display import display
+
+w = md.Normal(mu=0, sigma=1)
+display(w)          # drag the curve to reshape it
+
+w.params            # {'mu': ..., 'sigma': ...}
+```
+
+A full walkthrough notebook — all four families, live scipy stats, and a
+beta-prior combination example — lives at
+[`demos/jupyter_example.ipynb`](demos/jupyter_example.ipynb).
+
+From a checkout:
+
+```sh
+uv sync --extra dev --extra scipy   # installs jupyter, ipykernel, jupytext
+make jupyter                        # opens demos/jupyter_example.ipynb in JupyterLab
+```
+
+`make jupyter` registers the repo's `.venv` as a `modist` kernel, so the
+notebook uses exactly the installed packages. Requires a local
+[JupyterLab](https://jupyter.org/install) (installed alongside jupyter via the
+dev extras).
+
 ## How it works
 
 Each family is its own anywidget class with a small set of synced parameter
