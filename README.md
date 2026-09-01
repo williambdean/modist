@@ -5,6 +5,8 @@ of [`koaning/wigglystuff`](https://github.com/koaning/wigglystuff). Drag the
 density curve to shape a distribution, then feed the params straight into a
 distribution constructor with a single splat.
 
+![modist widget example](https://raw.githubusercontent.com/williambdean/modist/main/docs/widget-example.png)
+
 ## Install
 
 ```sh

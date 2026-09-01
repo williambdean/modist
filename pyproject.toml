@@ -1,6 +1,6 @@
 [project]
 name = "modist"
-version = "0.1.0"
+version = "0.1.1"
 description = "Interactive distribution widgets for marimo, in the style of wigglystuff"
 readme = "README.md"
 authors = [

@@ -18,4 +18,4 @@ from .normal import Normal
 
 __all__ = ["Normal", "Beta", "Gamma", "DistMixin"]
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
