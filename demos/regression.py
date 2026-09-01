@@ -179,6 +179,7 @@ def _(draws, sample_prior, w_intercept, w_sigma, w_slope):
 def _(
     intercept_true,
     lines,
+    mo,
     plt,
     slope_true,
     w_draw_idx,
@@ -219,7 +220,7 @@ def _(
     ax.set_xlim(*w_xlim.value)
     ax.set_ylim(*w_ylim.value)
     ax.legend(loc="upper left")
-    fig
+    mo.center(fig)
     return (yy,)
 
 
