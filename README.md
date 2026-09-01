@@ -29,7 +29,7 @@ params = w.value            # {'mu': ..., 'sigma': ...}
 
 ```python
 import pymc as pm
-dist = pm.Normal.dist(**params)   # or pm.Beta / pm.Gamma
+dist = pm.Normal.dist(**params)   # or pm.Beta / pm.Gamma / pm.StudentT
 ```
 
 ## Families
@@ -39,6 +39,12 @@ dist = pm.Normal.dist(**params)   # or pm.Beta / pm.Gamma
 | [`Normal`](src/modist/normal.py)  | `mu`, `sigma`      | free             | mean line → `mu`, ±1σ squares → `sigma` |
 | [`Beta`](src/modist/beta.py)      | `alpha`, `beta`    | fixed `[0, 1]`    | mean line → translate, q25/q75 squares → concentrate |
 | [`Gamma`](src/modist/gamma.py)    | `alpha`, `beta`    | edge pinned at 0  | mean line → translate, q25/q75 squares → reshape |
+| [`StudentT`](src/modist/studentt.py) | `mu`, `sigma`, `nu` | free             | mean line → `mu`, q75 square → `sigma`, tails dial → `nu` |
+
+`StudentT`'s third parameter is a **tails dial**: drag it up for fatter tails
+(lower `nu`) or down for thinner tails (higher `nu`). Because `nu` has no
+natural on-curve landmark, its drag is a separate 1-D slider rather than a
+point you move on the density curve.
 
 `alpha`/`beta` follow the [PyMC](https://www.pymc.io) / statistics convention
 (`Gamma`'s `beta` is the **rate**, not scipy's `scale`). The lazy `.scipy` and
@@ -72,7 +78,7 @@ display(w)          # drag the curve to reshape it
 w.params            # {'mu': ..., 'sigma': ...}
 ```
 
-A full walkthrough notebook — all four families, live scipy stats, and a
+A full walkthrough notebook — all five families, live scipy stats, and a
 beta-prior combination example — lives at
 [`demos/jupyter_example.ipynb`](demos/jupyter_example.ipynb).
 

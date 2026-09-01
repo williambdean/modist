@@ -9,7 +9,7 @@ import { mkdirSync } from "node:fs";
 const OUT = "src/modist/static";
 mkdirSync(OUT, { recursive: true });
 
-for (const name of ["normal", "beta", "gamma"]) {
+for (const name of ["normal", "beta", "gamma", "studentt"]) {
   buildSync({
     entryPoints: [`js/${name}.js`],
     bundle: true,

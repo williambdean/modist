@@ -43,6 +43,15 @@
 .msqgrip { stroke: #fff; stroke-width: 2; }
 .mhandle:hover .mdot, .mhandle:hover .msq { filter: brightness(1.15); }
 
+/* vertical dial handle (non-location params, e.g. tails / nu) */
+.mdialtrack { stroke: var(--m-mut, #9ca3af); stroke-width: 2; opacity: 0.5; }
+.mdialref { stroke: var(--m-nu, #8b5cf6); stroke-width: 1.5; stroke-dasharray: 2 4; opacity: 0.35; }
+.mdialknob { fill: var(--m-nu, #8b5cf6); stroke: #fff; stroke-width: 2.5; }
+.mdialgrip { stroke: #fff; stroke-width: 2; }
+.mhandle:hover .mdialknob { filter: brightness(1.15); }
+.mhity { fill: transparent; cursor: ns-resize; }
+.mhity:hover { fill: var(--m-mut, #d1d5db); opacity: 0.18; }
+
 .mtip { margin-top: 8px; color: var(--m-mut, #6b7280); font-size: 12px; text-align: center; }
 
 @media (prefers-color-scheme: dark) {
@@ -55,9 +64,13 @@
   .mdot { stroke: #0b1220; }
   .msq { stroke: #0b1220; }
   .msqgrip { stroke: #0b1220; }
+  .mdialknob { stroke: #0b1220; }
+  .mdialgrip { stroke: #0b1220; }
+  .mdialtrack { stroke: var(--m-mut, #6b7280); }
   .mtip { color: var(--m-mut, #9ca3af); }
   .mpan:hover { fill: var(--m-mut, #374151); }
   .mhitline:hover { fill: var(--m-mut, #374151); }
+  .mhity:hover { fill: var(--m-mut, #374151); }
   .mpantip { fill: var(--m-mut, #6b7280); }
   .mzoombtn { fill: var(--m-card, #1f2937); stroke: var(--m-border, #374151); }
   .mzoombtn:hover { fill: var(--m-acc, #164e63); }

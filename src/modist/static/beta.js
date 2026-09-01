@@ -1537,6 +1537,9 @@ var M_R = 8;
 var M_T = 46;
 var M_B = 44;
 var HIT_W = 24;
+var DIAL_TOP = M_T + 40;
+var DIAL_BOT = H - M_B - 6;
+var DIAL_HIT_W = 36;
 function clamp(v, lo, hi) {
   return Math.min(hi, Math.max(lo, v));
 }
@@ -1699,13 +1702,24 @@ function createWidget(F3, opts) {
         if (!(peak > 0) || !isFinite(peak)) peak = 1;
         return { xs, ys, peak };
       }
+      function yFrac(py) {
+        return clamp((py - M_T) / plotH, 0, 1);
+      }
       function applyDrag(e) {
         const rect = svg.getBoundingClientRect();
         const px = (e.clientX - rect.left) / rect.width * W;
+        const py = (e.clientY - rect.top) / rect.height * H;
         const d0 = dragDomain || currentDomain();
         const x = xInv(clamp(px, M_L, W - M_R), d0);
         const p = getParams();
-        const next = drag.handle.drag(p, x, d0);
+        const axes = drag.handle.axes || ["x"];
+        const yOnly = axes.length === 1 && axes[0] === "y";
+        const y = yOnly ? clamp((py - DIAL_TOP) / (DIAL_BOT - DIAL_TOP), 0, 1) : yFrac(py);
+        let fx = x;
+        let fy = y;
+        if (!axes.includes("x")) fx = drag.startX;
+        if (!axes.includes("y")) fy = drag.startY;
+        const next = drag.handle.drag(p, fx, fy, d0);
         setParams(next, "drag");
       }
       function panHit(e) {
@@ -1770,7 +1784,7 @@ function createWidget(F3, opts) {
         const rect = svg.getBoundingClientRect();
         const px = (e.clientX - rect.left) / rect.width * W;
         const x = xInv(clamp(px, M_L, W - M_R), currentDomain());
-        setParams(center.drag(getParams(), x, currentDomain()), "click");
+        setParams(center.drag(getParams(), x, 0.5, currentDomain()), "click");
       });
       const attachDrag = (g, handle) => {
         g.addEventListener("pointerdown", (e) => {
@@ -1778,8 +1792,12 @@ function createWidget(F3, opts) {
           e.preventDefault();
           e.stopPropagation();
           cancelAnim();
-          drag = { handle, id: e.pointerId };
           dragDomain = currentDomain();
+          const rect = svg.getBoundingClientRect();
+          const px = (e.clientX - rect.left) / rect.width * W;
+          const py = (e.clientY - rect.top) / rect.height * H;
+          const x0 = xInv(clamp(px, M_L, W - M_R), dragDomain);
+          drag = { handle, id: e.pointerId, startX: x0, startY: yFrac(py) };
           svg.setPointerCapture(e.pointerId);
           applyDrag(e);
         });
@@ -1871,9 +1889,15 @@ function createWidget(F3, opts) {
           for (const g of markerEls) if (g) svg.appendChild(g);
         };
         const hitLayer = elNS("g", svg, { class: "mhitlayer" });
-        const hxOf = F3.handles.map((h) => clamp(xt(h.at(p), dd), M_L, W - M_R));
+        const isY = (i) => {
+          const a = F3.handles[i].axes;
+          return a && a.length === 1 && a[0] === "y";
+        };
+        const hxOf = F3.handles.map(
+          (h, i) => isY(i) ? null : clamp(xt(h.at(p), dd), M_L, W - M_R)
+        );
         const zones = new Array(F3.handles.length);
-        const idx = [...F3.handles.keys()].sort((a, b) => hxOf[a] - hxOf[b] || a - b);
+        const idx = [...F3.handles.keys()].filter((i) => hxOf[i] != null).sort((a, b) => hxOf[a] - hxOf[b] || a - b);
         let zi = 0;
         while (zi < idx.length) {
           let zj = zi + 1;
@@ -1898,6 +1922,36 @@ function createWidget(F3, opts) {
         const overlap = new Array(F3.handles.length).fill(false);
         for (let i = 0; i < F3.handles.length; i++) {
           const h = F3.handles[i];
+          if (isY(i)) {
+            const yf = clamp(h.yOf ? h.yOf(p) : 0.5, 0, 1);
+            const yPx = DIAL_TOP + yf * (DIAL_BOT - DIAL_TOP);
+            const trackX = W - M_R - 20;
+            const g2 = elNS("g", svg, { class: "mhandle mdial" });
+            markerEls[i] = g2;
+            elNS("line", g2, { class: "mdialtrack", x1: trackX, y1: DIAL_TOP, x2: trackX, y2: DIAL_BOT });
+            elNS("line", g2, { class: "mdialref", x1: M_L, y1: yPx, x2: W - M_R, y2: yPx });
+            elNS("rect", g2, { x: trackX - 9, y: yPx - 7, width: 18, height: 14, rx: 4, class: "mdialknob" });
+            elNS("line", g2, { x1: trackX - 5, y1: yPx, x2: trackX + 5, y2: yPx, class: "mdialgrip" });
+            const chip2 = elNS("g", svg, { class: "mchipgroup", transform: `translate(${trackX}, ${M_T + 30})` });
+            const txt2 = elNS("text", chip2, { class: "mlabeltxt", "text-anchor": "middle", "dominant-baseline": "central" });
+            txt2.textContent = h.chip(p);
+            const bb2 = txt2.getBBox();
+            elNS("rect", chip2, { x: bb2.x - 6, y: bb2.y - 4, width: bb2.width + 12, height: bb2.height + 8, rx: 7, class: "mchip", fill: h.color });
+            chip2.appendChild(txt2);
+            chipEls[i] = chip2;
+            chipW[i] = 0;
+            const hr2 = elNS("rect", hitLayer, { class: "mhity", x: trackX - DIAL_HIT_W / 2, y: DIAL_TOP, width: DIAL_HIT_W, height: DIAL_BOT - DIAL_TOP });
+            hr2.addEventListener("pointerenter", () => {
+              hoverIdx = i;
+              applyHandleState();
+            });
+            hr2.addEventListener("pointerleave", () => {
+              if (hoverIdx === i) hoverIdx = null;
+              applyHandleState();
+            });
+            attachDrag(hr2, h);
+            continue;
+          }
           const hx = hxOf[i];
           const hy = yt(clamp(F3.pdf(p, h.at(p)), 0, peak), peak);
           const g = elNS("g", svg, { class: `mhandle ${h.icon}` });
@@ -1935,6 +1989,7 @@ function createWidget(F3, opts) {
         }
         for (let i = 0; i < F3.handles.length; i++) {
           for (let j2 = i + 1; j2 < F3.handles.length; j2++) {
+            if (hxOf[i] == null || hxOf[j2] == null) continue;
             if (Math.abs(hxOf[i] - hxOf[j2]) < chipW[i] + chipW[j2]) {
               overlap[i] = overlap[j2] = true;
             }

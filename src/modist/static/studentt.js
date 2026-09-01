@@ -2071,83 +2071,35 @@ function createWidget(F3, opts) {
   };
 }
 
-// js/gamma.js
-var A_MIN = 0.01;
-var A_MAX = 400;
-var A_RES = 0.965;
-var Q75_PEAK = er.gamma.inv(0.75, A_RES, 1 / A_RES);
-var Q75_FLOOR = er.gamma.inv(0.75, A_MAX, 1 / A_MAX);
-var mean = (p) => p.alpha / p.beta;
-var scale = (p) => 1 / p.beta;
-function solveQ25(q, target, m) {
-  const f = (a) => er.gamma.inv(q, a, m / a) - target;
-  const flow = f(A_MIN);
-  const fhigh = f(A_MAX);
-  if (flow > 0) return A_MIN;
-  if (fhigh < 0) return A_MAX;
-  let lo = A_MIN;
-  let hi = A_MAX;
-  for (let i = 0; i < 60; i++) {
-    const mid = (lo + hi) / 2;
-    if (f(mid) > 0) hi = mid;
-    else lo = mid;
-  }
-  return (lo + hi) / 2;
+// js/studentt.js
+var NU_MIN = 2.01;
+var NU_MAX = 50;
+var NU_COLOR = "#8b5cf6";
+function t75(nu) {
+  return er.studentt.inv(0.75, nu);
 }
-function bisectQ75(f, lo, hi, dir) {
-  const flow = f(lo) * dir;
-  const fhigh = f(hi) * dir;
-  if (flow > 0) return lo;
-  if (fhigh < 0) return hi;
-  for (let i = 0; i < 60; i++) {
-    const mid = (lo + hi) / 2;
-    if (f(mid) * dir > 0) hi = mid;
-    else lo = mid;
-  }
-  return (lo + hi) / 2;
-}
-function solveQ75(q, target, m, aCur) {
-  const f = (a) => er.gamma.inv(q, a, m / a) - target;
-  const peak = Q75_PEAK * m;
-  if (target >= peak) return A_RES;
-  const floor = Q75_FLOOR * m;
-  const onFalling = aCur >= A_RES;
-  if (onFalling && target >= floor) {
-    return bisectQ75(f, A_RES, A_MAX, -1);
-  }
-  return bisectQ75(f, A_MIN, A_RES, 1);
-}
-function translateAtShape(p, x, d) {
-  const a = p.alpha;
-  const span = d ? Math.max(d[1] - d[0], 1e-9) : 1;
-  const m = Math.max(x, 0.01 * span);
-  return { alpha: a, beta: a / m };
-}
-function shapeAtFixedMean(p, q, x) {
-  const m = mean(p);
-  const xc = Math.max(x, 1e-6);
-  const a = q === 0.25 ? solveQ25(q, xc, m) : solveQ75(q, xc, m, p.alpha);
-  return { alpha: a, beta: a / m };
+var TAIL_FACTOR = 5.2 / 1.96;
+function tBounds(p) {
+  return TAIL_FACTOR * p.sigma * er.studentt.inv(0.975, p.nu);
 }
 var F2 = {
-  name: "gamma",
-  label: "Gamma",
-  defaults: { alpha: 2, beta: 2 },
-  support: () => [0, null],
-  // left edge pinned at 0
+  name: "studentt",
+  label: "StudentT",
+  defaults: { mu: 0, sigma: 1, nu: 5 },
+  support() {
+    return [null, null];
+  },
   bounds(p) {
-    const m = mean(p);
-    const sd = Math.sqrt(p.alpha) / p.beta;
-    return [0, m + 5.2 * sd];
+    const w = tBounds(p);
+    return [p.mu - w, p.mu + w];
   },
   integ(p) {
-    const m = mean(p);
-    const sd = Math.sqrt(p.alpha) / p.beta;
-    return [0, m + 9 * sd];
+    const w = tBounds(p) * 1.15;
+    return [p.mu - w, p.mu + w];
   },
   pdf(p, x) {
-    if (x <= 0) return 0;
-    return er.gamma.pdf(x, p.alpha, scale(p));
+    const z = (x - p.mu) / p.sigma;
+    return er.studentt.pdf(z, p.nu) / p.sigma;
   },
   handles: [
     {
@@ -2155,34 +2107,57 @@ var F2 = {
       icon: "dot",
       color: "#0ea5e9",
       lineCls: "mmu",
-      at: (p) => mean(p),
-      chip: () => "mean",
-      drag: (p, x, y, d) => translateAtShape(p, x, d)
+      at(p) {
+        return p.mu;
+      },
+      chip() {
+        return "mean";
+      },
+      drag(p, x) {
+        return { mu: x };
+      }
     },
     {
       kind: "spread",
       icon: "sq",
-      color: "#8b5cf6",
-      lineCls: "miqr",
-      at: (p) => er.gamma.inv(0.25, p.alpha, scale(p)),
-      chip: () => "q25",
-      drag: (p, x) => shapeAtFixedMean(p, 0.25, x)
+      color: "#f97316",
+      lineCls: "mstd",
+      at(p) {
+        return p.mu + p.sigma * t75(p.nu);
+      },
+      chip() {
+        return "q75";
+      },
+      drag(p, x) {
+        const t = t75(p.nu);
+        return { sigma: Math.abs((x - p.mu) / t) };
+      }
     },
     {
-      kind: "spread",
-      icon: "sq",
-      color: "#8b5cf6",
-      lineCls: "miqr",
-      at: (p) => er.gamma.inv(0.75, p.alpha, scale(p)),
-      chip: () => "q75",
-      drag: (p, x) => shapeAtFixedMean(p, 0.75, x)
+      kind: "tails",
+      icon: "dial",
+      color: NU_COLOR,
+      axes: ["y"],
+      // dial position: top (0) = low nu (fatter tails), bottom (1) = high nu
+      yOf(p) {
+        return (p.nu - NU_MIN) / (NU_MAX - NU_MIN);
+      },
+      chip() {
+        return "tails";
+      },
+      // absolute mapping (base.js passes the pointer height across the dial
+      // band, 0 = top): dragging up fattens the tails (lower nu) immediately.
+      drag(p, x, y) {
+        const nu = NU_MIN + y * (NU_MAX - NU_MIN);
+        return { nu: Math.min(NU_MAX, Math.max(NU_MIN, nu)) };
+      }
     }
   ],
   tip(p) {
-    return `${F2.label} (edge at 0) \u2022 drag mean to translate \u2022 drag q25/q75 to reshape around the mean \u2022 alpha=${fmt(p.alpha)} beta=${fmt(p.beta)}`;
+    return `${F2.label} \u2022 drag mean \u25CF to shift \u2022 drag \u25A0 left/right to spread \u2022 drag the tails dial up for fatter, down for thinner \u2022 mu=${fmt(p.mu)} sigma=${fmt(p.sigma)} nu=${fmt(p.nu)}`;
   }
 };
-var gamma_default = createWidget(F2, { pins: "left" });
+var studentt_default = createWidget(F2, { pins: "none" });
 export {
-  gamma_default as default
+  studentt_default as default
 };

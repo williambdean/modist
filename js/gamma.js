@@ -111,7 +111,7 @@ const F = {
       lineCls: "mmu",
       at: (p) => mean(p),
       chip: () => "mean",
-      drag: (p, x, d) => translateAtShape(p, x, d),
+      drag: (p, x, y, d) => translateAtShape(p, x, d),
     },
     {
       kind: "spread",

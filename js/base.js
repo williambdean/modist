@@ -11,6 +11,12 @@ const M_R = 8;
 const M_T = 46;
 const M_B = 44;
 const HIT_W = 24; // hit-zone width per handle (stacked handles are split into slices)
+// vertical dial track band: begins below the top-right button row so the knob is
+// always grabbable; drags and rendering share this mapping so the knob tracks
+// the cursor exactly.
+const DIAL_TOP = M_T + 40;
+const DIAL_BOT = H - M_B - 6;
+const DIAL_HIT_W = 36; // full-band slider thumb width on a y-only dial
 
 function clamp(v, lo, hi) {
   return Math.min(hi, Math.max(lo, v));
@@ -164,7 +170,7 @@ export function createWidget(F, opts) {
       }
 
       // ---- drag state (persistent on the svg so drags survive redraws) ----
-      let drag = null; // { kind/handle, id }
+      let drag = null; // { handle, id, startX, startY }
       let dragDomain = null; // frozen [lo,hi] at pointerdown
       let panDrag = null;
       let zoomAccum = 0;
@@ -203,13 +209,33 @@ export function createWidget(F, opts) {
       }
 
       // ---- actions ----
+      // y-fraction convention: 0 = top of the plot (M_T), 1 = bottom (base),
+      // growing downward (matching pointer clientY / SVG y).
+      function yFrac(py) {
+        return clamp((py - M_T) / plotH, 0, 1);
+      }
+
       function applyDrag(e) {
         const rect = svg.getBoundingClientRect();
         const px = ((e.clientX - rect.left) / rect.width) * W;
+        const py = ((e.clientY - rect.top) / rect.height) * H;
         const d0 = dragDomain || currentDomain();
         const x = xInv(clamp(px, M_L, W - M_R), d0);
         const p = getParams();
-        const next = drag.handle.drag(p, x, d0);
+
+        // y convention: x-only handles get the plot y-fraction (yFrac); y-only
+        // dials get the fully absolute pointer position across the dial band
+        // (0 = top), so a press/drag instantly moves the knob to the cursor.
+        // Render (yOf) and drag share DIAL_TOP/DIAL_BOT via this same value.
+        const axes = drag.handle.axes || ["x"];
+        const yOnly = axes.length === 1 && axes[0] === "y";
+        const y = yOnly ? clamp((py - DIAL_TOP) / (DIAL_BOT - DIAL_TOP), 0, 1) : yFrac(py);
+        let fx = x;
+        let fy = y;
+        // freeze the axes the handle does NOT accept, so a labeled drag stays 1-D
+        if (!axes.includes("x")) fx = drag.startX;
+        if (!axes.includes("y")) fy = drag.startY;
+        const next = drag.handle.drag(p, fx, fy, d0);
         setParams(next, "drag");
       }
 
@@ -280,7 +306,7 @@ export function createWidget(F, opts) {
         const rect = svg.getBoundingClientRect();
         const px = ((e.clientX - rect.left) / rect.width) * W;
         const x = xInv(clamp(px, M_L, W - M_R), currentDomain());
-        setParams(center.drag(getParams(), x, currentDomain()), "click");
+        setParams(center.drag(getParams(), x, 0.5, currentDomain()), "click");
       });
 
       // handle drag
@@ -290,8 +316,12 @@ export function createWidget(F, opts) {
           e.preventDefault();
           e.stopPropagation();
           cancelAnim();
-          drag = { handle, id: e.pointerId };
           dragDomain = currentDomain();
+          const rect = svg.getBoundingClientRect();
+          const px = ((e.clientX - rect.left) / rect.width) * W;
+          const py = ((e.clientY - rect.top) / rect.height) * H;
+          const x0 = xInv(clamp(px, M_L, W - M_R), dragDomain);
+          drag = { handle, id: e.pointerId, startX: x0, startY: yFrac(py) };
           svg.setPointerCapture(e.pointerId);
           applyDrag(e);
         });
@@ -409,15 +439,25 @@ export function createWidget(F, opts) {
         const orderMarkers = () => { for (const g of markerEls) if (g) svg.appendChild(g); };
         const hitLayer = elNS("g", svg, { class: "mhitlayer" });
 
-        // pass 0: locate every handle on the x-axis (clamped to the plot)
-        const hxOf = F.handles.map((h) => clamp(xt(h.at(p), dd), M_L, W - M_R));
+        // pass 0: locate every handle on the x-axis (clamped to the plot).
+        // y-only handles (e.g. a vertical dial) have no x anchor and are carved
+        // out of the x-zone partition; they get their own horizontal zone below.
+        const isY = (i) => {
+          const a = F.handles[i].axes;
+          return a && a.length === 1 && a[0] === "y";
+        };
+        const hxOf = F.handles.map((h, i) =>
+          isY(i) ? null : clamp(xt(h.at(p), dd), M_L, W - M_R)
+        );
 
         // partition the plot x-range into per-handle grab zones. Non-overlapping
         // handles keep the full centered HIT_W zone; any maximal run of handles
         // whose zones would overlap shares one union-zone split evenly, with the
         // leftmost handle on the left (matching visual order).
         const zones = new Array(F.handles.length);
-        const idx = [...F.handles.keys()].sort((a, b) => (hxOf[a] - hxOf[b]) || (a - b));
+        const idx = [...F.handles.keys()]
+          .filter((i) => hxOf[i] != null)
+          .sort((a, b) => (hxOf[a] - hxOf[b]) || (a - b));
         let zi = 0;
         while (zi < idx.length) {
           let zj = zi + 1;
@@ -441,6 +481,45 @@ export function createWidget(F, opts) {
         const overlap = new Array(F.handles.length).fill(false);
         for (let i = 0; i < F.handles.length; i++) {
           const h = F.handles[i];
+
+          // vertical dial: no x anchor; a vertical track + knob that only moves
+          // up/down. The whole band is one slider track, so clicking any height
+          // jumps the knob there and dragging scrubs it; the knob position and
+          // the drag mapping share DIAL_TOP/DIAL_BOT, so it tracks the cursor.
+          if (isY(i)) {
+            const yf = clamp(h.yOf ? h.yOf(p) : 0.5, 0, 1);
+            const yPx = DIAL_TOP + yf * (DIAL_BOT - DIAL_TOP);
+            const trackX = W - M_R - 20;
+            const g = elNS("g", svg, { class: "mhandle mdial" });
+            markerEls[i] = g;
+            elNS("line", g, { class: "mdialtrack", x1: trackX, y1: DIAL_TOP, x2: trackX, y2: DIAL_BOT });
+            elNS("line", g, { class: "mdialref", x1: M_L, y1: yPx, x2: W - M_R, y2: yPx });
+            elNS("rect", g, { x: trackX - 9, y: yPx - 7, width: 18, height: 14, rx: 4, class: "mdialknob" });
+            elNS("line", g, { x1: trackX - 5, y1: yPx, x2: trackX + 5, y2: yPx, class: "mdialgrip" });
+
+            const chip = elNS("g", svg, { class: "mchipgroup", transform: `translate(${trackX}, ${M_T + 30})` });
+            const txt = elNS("text", chip, { class: "mlabeltxt", "text-anchor": "middle", "dominant-baseline": "central" });
+            txt.textContent = h.chip(p);
+            const bb = txt.getBBox();
+            elNS("rect", chip, { x: bb.x - 6, y: bb.y - 4, width: bb.width + 12, height: bb.height + 8, rx: 7, class: "mchip", fill: h.color });
+            chip.appendChild(txt);
+            chipEls[i] = chip;
+            chipW[i] = 0;
+
+            // slider track: a full-band vertical hit zone centered on the track
+            const hr = elNS("rect", hitLayer, { class: "mhity", x: trackX - DIAL_HIT_W / 2, y: DIAL_TOP, width: DIAL_HIT_W, height: DIAL_BOT - DIAL_TOP });
+            hr.addEventListener("pointerenter", () => {
+              hoverIdx = i;
+              applyHandleState();
+            });
+            hr.addEventListener("pointerleave", () => {
+              if (hoverIdx === i) hoverIdx = null;
+              applyHandleState();
+            });
+            attachDrag(hr, h);
+            continue;
+          }
+
           const hx = hxOf[i];
           const hy = yt(clamp(F.pdf(p, h.at(p)), 0, peak), peak);
           const g = elNS("g", svg, { class: `mhandle ${h.icon}` });
@@ -486,6 +565,7 @@ export function createWidget(F, opts) {
         // symmetric chip-overlap detection (a pair overlapping → both ghost)
         for (let i = 0; i < F.handles.length; i++) {
           for (let j = i + 1; j < F.handles.length; j++) {
+            if (hxOf[i] == null || hxOf[j] == null) continue;
             if (Math.abs(hxOf[i] - hxOf[j]) < chipW[i] + chipW[j]) {
               overlap[i] = overlap[j] = true;
             }

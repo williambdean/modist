@@ -18,6 +18,7 @@ import modist as md
         (md.Normal, {"mu": 1.5, "sigma": 2.0}, {"mu": 1.5, "sigma": 2.0}),
         (md.Beta, {"alpha": 2.0, "beta": 5.0}, {"alpha": 2.0, "beta": 5.0}),
         (md.Gamma, {"alpha": 3.0, "beta": 4.0}, {"alpha": 3.0, "beta": 4.0}),
+        (md.StudentT, {"mu": 1.0, "sigma": 2.0, "nu": 5.0}, {"mu": 1.0, "sigma": 2.0, "nu": 5.0}),
     ],
 )
 def test_synced_params(cls, kwargs, expect):
@@ -52,9 +53,17 @@ def test_gamma_scipy_rate_semantics():
     assert s.kwds["scale"] == pytest.approx(1.0 / 3.0)
 
 
+def test_studentt_scipy_matches_params():
+    w = md.StudentT(mu=1.0, sigma=2.0, nu=5.0)
+    s = w.scipy
+    assert s.mean() == pytest.approx(1.0)
+    assert s.std() == pytest.approx(2.0 * (5.0 / 3.0) ** 0.5)
+    assert s.kwds["df"] == pytest.approx(5.0)
+
+
 def test_value_splats_into_pymc():
     pm = pytest.importorskip("pymc")
-    for cls, name in ((md.Normal, "Normal"), (md.Beta, "Beta"), (md.Gamma, "Gamma")):
+    for cls, name in ((md.Normal, "Normal"), (md.Beta, "Beta"), (md.Gamma, "Gamma"), (md.StudentT, "StudentT")):
         w = cls()
         dist = getattr(pm, name).dist(**w.params)
         assert dist is not None
@@ -72,6 +81,7 @@ def test_pymc_property_lazy():
         (md.Normal, ["foo_mu", "foo_sigma"]),
         (md.Beta, ["foo_alpha", "foo_beta"]),
         (md.Gamma, ["foo_alpha", "foo_beta"]),
+        (md.StudentT, ["foo_mu", "foo_sigma", "foo_nu"]),
     ],
 )
 def test_create_variable_symbolic_inputs(cls, expect_scalars):
@@ -109,7 +119,7 @@ def test_prior_property():
 
 def test_esm_pointing_at_self_contained_bundle():
     # anywidget resolves a Path _esm into a FileContents; str() returns the JS.
-    for cls in (md.Normal, md.Beta, md.Gamma):
+    for cls in (md.Normal, md.Beta, md.Gamma, md.StudentT):
         src = str(cls._esm)
         assert len(src) > 10_000, "jStat should be inlined into the bundle"
         # anywidget serves _esm as a Blob URL: no relative imports allowed
