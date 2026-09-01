@@ -5,6 +5,12 @@ of [`koaning/wigglystuff`](https://github.com/koaning/wigglystuff). Drag the
 density curve to shape a distribution, then feed the params straight into a
 distribution constructor with a single splat.
 
+## Install
+
+```sh
+uv add modist            # or: uv pip install modist  (pip install modist)
+```
+
 ## Quickstart
 
 ```python

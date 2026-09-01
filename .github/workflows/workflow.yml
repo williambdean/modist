@@ -1,0 +1,23 @@
+---
+# TEMPORARY: publish to TestPyPI via OIDC trusted publishing, matching the
+# test.pypi.org pending-publisher registration (workflow name `workflow.yml`).
+# This is a throwaway check to confirm the TestPyPI publish + install; it will
+# be removed once verified. Production publishing to PyPI lives in publish.yml.
+name: TestPyPI
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    tags:
+      - "v*.*.*"
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v7
+      - run: uv build
+      - run: uv publish --publish-url https://test.pypi.org/legacy/ --trusted-publishing always
