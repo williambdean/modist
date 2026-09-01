@@ -1,0 +1,13 @@
+{
+  "name": "modist",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build:js": "node build.js",
+    "test:js": "node tests/js/run.mjs"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2",
+    "playwright": "^1.62.1"
+  }
+}
