@@ -18,9 +18,12 @@ def _():
 
 @app.cell
 def _(md, mo):
-    w_intercept = mo.ui.anywidget(md.Normal(mu=1, sigma=1))
-    w_slope = mo.ui.anywidget(md.Normal(mu=1, sigma=0.5))
-    w_sigma = mo.ui.anywidget(md.Gamma(alpha=10, beta=5))
+    priors = {
+        "intercept": md.Normal(mu=1, sigma=1),
+        "slope": md.Normal(mu=1, sigma=0.5),
+        "sigma": md.Gamma(alpha=10, beta=5),
+    }
+    ui = md.ui.create_tabs(priors, height=350)
 
     w_show_true_line = mo.ui.checkbox(value=False, label="Show true line")
     w_show_data = mo.ui.checkbox(value=True, label="Show data")
@@ -41,54 +44,29 @@ def _(md, mo):
         label="y limits",
     )
     return (
-        w_intercept,
+        priors,
+        ui,
         w_show_answer,
         w_show_data,
         w_show_true_line,
-        w_sigma,
-        w_slope,
         w_xlim,
         w_ylim,
     )
 
 
 @app.cell
-def _(
-    mo,
-    w_intercept,
-    w_show_data,
-    w_show_true_line,
-    w_sigma,
-    w_slope,
-    w_xlim,
-    w_ylim,
-):
+def _(mo):
     intro = mo.md(
         r"""
         **Bayesian linear regression — priors → prior predictive.**
 
-        Drag the three prior widgets to reshape your beliefs about the
-        **intercept**, **slope**, and noise **σ**. The plot below shows the
-        resulting *prior predictive* for the response, overlaid on the true
-        synthetic data used to generate it.
+        Drag the priors (one draggable distribution per tab) to reshape your
+        beliefs about the **intercept**, **slope**, and noise **σ**. The plot
+        below shows the resulting *prior predictive* for the response,
+        overlaid on the true synthetic data used to generate it.
         """
     )
-    prior_row = mo.hstack(
-        [
-            mo.vstack([w_intercept, "intercept prior ~ Normal"]),
-            mo.vstack([w_slope, "slope prior ~ Normal"]),
-            mo.vstack([w_sigma, "σ prior ~ Gamma (rate)"]),
-        ],
-        gap=1,
-    )
-    control_row = mo.hstack(
-        [
-            mo.vstack([w_show_true_line, w_show_data]),
-            mo.vstack([w_xlim, w_ylim]),
-        ],
-        gap=2,
-    )
-    return control_row, intro, prior_row
+    return (intro,)
 
 
 @app.cell
@@ -98,14 +76,14 @@ def _(intro):
 
 
 @app.cell
-def _(control_row):
-    control_row
+def _(mo, w_show_data, w_show_true_line, w_xlim, w_ylim):
+    mo.vstack([w_show_true_line, w_show_data, w_xlim, w_ylim])
     return
 
 
 @app.cell
-def _(prior_row):
-    prior_row
+def _(ui):
+    ui
     return
 
 
@@ -141,13 +119,14 @@ def _(np):
 
 
 @app.cell
-def _(explicit_graph_inputs, pm, w_intercept, w_sigma, w_slope, x_grid):
+def _(explicit_graph_inputs, pm, priors, x_grid):
     # Build the prior graph ONCE with symbolic scalar inputs (named after each
     # variable), then compile a sampler. Params are function inputs, so dragging
-    # a widget just re-calls the compiled fn — no recompile per update.
-    intercept = w_intercept.create_variable("intercept")
-    slope = w_slope.create_variable("slope")
-    sigma = w_sigma.create_variable("sigma")
+    # a widget just re-calls the compiled fn — no recompile per update. The
+    # original distribution instances (kept in `priors`) stay live as you drag.
+    intercept = priors["intercept"].create_variable("intercept")
+    slope = priors["slope"].create_variable("slope")
+    sigma = priors["sigma"].create_variable("sigma")
 
     mu = intercept + slope * x_grid
     y_prior = pm.Normal.dist(mu=mu, sigma=sigma)
@@ -161,15 +140,12 @@ def _(explicit_graph_inputs, pm, w_intercept, w_sigma, w_slope, x_grid):
 
 
 @app.cell
-def _(draws, sample_prior, w_intercept, w_sigma, w_slope):
-    def kwargs_for(name, value):
-        return {f"{name}_{k}": v for k, v in value.items()}
-
-    # draws = 1 if w_scatter.value else 200
+def _(draws, sample_prior, ui):
+    # ui.value is {name: {param: value}} — splat everything into the compiled
+    # sampler's symbolic inputs ({name}_{param}).
     _prior_kwargs = {}
-    _prior_kwargs.update(kwargs_for("intercept", w_intercept.value))
-    _prior_kwargs.update(kwargs_for("slope", w_slope.value))
-    _prior_kwargs.update(kwargs_for("sigma", w_sigma.value))
+    for name, params in ui.value.items():
+        _prior_kwargs.update({f"{name}_{k}": v for k, v in params.items()})
 
     lines = [sample_prior(**_prior_kwargs) for _ in range(draws)]
     return (lines,)
@@ -248,12 +224,12 @@ def _(w_show_answer):
 
 
 @app.cell
-def _(np, plt, w_intercept, w_show_answer, w_sigma, w_slope):
+def _(np, plt, ui, w_show_answer):
     if w_show_answer.value:
         fig_a, axes = plt.subplots(1, 3, figsize=(10, 3))
         t_vals = [2.0, 0.7, 1.0]
         labels = ["intercept", "slope", "σ"]
-        dists = [w_intercept.scipy, w_slope.scipy, w_sigma.scipy]
+        dists = [ui["intercept"].scipy, ui["slope"].scipy, ui["sigma"].scipy]
         for i, dist in enumerate(dists):
             lo, hi = dist.ppf(0.001), dist.ppf(0.999)
             u = np.linspace(lo, hi, 300)
@@ -269,7 +245,6 @@ def _(np, plt, w_intercept, w_show_answer, w_sigma, w_slope):
             axes[i].legend(fontsize=8)
         fig_a.suptitle("Priors vs True Parameters")
         fig_a.tight_layout()
-
     fig_a
     return
 

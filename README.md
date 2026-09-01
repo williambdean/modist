@@ -13,6 +13,9 @@ distribution constructor with a single splat.
 uv add modist            # or: uv pip install modist  (pip install modist)
 ```
 
+The grouped-priors UI (`md.ui`) additionally requires marimo:
+`uv add 'modist[marimo]'` (or `pip install modist[marimo]`).
+
 ## Quickstart
 
 ```python
@@ -31,6 +34,38 @@ params = w.value            # {'mu': ..., 'sigma': ...}
 import pymc as pm
 dist = pm.Normal.dist(**params)   # or pm.Beta / pm.Gamma / pm.StudentT
 ```
+
+## Priors UI
+
+Allocate a whole set of priors at once with a tabbed panel — one draggable
+distribution per prior:
+
+```python
+import modist as md
+
+priors = {"intercept": md.Normal(), "slope": md.Normal(), "sigma": md.Gamma()}
+ui = md.ui.create_tabs(priors)
+ui
+```
+
+```python
+ui.value   # {'intercept': {'mu': ..., 'sigma': ...}, 'sigma': {'alpha': ..., 'beta': ...}, ...}
+```
+
+`ui.value` re-runs live as you drag, and each prior splats straight into its
+constructor: `pm.Normal.dist(**ui.value["intercept"])`. Use
+`md.ui.create_tabs(priors, orientation="vertical")` for a vertical tab bar,
+`md.ui.create_tabs(priors, height=260)` for shorter panels (the widgets size by
+aspect ratio, so a smaller `height` just narrows them), or
+`md.ui.create_stack(priors)` to show every prior at once.
+
+`ui.priors` maps each name to a [`pymc_extras.Prior`](https://github.com/pymc-devs/pymc-extras)
+object (`pip install pymc-extras`). Your original distribution instances stay
+live as you drag, so symbolic flows built off them
+(`w.create_variable(...)`, `w.params`, `w.scipy`) keep working.
+
+Requires marimo (`modist[marimo]`). `import modist` itself stays marimo-free —
+`md.ui` is imported lazily on first access.
 
 ## Families
 

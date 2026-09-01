@@ -1543,7 +1543,7 @@ wheels = [
 
 [[package]]
 name = "modist"
-version = "0.2.0"
+version = "0.3.0"
 source = { editable = "." }
 dependencies = [
     { name = "anywidget" },
@@ -1557,6 +1557,9 @@ dev = [
     { name = "jupytext" },
     { name = "marimo" },
     { name = "pytest" },
+]
+marimo = [
+    { name = "marimo" },
 ]
 pymc = [
     { name = "pymc" },
@@ -1574,12 +1577,13 @@ requires-dist = [
     { name = "jupyter", marker = "extra == 'dev'", specifier = ">=1.0" },
     { name = "jupytext", marker = "extra == 'dev'", specifier = ">=1.19.5" },
     { name = "marimo", marker = "extra == 'dev'", specifier = ">=0.9" },
+    { name = "marimo", marker = "extra == 'marimo'", specifier = ">=0.24" },
     { name = "pymc", marker = "extra == 'pymc'", specifier = ">=5.10" },
     { name = "pymc-extras", marker = "extra == 'pymc'", specifier = ">=0.0.4" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8" },
     { name = "scipy", marker = "extra == 'scipy'", specifier = ">=1.12" },
 ]
-provides-extras = ["scipy", "pymc", "dev"]
+provides-extras = ["scipy", "pymc", "marimo", "dev"]
 
 [[package]]
 name = "msgspec"
