@@ -37,7 +37,7 @@ class DistMixin:
         dist = getattr(pm, self._dist_name)
         return dist.dist(**self.params)
 
-    def create_variable(self, name: str) -> Any:
+    def create_variable(self, name: str, *, size=None) -> Any:
         """A symbolic pymc distribution whose parameters are named pytensor
         scalars (``{name}_{param}``), ready for ``pm.compile`` with
         ``pytensor.graph.traversal.explicit_graph_inputs``.
@@ -49,12 +49,21 @@ class DistMixin:
 
         ``w_int.create_variable("intercept")`` gives ``pm.Normal.dist(
         mu=pt.scalar("intercept_mu"), sigma=pt.scalar("intercept_sigma"))``.
+
+        Args:
+            name: name to prefix the parameter variables with.
+            size: optional shape/size passed through to the pymc distribution,
+                so one widget can drive a vector-valued RV (its scalar params
+                broadcast to ``size``).
         """
         import pymc as pm  # type: ignore[import-not-found]
         import pytensor.tensor as pt  # type: ignore[import-not-found]
 
         kwargs = {p: pt.scalar(f"{name}_{p}") for p in self._param_names}
-        return getattr(pm, self._dist_name).dist(**kwargs)
+        dist_fn = getattr(pm, self._dist_name)
+        if size is not None:
+            return dist_fn.dist(size=size, **kwargs)
+        return dist_fn.dist(**kwargs)
 
     @property
     def prior(self) -> Any:
