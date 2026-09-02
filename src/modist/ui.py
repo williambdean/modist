@@ -136,7 +136,7 @@ class Priors(_batch_base):
         elements: dict[str, mo.ui.anywidget | "Priors"],
         *,
         layout: mo.Html = Ellipsis,  # type: ignore[valid-type]
-        orientation: Literal["horizontal", "vertical"] = "horizontal",
+        orientation: Literal["horizontal", "vertical"] = "vertical",
         inner_orientation: Literal["horizontal", "vertical"] = "horizontal",
         height: float = 360,
         label: str = "priors",
@@ -164,7 +164,7 @@ class Priors(_batch_base):
         priors: PriorsSpec,
         *,
         layout: mo.Html = Ellipsis,  # type: ignore[valid-type]
-        orientation: Literal["horizontal", "vertical"] = "horizontal",
+        orientation: Literal["horizontal", "vertical"] = "vertical",
         inner_orientation: Literal["horizontal", "vertical"] = "horizontal",
         height: float = 360,
         label: str = "priors",
@@ -241,7 +241,7 @@ class Priors(_batch_base):
 def create_tabs(
     priors: PriorsSpec,
     *,
-    orientation: Literal["horizontal", "vertical"] = "horizontal",
+    orientation: Literal["horizontal", "vertical"] = "vertical",
     inner_orientation: Literal["horizontal", "vertical"] = "horizontal",
     height: float = 360,
     label: str = "priors",
