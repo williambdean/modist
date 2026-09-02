@@ -93,7 +93,7 @@ def test_draw_preserves_dims_shape_and_returns_all_rvs():
 
 def test_draw_multiple_and_overrides():
     ui = md.pymc.create_priors(_nested_model())
-    stack = ui.draw(n=25)
+    stack = ui.draw(25)
     assert np.shape(stack["beta"]) == (25, 3)
     assert np.shape(stack["obs"]) == (25, 2)
     # overrides layer on top of current widget values
@@ -114,7 +114,7 @@ def test_sample_prior_predictive_prior_group_dims_and_coords():
     # _nested_model has no observed RVs -> everything lands in the `prior`
     # group and the `prior_predictive` group stays empty.
     ui = md.pymc.create_priors(_nested_model())
-    dt = ui.sample_prior_predictive(n=25)
+    dt = ui.sample_prior_predictive(25)
     prior = dt["prior"].ds
     assert set(prior.data_vars) == {"intercept_mu", "intercept", "beta", "sigma", "obs"}
     assert prior["beta"].dims == ("chain", "draw", "covariates")
@@ -129,7 +129,7 @@ def test_sample_prior_predictive_observed_and_deterministic():
     ui = md.pymc.create_priors(
         _observed_deterministic_model(), outputs=["beta", "mu", "obs"]
     )
-    dt = ui.sample_prior_predictive(n=5)
+    dt = ui.sample_prior_predictive(5)
     prior = dt["prior"].ds
     # deterministic `mu` keeps its dims and coords
     assert set(prior.data_vars) == {"beta", "mu"}
@@ -144,7 +144,7 @@ def test_sample_prior_predictive_deterministic_included_by_default():
     # match pm.sample_prior_predictive: deterministics are part of the default
     # output set (no `outputs=` needed).
     ui = md.pymc.create_priors(_observed_deterministic_model())
-    dt = ui.sample_prior_predictive(n=5)
+    dt = ui.sample_prior_predictive(5)
     prior = dt["prior"].ds
     assert set(prior.data_vars) == {"beta", "mu"}
     assert prior["mu"].dims == ("chain", "draw", "trial")
@@ -156,7 +156,7 @@ def test_sample_prior_predictive_default_and_overrides():
     assert ui.sample_prior_predictive()["prior"].ds.sizes["draw"] == 500
     # overrides pass through to the sampler
     assert (
-        ui.sample_prior_predictive(n=3, intercept_mu_sigma=3.0)["prior"].ds.sizes[
+        ui.sample_prior_predictive(3, intercept_mu_sigma=3.0)["prior"].ds.sizes[
             "draw"
         ]
         == 3
@@ -260,7 +260,7 @@ def test_mapping_rescues_extras_distribution():
         px.Chi("x", nu=3)
     ui = md.pymc.create_priors(model, mapping={"Chi": md.Gamma})
     assert set(ui.inputs) == {"x_alpha", "x_beta"}
-    draws = ui.draw(n=3)
+    draws = ui.draw(3)
     assert np.shape(draws["x"]) == (3,)
 
 
@@ -273,7 +273,7 @@ def test_lognormal_and_inversegamma_map_out_of_the_box():
         pm.InverseGamma("ig", alpha=2, beta=1)
     ui = md.pymc.create_priors(model)
     assert set(ui.inputs) == {"l_alpha", "l_beta", "ig_alpha", "ig_beta"}
-    draws = ui.draw(n=3)
+    draws = ui.draw(3)
     assert np.shape(draws["l"]) == (3,)
     assert np.shape(draws["ig"]) == (3,)
 
@@ -458,7 +458,7 @@ def test_outputs_mapping_form():
     model, p, _ = _logistic_model()
     ui = md.pymc.create_priors(model, outputs={"sig": p, "resp": model["response"]})
     assert ui.rv_names == ["sig", "resp"]
-    draws = ui.draw(n=3)
+    draws = ui.draw(3)
     assert np.shape(draws["sig"]) == (3, 50)
     assert np.shape(draws["resp"]) == (3, 50)
 
@@ -469,7 +469,7 @@ def test_outputs_mix_of_forms_and_draw_n():
         model, outputs=["intercept", "p_det", ("sig", p), "response"]
     )
     assert ui.rv_names == ["intercept", "p_det", "sig", "response"]
-    draws = ui.draw(n=5)
+    draws = ui.draw(5)
     assert np.shape(draws["sig"]) == (5, 50)
     assert np.shape(draws["response"]) == (5, 50)
     assert np.shape(draws["intercept"]) == (5,)
@@ -928,7 +928,7 @@ def test_dims_scalar_prior_full_flow():
     model = _dims_model()
     ui = md.pymc.create_priors(model, names=["sigma"])
     assert set(ui.inputs) == {"sigma_alpha", "sigma_beta"}
-    draws = ui.draw(n=3)
+    draws = ui.draw(3)
     assert np.shape(draws["sigma"]) == (3,)
     new_model = md.pymc.set_distributions(model, ui.value)
     assert "sigma" in [r.name for r in new_model.free_RVs]
@@ -941,7 +941,7 @@ def test_dims_split_per_element_with_coords():
     model = _dims_model()
     ui = md.pymc.create_priors(model, names=["beta"])
     assert set(ui.inputs) == {"beta_a_mu", "beta_a_sigma", "beta_b_mu", "beta_b_sigma"}
-    draws = ui.draw(n=3)
+    draws = ui.draw(3)
     assert np.shape(draws["beta"]) == (3, 2)
     new_model = md.pymc.set_distributions(model, ui.value)
     assert new_model.named_vars_to_dims["beta"] == ["channel"]
@@ -971,7 +971,7 @@ def test_dims_multidim_nonsplit():
         pmd.Normal("w", mu=0.0, sigma=1.0, dims=("a", "b"))
     ui = md.pymc.create_priors(model)
     assert "w" in ui.replaced
-    draws = ui.draw(n=2)
+    draws = ui.draw(2)
     assert np.shape(draws["w"]) == (2, 2, 3)
     new_model = md.pymc.set_distributions(model, ui.value)
     assert new_model.named_vars_to_dims["w"] == ["a", "b"]
@@ -983,7 +983,7 @@ def test_dims_sample_prior_predictive():
     pytest.importorskip("pymc.dims")
     model = _dims_model()
     ui = md.pymc.create_priors(model)
-    dt = ui.sample_prior_predictive(n=3)
+    dt = ui.sample_prior_predictive(3)
     assert "beta" in dt.prior.data_vars
     assert dt.prior.beta.dims == ("chain", "draw", "channel")
     assert list(dt.prior.coords["channel"].values) == ["a", "b"]

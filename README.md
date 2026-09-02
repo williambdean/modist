@@ -14,7 +14,9 @@ uv add modist            # or: uv pip install modist  (pip install modist)
 ```
 
 The grouped-priors UI (`md.ui`) additionally requires marimo:
-`uv add 'modist[marimo]'` (or `pip install modist[marimo]`).
+`uv add 'modist[marimo]'` (or `pip install modist[marimo]`). The
+priors-from-model helpers (`md.pymc`) additionally require pymc:
+`uv add 'modist[marimo,pymc]'`.
 
 ## Quickstart
 
@@ -66,6 +68,50 @@ live as you drag, so symbolic flows built off them
 
 Requires marimo (`modist[marimo]`). `import modist` itself stays marimo-free —
 `md.ui` is imported lazily on first access.
+
+## Priors from a PyMC model
+
+> Requires `modist[marimo,pymc]`. `md.pymc` is imported lazily, so plain
+> `import modist` doesn't pull in pymc.
+
+The same idea, lifted from a built model. `md.pymc.create_priors(model)`
+finds the model's **root priors** — distributions whose parameters don't depend
+on other distributions — replaces each with a draggable widget, compiles a
+sampler once, and bundles everything into a `Priors` panel you can drag, draw
+from, and hand straight to inference. The whole loop, from model to
+`pm.sample`, is one short session:
+
+```python
+import numpy as np, pymc as pm, modist as md
+x = np.random.default_rng(0).normal(size=(50, 3))
+y = x @ [1.0, -0.5, 2.0] + np.random.default_rng(1).normal(size=50)
+
+with pm.Model(coords={"covariate": ["retention", "content", "price"]}) as model:
+    alpha = pm.Normal("alpha", mu=pm.Normal("alpha_mu", sigma=5), sigma=2)
+    beta = pm.Normal("beta", dims="covariate")          # one widget per covariate
+    sigma = pm.HalfNormal("sigma")                      # auto-mapped to a Gamma widget
+    pm.Normal("obs", mu=alpha + x @ beta, sigma=sigma, observed=y)
+
+ui = md.pymc.create_priors(model)   # tabs: alpha_mu, sigma, and a per-covariate beta group
+ui                                    # drag the density curves to reshape the priors
+```
+
+Then use for prior predictive, etc:
+
+```python
+ui.value                              # live params, ready to splat into pm.*.dist(**p)
+ui.draw(1_000)                         # draws of every model RV, driven by the widgets
+ui.draw(1_000, beta_price_mu=1.5)       # ... with a named per-parameter override
+ui.sample_prior_predictive(1_000)       # -> xr.DataTree: prior / prior_predictive groups
+```
+
+Use the `set_distributions` method in order to define a new PyMC model.
+
+```python
+new_model = ui.set_distributions()    # the widget families replace the priors
+idata = pm.sample(model=new_model)    # ordinary pm.sample, ready for arviz
+```
+
 
 ## Families
 

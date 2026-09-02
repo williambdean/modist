@@ -36,7 +36,7 @@ Examples
 >>> ui = md.pymc.create_priors(model)   # tabs for "intercept" (Normal), ...
 >>> ui
 >>> ui.draw()   # draws of every model RV + deterministic, driven by ui.value
->>> ui.sample_prior_predictive(n=500)  # -> xr.DataTree (prior / prior_predictive)
+>>> ui.sample_prior_predictive(500)  # -> xr.DataTree (prior / prior_predictive)
 >>>
 >>> new_model = ui.set_distributions(model)
 >>> # idata = pm.sample(model=new_model)
@@ -573,16 +573,16 @@ class ModelPriors(Priors):
     def fn(self) -> Callable[..., Any]:
         return self._fn
 
-    def draw(self, n: int = 1, **overrides: float) -> dict[str, Any]:
+    def draw(self, draws: int = 1, **overrides: float) -> dict[str, Any]:
         """Sample the model with the current widget values.
 
         Args:
-            n: number of draws per RV.
+            draws: number of draws per RV.
             **overrides: ``{f"{name}_{param}": value}`` overrides applied on top
                 of the current widget values.
 
         Returns:
-            ``{rv_name: numpy array}`` with one column per sample when ``n > 1``.
+            ``{rv_name: numpy array}`` with one column per sample when ``draws > 1``.
         """
         kwargs = {
             k: v for k, v in _flat_inputs(self.value).items() if k in self._inputs
@@ -593,18 +593,18 @@ class ModelPriors(Priors):
                 f"unknown input(s) {bad}; available: {sorted(self._inputs)}"
             )
         kwargs.update(overrides)
-        results = [self._fn(**kwargs) for _ in range(n)]
-        if n == 1:
+        results = [self._fn(**kwargs) for _ in range(draws)]
+        if draws == 1:
             return dict(zip(self._rv_names, results[0]))
         return {
             name: np.stack([r[i] for r in results])
             for i, name in enumerate(self._rv_names)
         }
 
-    def __call__(self, n: int = 1, **overrides: float) -> dict[str, Any]:
-        return self.draw(n=n, **overrides)
+    def __call__(self, draws: int = 1, **overrides: float) -> dict[str, Any]:
+        return self.draw(draws, **overrides)
 
-    def sample_prior_predictive(self, n: int = 500, **overrides: float) -> DataTree:
+    def sample_prior_predictive(self, draws: int = 500, **overrides: float) -> DataTree:
         """Draw prior/prior-predictive samples as an ``xr.DataTree``.
 
         Runs the same compiled sampler as :meth:`draw` — driven by the current
@@ -619,7 +619,7 @@ class ModelPriors(Priors):
         object drops straight into arviz plotting (``az.plot_*`` / ``azp``).
 
         Args:
-            n: number of draws per RV (default 500).
+            draws: number of draws per RV (default 500).
             **overrides: same ``{f"{name}_{param}": value}`` overrides as
                 :meth:`draw`, applied on top of the current widget values.
 
@@ -628,8 +628,8 @@ class ModelPriors(Priors):
         """
         import pymc as pm
 
-        draws = self.draw(n=n, **overrides)
-        return pm.to_inference_data(prior=draws, model=self._model)
+        prior_draws = self.draw(draws, **overrides)
+        return pm.to_inference_data(prior=prior_draws, model=self._model)
 
     def set_distributions(
         self,
