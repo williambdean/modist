@@ -39,10 +39,13 @@ PriorsParams: TypeAlias = dict[str, dict[str, float]]
 # panel so its rendered height matches `height` without distorting the plot.
 _ASPECT = 660 / 360
 
-# Estimated height (px) of marimo's horizontal tab bar, used to account for the
-# tab bar a nested group adds on top of its widgets so group panels end up the
-# same height as leaf panels (no jump when switching tabs).
-_TAB_BAR_PX = 44
+# Extra rendered height (px) a nested group adds on top of its widgets — its
+# inner horizontal tab bar (marimo's `max-h-14` = 56px) plus the 8px top margin
+# on the tab content — used to size a group's widgets a bar's worth shorter so
+# group panels and leaf panels end up the same height (no jump when switching
+# tabs). Only applies to horizontal inner bars; a vertical inner bar is a side
+# rail that consumes width, not height.
+_TAB_BAR_PX = 64
 _MIN_HEIGHT = 140
 
 
