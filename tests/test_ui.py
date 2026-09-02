@@ -122,3 +122,45 @@ def test_priors_property_requires_pymc_extras():
 
     for name, prior in ui.priors.items():
         assert isinstance(prior, Prior)
+
+
+def _group_spec():
+    return {"alpha": {"north": md.Normal(), "south": md.Normal()}, "sigma": md.Gamma()}
+
+
+def test_group_widget_height_is_reduced_for_horizontal_bar():
+    from modist.ui import _MIN_HEIGHT, _TAB_BAR_PX
+
+    ui = md.ui.create_tabs(_group_spec(), height=360)
+    # a horizontal inner tab bar adds ~_TAB_BAR_PX, so the group's widgets are
+    # sized a bar's worth shorter so the group panel matches a leaf panel
+    assert ui["alpha"]._height == max(_MIN_HEIGHT, 360 - _TAB_BAR_PX)
+
+
+def test_group_height_unchanged_for_vertical_bar():
+    ui = md.ui.create_tabs(_group_spec(), inner_orientation="vertical", height=300)
+    # a vertical tab bar is a side rail — it adds width, not height
+    assert ui["alpha"]._height == 300
+
+
+def test_group_height_falls_back_to_floor():
+    from modist.ui import _MIN_HEIGHT
+
+    ui = md.ui.create_tabs(_group_spec(), height=60)
+    assert ui["alpha"]._height == _MIN_HEIGHT
+
+
+def test_deep_groups_subtract_bar_per_level():
+    from modist.ui import _TAB_BAR_PX
+
+    ui = md.ui.create_tabs(
+        {"geo": {"north": {"x1": md.Normal(), "x2": md.Normal()}}}, height=400
+    )
+    assert ui["geo"]._height == max(140, 400 - _TAB_BAR_PX)
+    assert ui["geo"]["north"]._height == max(140, 400 - 2 * _TAB_BAR_PX)
+
+
+def test_flat_spec_has_no_height_adjustment():
+    # no groups -> leaf widgets keep their full width cap (i.e. full height)
+    ui = md.ui.create_tabs({"sigma": md.Gamma()}, height=300)
+    assert f"max-width:{int(round(300 * 660 / 360))}px" in ui.text
