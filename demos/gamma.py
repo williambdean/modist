@@ -14,7 +14,7 @@ def _():
 
 @app.cell
 def _(md, mo):
-    w = mo.ui.anywidget(md.Gamma(alpha=2, beta=2))
+    w = mo.ui.anywidget(md.Gamma(alpha=25, beta=5))
     w
     return (w,)
 
