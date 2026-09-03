@@ -709,6 +709,58 @@ def test_split_remapped_family_expands_per_element_with_defaults():
     assert np.shape(ui.draw()["h"]) == (2,)
 
 
+def test_gamma_beta_seeds_from_model_params():
+    """pymc's Gamma op stores beta (rate) internally as its reciprocal
+    (scale); the seed must unwrap the Elemwise(reciprocal) layer and read the
+    rate constant directly, not fall back to the widget default."""
+    with pm.Model() as model:
+        pm.Gamma("g", alpha=2.0, beta=3.0)
+    spec = md.pymc.prior_spec(model)["g"]
+    assert spec.params == [{"alpha": 2.0, "beta": 3.0}]
+    ui = md.pymc.create_priors(model)
+    assert ui.value["g"] == {"alpha": 2.0, "beta": 3.0}
+    assert "g_alpha" in ui.inputs
+    assert "g_beta" in ui.inputs
+
+
+def test_gamma_split_scalar_alpha_array_beta_seeds_per_element():
+    """A dims'd Gamma with scalar alpha (broadcast via DimShuffle) and array
+    beta seeds every element's beta from the array and broadcasts alpha."""
+    with pm.Model(coords={"x": ["a", "b", "c"]}) as model:
+        pm.Gamma("g", alpha=2.0, beta=[4.0, 5.0, 6.0], dims="x")
+    spec = md.pymc.prior_spec(model)["g"]
+    assert spec.params == [
+        {"alpha": 2.0, "beta": 4.0},
+        {"alpha": 2.0, "beta": 5.0},
+        {"alpha": 2.0, "beta": 6.0},
+    ]
+    ui = md.pymc.create_priors(model)
+    assert ui.value["g"] == {
+        "a": {"alpha": 2.0, "beta": 4.0},
+        "b": {"alpha": 2.0, "beta": 5.0},
+        "c": {"alpha": 2.0, "beta": 6.0},
+    }
+    assert np.shape(ui.draw()["g"]) == (3,)
+
+
+def test_gamma_split_array_alpha_array_beta_seeds_per_element():
+    """A dims'd Gamma with both alpha and beta as per-element arrays seeds
+    every element from its corresponding pair of constants."""
+    with pm.Model(coords={"y": ["p", "q"]}) as model:
+        pm.Gamma("g", alpha=[1.0, 2.0], beta=[3.0, 4.0], dims="y")
+    spec = md.pymc.prior_spec(model)["g"]
+    assert spec.params == [
+        {"alpha": 1.0, "beta": 3.0},
+        {"alpha": 2.0, "beta": 4.0},
+    ]
+    ui = md.pymc.create_priors(model)
+    assert ui.value["g"] == {
+        "p": {"alpha": 1.0, "beta": 3.0},
+        "q": {"alpha": 2.0, "beta": 4.0},
+    }
+    assert np.shape(ui.draw()["g"]) == (2,)
+
+
 def test_split_labels_sanitized_from_coords_with_spaces():
     """Coord labels with spaces become identifier-safe tab labels/inputs."""
     with pm.Model(

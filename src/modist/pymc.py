@@ -69,6 +69,7 @@ from pymc.pytensorf import toposort_replace
 from pytensor.graph.basic import Constant as _Constant
 from pytensor.graph.replace import graph_replace
 from pytensor.graph.traversal import ancestors, explicit_graph_inputs
+from pytensor.tensor.elemwise import Elemwise as _Elemwise
 
 try:
     from pytensor.xtensor.type import XTensorVariable as _XTensorVariable
@@ -163,13 +164,60 @@ def _default_params(rv: Any, md_cls: type[DistMixin]) -> dict[str, float]:
 
 
 def _as_constant(x: Any) -> float | None:
-    """The float value of a pytensor constant/shared scalar, else ``None``."""
+    """The float value of a pytensor constant/shared scalar, else ``None``.
+
+    pymc parameterizes some distributions' op inputs through an elementwise
+    transform of the user-facing value. For Gamma the *rate* ``beta`` is passed
+    as ``scale = reciprocal(beta)``, so the RV's second op input arrives as
+    ``Elemwise(reciprocal)(TensorConstant(rate))`` rather than a bare constant.
+    The inner constant is the rate modist's ``beta`` wants directly, so unwrap
+    the reciprocal and read it unchanged. ``DimShuffle`` wrappers (a broadcast
+    of a scalar constant to the RV's vector shape, applied by pymc to e.g.
+    broadcast a scalar ``alpha``) are also transparent — the value is unchanged.
+    """
     if isinstance(x, _Constant):
         arr = np.asarray(x.data)
         if arr.ndim == 0:
             return float(arr)
         if arr.size == 1:
             return float(arr.ravel()[0])
+    inner = _unwrap_input(x)
+    if inner is not None and inner is not x:
+        return _as_constant(inner)
+    return None
+
+
+def _unwrap_input(x: Any) -> _Constant | None:
+    """Strip a single pymc op-input transform layer and return the inner constant.
+
+    pymc wraps certain RV op-inputs in a single transform that does not change
+    the *value* modist wants to seed the widget with:
+
+    - ``DimShuffle``: broadcasts a scalar constant to the RV's vector shape
+      (e.g. ``alpha=2.0`` in a dims'd model).
+    - ``Elemwise(reciprocal)``: converts the user-facing *rate* to the
+      internal *scale* (e.g. ``beta=3.0`` → ``scale = 1/3``).
+
+    Returns the inner ``_Constant`` if a single known layer is present, or
+    ``None`` if the input is already a ``_Constant`` or has an unknown/missing
+    wrapper. Only one level of nesting is handled; deeper trees are not
+    expected from pymc's distribution construction.
+    """
+    owner = getattr(x, "owner", None)
+    if owner is None:
+        return None
+    if isinstance(owner.op, _Elemwise):
+        try:
+            scalar_name = owner.op.scalar_op.name
+        except AttributeError:
+            return None
+        if scalar_name == "reciprocal" and len(owner.inputs) == 1:
+            inner = owner.inputs[0]
+            return inner if isinstance(inner, _Constant) else None
+    # DimShuffle: broadcast a scalar constant (e.g. alpha broadcast to vector)
+    if hasattr(owner.op, "new_order") and len(owner.inputs) == 1:
+        inner = owner.inputs[0]
+        return inner if isinstance(inner, _Constant) else None
     return None
 
 
@@ -253,9 +301,10 @@ def _split_params(
 
     # resolve the element count
     n: int | None = None
-    for inp in inputs:  # 1. constant array params
-        if isinstance(inp, _Constant):
-            arr = np.asarray(inp.data)
+    for inp in inputs:  # 1. constant array params (bare or pymc-wrapped)
+        inner = inp if isinstance(inp, _Constant) else _unwrap_input(inp)
+        if inner is not None:
+            arr = np.asarray(inner.data)
             if arr.ndim >= 1 and arr.size > 1:
                 n = int(arr.size)
                 break
@@ -282,14 +331,16 @@ def _split_params(
         return per_elem
     for p in md_cls._param_names:
         inp = inputs[params.index(p)]
-        if isinstance(inp, _Constant):
-            arr = np.asarray(inp.data)
+        # bare Constant or pymc-wrapped constant (DimShuffle, Elemwise(reciprocal))
+        inner = inp if isinstance(inp, _Constant) else _unwrap_input(inp)
+        if inner is not None:
+            arr = np.asarray(inner.data)
             if arr.ndim >= 1 and arr.size > 1:
                 flat = arr.ravel()
                 for i in range(n):
                     per_elem[i][p] = float(flat[i])
             else:
-                val = _as_constant(inp)
+                val = _as_constant(inner)
                 if val is not None:
                     for i in range(n):
                         per_elem[i][p] = val
