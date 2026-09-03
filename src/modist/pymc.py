@@ -17,7 +17,10 @@ into **one widget per element** whenever the element count is known — from a
 constant array param (``mu=[1, 2, 3]``), the coord values, or a constant
 ``size`` — with labels taken from the model coords (e.g. ``"sunlight hours"`` →
 ``"sunlight_hours"``). The rebuilt model stacks the per-element widgets back
-into arrays (``mu=[...], sigma=[...]``). 2-D+ priors and priors with symbolic
+into arrays (``mu=[...], sigma=[...]``). 2-D+ priors expand into **nested tab
+groups**: the first dim becomes outer tabs and the second dim becomes inner tabs
+(e.g. ``dims=("geo", "product")`` → outer tabs A/B/C, inner tabs 1/2/3/4).
+Third+ dims are flattened into composite inner labels. Priors with symbolic
 sizes keep a single broadcasting widget.
 
 ``md.pymc.prior_spec(model)`` returns the structured prior specification that
@@ -347,6 +350,134 @@ def _split_params(
     return per_elem
 
 
+def _rv_ndim(model: Any, rv: Any) -> int:
+    """Number of dimensions of an RV, inferred from dims/coords or the op."""
+    if isinstance(rv, _XTensorVariable):
+        return len(getattr(rv.type, "dims", ()))
+    dims = model.named_vars_to_dims.get(rv.name, ())
+    if dims:
+        return len(dims)
+    return rv.type.ndim
+
+
+def _dims_tab_labels(
+    model: Any, rv: Any
+) -> tuple[list[str], list[str], list[str]]:
+    """Tab labels and dim sizes for a 2-D+ RV.
+
+    Returns ``(outer_labels, inner_labels, dim_sizes)``.  For ``ndim == 2``,
+    outer is the first dim's coords and inner is the second dim's coords.  For
+    ``ndim >= 3`` the first two dims become tab levels and the remaining dims
+    are flattened into composite inner labels (``"b1_c1"``).  Label collisions
+    fall back to positional indices.  ``dim_sizes`` is the full per-dim size
+    list (used to preserve the RV's ndim when rebuilding).
+    """
+    from itertools import product as _product
+
+    rv_dims = model.named_vars_to_dims.get(rv.name, ())
+    dim_sizes: list[int] = []
+    for d in rv_dims:
+        c = model.coords.get(d)
+        dim_sizes.append(len(c) if c is not None else 0)
+
+    def _labels_for(dim: str | None, size: int) -> list[str]:
+        coords = model.coords.get(dim) if dim else None
+        labels = (
+            [_sanitize_label(str(v)) for v in coords]
+            if coords is not None
+            else [_sanitize_label(str(i)) for i in range(size)]
+        )
+        if len(set(labels)) != len(labels):
+            labels = [_sanitize_label(str(i)) for i in range(len(labels))]
+        return labels
+
+    if not rv_dims:
+        return (["0"], ["0"], [])
+
+    outer_labels = _labels_for(rv_dims[0], max(2, dim_sizes[0]) if dim_sizes else 2)
+
+    inner_dims = rv_dims[1:]
+    if len(inner_dims) == 1:
+        inner_labels = _labels_for(
+            inner_dims[0],
+            max(2, dim_sizes[1]) if len(dim_sizes) > 1 else 2,
+        )
+    elif len(inner_dims) > 1:
+        inner_label_lists = []
+        for i, d in enumerate(inner_dims):
+            size = dim_sizes[i + 1] if i + 1 < len(dim_sizes) else 0
+            inner_label_lists.append(_labels_for(d, max(2, size)))
+        inner_labels = [
+            "_".join(combo) for combo in _product(*inner_label_lists)
+        ]
+    else:
+        inner_labels = ["0"]
+
+    return (outer_labels, inner_labels, dim_sizes)
+
+
+def _split_params_nd(
+    model: Any, rv: Any, md_cls: type[DistMixin]
+) -> dict[str, list[dict[str, float]]] | None:
+    """Per-element widget seeds for a 2-D+ vector RV, or ``None`` if not splittable.
+
+    Like :func:`_split_params` but for ``ndim >= 2``.  Returns a nested dict
+    ``{outer_label: [per-inner-element param dicts]}`` suitable for building
+    nested :class:`Priors` groups (outer tabs × inner tabs).
+
+    For ``ndim >= 3``, the first two dims become tab levels and remaining dims
+    are flattened into composite inner labels (``"b1_c1"``).
+    """
+    op_order = {
+        "Normal": ["mu", "sigma"],
+        "Beta": ["alpha", "beta"],
+        "Gamma": ["alpha", "beta"],
+        "StudentT": ["nu", "mu", "sigma"],
+    }
+    if md_cls._dist_name not in op_order:
+        return None
+    ndim = _rv_ndim(model, rv)
+    if ndim < 2:
+        return None
+
+    exact_match = _dist_name(rv) == md_cls._dist_name
+    params = op_order[md_cls._dist_name]
+    inputs = rv.owner.inputs[-len(params) :]
+
+    outer_labels, inner_labels, _ = _dims_tab_labels(model, rv)
+    n_outer = len(outer_labels)
+    n_inner = len(inner_labels)
+
+    default = {p: md_cls().params[p] for p in md_cls._param_names}
+    nested: dict[str, list[dict[str, float]]] = {
+        ol: [default.copy() for _ in range(n_inner)] for ol in outer_labels
+    }
+
+    if not exact_match:
+        return nested
+
+    for p in md_cls._param_names:
+        inp = inputs[params.index(p)]
+        inner = inp if isinstance(inp, _Constant) else _unwrap_input(inp)
+        if inner is not None:
+            arr = np.asarray(inner.data)
+            if arr.ndim >= 1 and arr.size > 1:
+                flat = arr.ravel()
+                if flat.size == n_outer * n_inner:
+                    idx = 0
+                    for oi in range(n_outer):
+                        for ii in range(n_inner):
+                            nested[outer_labels[oi]][ii][p] = float(flat[idx])
+                            idx += 1
+            else:
+                val = _as_constant(inner)
+                if val is not None:
+                    for oi in range(n_outer):
+                        for ii in range(n_inner):
+                            nested[outer_labels[oi]][ii][p] = val
+    return nested
+
+
 def _sanitize_label(label: str) -> str:
     """Turn an arbitrary coord value into an identifier-safe tab label."""
     s = re.sub(r"\W+", "_", label).strip("_")
@@ -371,21 +502,54 @@ def _element_labels(model: Any, rv: Any, n: int) -> list[str]:
     return [_sanitize_label(str(i)) for i in range(n)]
 
 
+def _element_labels_nd(
+    model: Any, rv: Any
+) -> tuple[list[str], list[str]]:
+    """Identifier-safe labels for a 2-D+ RV's outer and inner tab levels.
+
+    Returns ``(outer_labels, inner_labels)``.  For ``ndim == 2``, outer is
+    the first dim's coords and inner is the second dim's coords.  For
+    ``ndim >= 3``, the first two dims become tab levels and remaining dims are
+    flattened into composite inner labels.
+    """
+    outer_labels, inner_labels, _ = _dims_tab_labels(model, rv)
+    return (outer_labels, inner_labels)
+
+
 def _flat_inputs(value: dict[str, Any]) -> dict[str, float]:
-    """Flatten a (possibly nested) ``Priors.value`` into sampler kwargs.
+    """Flatten a (possibly deeply nested) ``Priors.value`` into sampler kwargs.
 
     ``{name: {param: value}}`` → ``{f"{name}_{param}": value}``; a grouped
     prior ``{name: {label: {param: value}}}`` → ``{f"{name}_{label}_{param}":
-    value}`` — matching the compiled sampler's per-element scalar inputs.
+    value}``; a 2-D grouped prior
+    ``{name: {outer: {inner: {param: value}}}}`` →
+    ``{f"{name}_{outer}_{inner}_{param}": value}`` — matching the compiled
+    sampler's per-element scalar inputs at any nesting depth.
     """
     kwargs: dict[str, float] = {}
     for name, params in value.items():
-        for k, v in params.items():
-            if isinstance(v, dict):
-                for p, vv in v.items():
-                    kwargs[f"{name}_{k}_{p}"] = vv
+        if isinstance(params, dict):
+            first = next(iter(params.values()), None)
+            if isinstance(first, dict):
+                # grouped (1-D or 2-D+): {label: {param: val}} or
+                # {outer: {inner: {param: val}}}
+                first_val = next(iter(first.values()), None)
+                if isinstance(first_val, dict):
+                    # 2-D+ nested: recurse through outer → inner → params
+                    for outer_label, inner_dict in params.items():
+                        for inner_label, param_dict in inner_dict.items():
+                            for p, vv in param_dict.items():
+                                kwargs[f"{name}_{outer_label}_{inner_label}_{p}"] = vv
+                else:
+                    for lab, param_dict in params.items():
+                        for p, vv in param_dict.items():
+                            kwargs[f"{name}_{lab}_{p}"] = vv
             else:
-                kwargs[f"{name}_{k}"] = v
+                # scalar: {param: val}
+                for p, vv in params.items():
+                    kwargs[f"{name}_{p}"] = vv
+        else:
+            kwargs[name] = params
     return kwargs
 
 
@@ -413,7 +577,7 @@ class PriorSpec:
     Describes how :func:`create_priors` will build widgets for a single prior
     and how they seed the rebuilt model. Returned by :func:`prior_spec`; it is
     a plain mutable dataclass, so you may edit its fields before passing it
-    back to ``create_priors(spec=...)`` (e.g. to pin seeds or re-label tabs).
+    back to ``create_priors(model, spec=...)`` (e.g. to pin seeds or re-label tabs).
 
     Attributes:
         name: the source RV's name (``"betas"``).
@@ -424,17 +588,22 @@ class PriorSpec:
             ``"sunlight hours"`` → ``"sunlight_hours"``).
         params: one seed ``{param: value}`` dict per element. Length is 1 for a
             scalar (non-split) prior; ``len(labels)`` when split.
+        nested: nested per-element seeds for 2-D+ priors. ``None`` for 1-D
+            splits and scalar priors. When set, ``{outer_label: [per-inner
+            param dicts]}`` — the prior renders as nested tab groups (outer
+            tabs × inner tabs).
     """
 
     name: str
     family: type[DistMixin]
     labels: list[str] | None
     params: list[dict[str, float]]
+    nested: dict[str, list[dict[str, float]]] | None = None
 
     @property
     def split(self) -> bool:
         """Whether the prior expands into one widget per element."""
-        return self.labels is not None
+        return self.labels is not None or self.nested is not None
 
 
 def prior_spec(
@@ -492,12 +661,22 @@ def prior_spec(
                 params=per_elem,
             )
         else:
-            spec[name] = PriorSpec(
-                name=name,
-                family=md_cls,
-                labels=None,
-                params=[_default_params(rv, md_cls)],
-            )
+            nested = _split_params_nd(model, rv, md_cls)
+            if nested is not None:
+                spec[name] = PriorSpec(
+                    name=name,
+                    family=md_cls,
+                    labels=None,
+                    params=[_default_params(rv, md_cls)],
+                    nested=nested,
+                )
+            else:
+                spec[name] = PriorSpec(
+                    name=name,
+                    family=md_cls,
+                    labels=None,
+                    params=[_default_params(rv, md_cls)],
+                )
     return spec
 
 
@@ -765,7 +944,62 @@ def create_priors(
         rv = model[name]
         md_cls = ps.family
 
-        if ps.split:
+        if ps.split and ps.nested is not None:
+            # Nested split path (2-D+): one widget per (outer, inner) element
+            # pair, stacked into an array replacement in the RV's full shape.
+            outer_labels = list(ps.nested.keys())
+            _, inner_labels_list, dim_sizes = _dims_tab_labels(model, rv)
+
+            # Resolve the full per-dim shape from the model's coords/dims so the
+            # replacement matches the RV's ndim (2-D stays 2-D; 3-D+ flattens the
+            # inner labels but must rebuild at the original ndim).
+            full_shape = tuple(dim_sizes) if dim_sizes else (
+                len(outer_labels),
+                len(inner_labels_list),
+            )
+
+            inner_groups: dict[str, Any] = {}
+            for oi, ol in enumerate(outer_labels):
+                inner_elems: dict[str, Any] = {}
+                for ii, il in enumerate(inner_labels_list):
+                    inner_elems[il] = mo.ui.anywidget(
+                        md_cls(**ps.nested[ol][ii])
+                    )
+                # Two tab-bar levels (outer + inner) above these leaves, so
+                # subtract the bar once per level to keep the total height
+                # equal to the batch height and avoid a jump when switching
+                # between a 2-D-nested tab and a plain leaf tab.
+                leaf_height = max(_MIN_HEIGHT, height - 2 * _TAB_BAR_PX)
+                inner_groups[ol] = Priors(
+                    inner_elems,
+                    height=leaf_height,
+                    orientation="horizontal",
+                )
+
+            stacked_kwargs: dict[str, Any] = {}
+            for p in md_cls._param_names:
+                flat = []
+                for ol in outer_labels:
+                    for ii in range(len(inner_labels_list)):
+                        flat.append(
+                            pt.scalar(f"{name}_{ol}_{inner_labels_list[ii]}_{p}")
+                        )
+                stacked_kwargs[p] = pt.reshape(
+                    pt.stack(flat), full_shape
+                )
+            replacement = getattr(pm, md_cls._dist_name).dist(
+                **stacked_kwargs, size=full_shape
+            )
+            replacements[rv] = replacement
+
+            child_height = max(_MIN_HEIGHT, height - _TAB_BAR_PX)
+            elements[name] = Priors(
+                inner_groups,
+                height=child_height,
+                orientation="horizontal",
+                inner_orientation="horizontal",
+            )
+        elif ps.split:
             # Split path: one widget per element → per-element scalar inputs
             # stacked into an array replacement. The stacked params already
             # fix the shape, so no ``size`` is passed (the original RV's size
@@ -914,6 +1148,7 @@ def set_distributions(
     # Normalize each name's value into a list of per-param values:
     #   scalar prior  : {name: {param: value}} -> one dict of params
     #   per-element   : {name: {label: {param: value}}} -> list of param dicts
+    #   2-D+ nested   : {name: {outer: {inner: {param: value}}}} -> flattened
     entries: dict[str, list[dict[str, float]]] = {}
     for name in rv_names:
         raw = values[name]
@@ -924,13 +1159,22 @@ def set_distributions(
             )
         first = next(iter(raw.values()))
         if isinstance(first, dict):
-            # per-element (vectorized) mode
-            for lab, sub in raw.items():
-                if not isinstance(sub, dict):
-                    raise TypeError(
-                        f"values[{name!r}][{lab!r}] must be a {{param: value}} mapping"
-                    )
-            entries[name] = [sub for sub in raw.values()]
+            second = next(iter(first.values()), None)
+            if isinstance(second, dict):
+                # 2-D+ nested: {outer: {inner: {param: value}}}
+                flat: list[dict[str, float]] = []
+                for outer_dict in raw.values():
+                    for param_dict in outer_dict.values():
+                        flat.append(param_dict)
+                entries[name] = flat
+            else:
+                # per-element (vectorized) mode: {label: {param: value}}
+                for lab, sub in raw.items():
+                    if not isinstance(sub, dict):
+                        raise TypeError(
+                            f"values[{name!r}][{lab!r}] must be a {{param: value}} mapping"
+                        )
+                entries[name] = [sub for sub in raw.values()]
         else:
             entries[name] = [raw]
 

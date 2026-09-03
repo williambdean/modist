@@ -786,13 +786,40 @@ def test_split_size_without_dims():
     assert np.shape(draws["b"]) == (3,)
 
 
-def test_split_2d_not_split():
-    """2-D dims priors don't expand (single-widget fallback)."""
+def test_split_2d_nested():
+    """2-D dims priors expand into nested tab groups (outer × inner)."""
     with pm.Model(coords={"r": ["x", "y"], "c": ["a", "b"]}) as model:
         pm.Normal("m", mu=np.ones((2, 2)), dims=("r", "c"))
     ui = md.pymc.create_priors(model)
-    assert "m_mu" in ui.inputs
-    assert ui.value["m"] == {"mu": 0.0, "sigma": 1.0}
+    # outer tabs x/y, inner tabs a/b, each seeding mu=1.0 from the matrix
+    assert ui.value["m"] == {
+        "x": {"a": {"mu": 1.0, "sigma": 1.0}, "b": {"mu": 1.0, "sigma": 1.0}},
+        "y": {"a": {"mu": 1.0, "sigma": 1.0}, "b": {"mu": 1.0, "sigma": 1.0}},
+    }
+    assert "m_x_a_mu" in ui.inputs
+    assert "m_y_b_sigma" in ui.inputs
+    draws = ui.draw()
+    assert np.shape(draws["m"]) == (2, 2)
+    new_model = md.pymc.set_distributions(model, ui.value)
+    assert new_model.named_vars_to_dims["m"] == ["r", "c"]
+    assert new_model.coords == {"r": ("x", "y"), "c": ("a", "b")}
+
+
+def test_split_3d_capped_tabs():
+    """3-D priors flatten dims beyond the first two into composite inner labels."""
+    with pm.Model(
+        coords={"a": ["a1", "a2"], "b": ["b1", "b2"], "c": ["c1", "c2"]}
+    ) as model:
+        pm.Normal("m", dims=("a", "b", "c"))
+    ui = md.pymc.create_priors(model)
+    # outer tabs a1/a2; inner tabs b1_c1, b1_c2, b2_c1, b2_c2
+    inner_labels = list(next(iter(ui.value["m"].values())))
+    assert inner_labels == ["b1_c1", "b1_c2", "b2_c1", "b2_c2"]
+    draws = ui.draw()
+    assert np.shape(draws["m"]) == (2, 2, 2)
+    new_model = md.pymc.set_distributions(model, ui.value)
+    rv = new_model["m"]
+    assert new_model.named_vars_to_dims["m"] == ["a", "b", "c"]
 
 
 def test_set_distributions_mixed_nested_flat():
@@ -1013,9 +1040,10 @@ def test_dims_array_param_seeds_per_element():
     }
 
 
-def test_dims_multidim_nonsplit():
-    """A 2-D pymc.dims prior keeps a single broadcasting widget; its rebuild
-    size is derived from the registered coords, not an (absent) size input."""
+def test_dims_multidim_nested_tabs():
+    """A 2-D pymc.dims prior expands into nested tab groups (outer × inner); its
+    rebuild size is derived from the registered coords, not an (absent) size
+    input."""
     pytest.importorskip("pymc.dims")
     import pymc.dims as pmd
 
@@ -1023,6 +1051,8 @@ def test_dims_multidim_nonsplit():
         pmd.Normal("w", mu=0.0, sigma=1.0, dims=("a", "b"))
     ui = md.pymc.create_priors(model)
     assert "w" in ui.replaced
+    assert set(ui.value["w"]) == {"a1", "a2"}
+    assert list(ui.value["w"]["a1"]) == ["b1", "b2", "b3"]
     draws = ui.draw(2)
     assert np.shape(draws["w"]) == (2, 2, 3)
     new_model = md.pymc.set_distributions(model, ui.value)
