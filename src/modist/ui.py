@@ -54,6 +54,7 @@ def _build_elements(
     *,
     inner_orientation: Literal["horizontal", "vertical"] = "horizontal",
     height: float = 360,
+    selected: str | list[str] | None = None,
 ) -> dict[str, mo.ui.anywidget | Priors]:
     """Recursively turn a (possibly nested) dist spec into UI elements.
 
@@ -66,15 +67,22 @@ def _build_elements(
     """
     elements: dict[str, mo.ui.anywidget | Priors] = {}
     leaf_invalid: list[str] = []
+    if isinstance(selected, list):
+        selected_top, selected_inner = selected[0], selected[1:] or None
+    else:
+        selected_top, selected_inner = selected, None
     for name, value in spec.items():
+        child_selected = selected_inner if name == selected_top else None
         if isinstance(value, dict):
             bar = _TAB_BAR_PX if inner_orientation == "horizontal" else 0
             child_height = max(_MIN_HEIGHT, height - bar)
             inner = _build_elements(
-                value, inner_orientation=inner_orientation, height=child_height
+                value, inner_orientation=inner_orientation, height=child_height,
+                selected=child_selected,
             )
             elements[name] = Priors(
                 inner,
+                selected=child_selected,
                 orientation=inner_orientation,
                 inner_orientation=inner_orientation,
                 height=child_height,
@@ -139,6 +147,7 @@ class Priors(_batch_base):
         elements: dict[str, mo.ui.anywidget | "Priors"],
         *,
         layout: mo.Html = Ellipsis,  # type: ignore[valid-type]
+        selected: str | list[str] | None = None,
         orientation: Literal["horizontal", "vertical"] = "vertical",
         inner_orientation: Literal["horizontal", "vertical"] = "horizontal",
         height: float = 360,
@@ -149,14 +158,31 @@ class Priors(_batch_base):
         self._inner_orientation = inner_orientation
         self._height = height
         self._label = label
+        self._layout_key = "__modist_selected"
+        if isinstance(selected, list):
+            selected_top, selected_inner = selected[0], selected[1:] or None
+        else:
+            selected_top, selected_inner = selected, None
         if layout is Ellipsis:
             layout = mo.ui.tabs(
-                _cap_height(elements, height), orientation=orientation
+                _cap_height(elements, height),
+                value=selected_top,
+                orientation=orientation,
             )
         self._layout = layout
+
+        # Temporarily include the layout (mo.ui.tabs) in the elements dict so
+        # _batch_base.__init__ registers it in `element-ids` — the JS listener
+        # needs this to route layout value updates (tab clicks) back through
+        # the marimo-dict reactivity chain.  After init we restore the original
+        # dict and filter the layout key out in _convert_value so it does not
+        # leak into the public `value`.
+        elements_with_layout = dict(elements)
+        if hasattr(layout, "_initial_value_frontend"):
+            elements_with_layout[self._layout_key] = layout
         super().__init__(
             html=layout,
-            elements=elements,
+            elements=elements_with_layout,
             label=label,
             on_change=on_change,
         )
@@ -167,6 +193,7 @@ class Priors(_batch_base):
         priors: PriorsSpec,
         *,
         layout: mo.Html = Ellipsis,  # type: ignore[valid-type]
+        selected: str | list[str] | None = None,
         orientation: Literal["horizontal", "vertical"] = "vertical",
         inner_orientation: Literal["horizontal", "vertical"] = "horizontal",
         height: float = 360,
@@ -182,6 +209,8 @@ class Priors(_batch_base):
             layout: how to lay the priors out; defaults to tabs. Pass a
                 ``mo.ui.tabs`` / ``mo.ui.accordion`` / ``mo.vstack`` built from
                 ``{name: mo.ui.anywidget(dist)}`` for a custom arrangement.
+            selected: tab to open initially — a string for top-level or a list
+                for a nested path (e.g. ``["alpha", "north"]``).
             orientation: tab bar orientation (``"horizontal"`` or ``"vertical"``).
             inner_orientation: orientation of nested group tab bars (default
                 ``"horizontal"``).
@@ -194,10 +223,14 @@ class Priors(_batch_base):
                 "`priors` must be a non-empty mapping of modist "
                 "distributions / nested mappings."
             )
-        elements = _build_elements(priors, inner_orientation=inner_orientation, height=height)
+        elements = _build_elements(
+            priors, inner_orientation=inner_orientation, height=height,
+            selected=selected,
+        )
         return cls(
             elements,
             layout=layout,
+            selected=selected,
             orientation=orientation,
             inner_orientation=inner_orientation,
             height=height,
@@ -217,13 +250,18 @@ class Priors(_batch_base):
     def _convert_value(self, value: dict[str, Any]) -> PriorsParams:
         if self._initialized:
             super()._convert_value(value)
-        # anywidget children own their state as live traits; read those rather
-        # than their (empty) internal _value. Nested groups recurse via their
-        # own `_value` — using `el.value` here would trip marimo's "value in the
-        # cell that created it" guard when a group is built in the same cell.
         return {
             key: (el._value if isinstance(el, Priors) else el.value)
             for key, el in self._elements.items()
+            if key != self._layout_key
+        }
+
+    @property
+    def elements(self) -> dict[str, Any]:
+        """``{name: mo.ui.anywidget(...) | Priors}`` (excludes internal layout)."""
+        return {
+            k: v for k, v in self._elements.items()
+            if k != self._layout_key
         }
 
     @property
@@ -238,12 +276,31 @@ class Priors(_batch_base):
                 return el.priors
             return el.prior
 
-        return {key: _one(el) for key, el in self._elements.items()}
+        return {key: _one(el) for key, el in self._elements.items() if key != self._layout_key}
+
+    @property
+    def selected(self) -> list[str]:
+        """The path of the currently-selected tab as a list of tab names.
+
+        For a flat panel this is ``["sigma"]``.  For a nested panel the full
+        path is returned, e.g. ``["alpha", "north"]``.  Returns an empty list
+        when the panel has no tabs (e.g. a stack layout).
+        """
+        top = getattr(self._layout, "value", None)
+        if top is None:
+            return []
+        child = self._elements.get(top)
+        if isinstance(child, Priors):
+            inner = child.selected
+            if inner:
+                return [top, *inner]
+        return [top]
 
 
 def create_tabs(
     priors: PriorsSpec,
     *,
+    selected: str | list[str] | None = None,
     orientation: Literal["horizontal", "vertical"] = "vertical",
     inner_orientation: Literal["horizontal", "vertical"] = "horizontal",
     height: float = 360,
@@ -256,6 +313,8 @@ def create_tabs(
         priors: ``{name: modist_distribution | {name: ...}}`` — one tab per
             prior; a dict value becomes a nested group of tabs (e.g. one widget
             per coordinate).
+        selected: tab to open initially — a string for top-level or a list
+            for a nested path (e.g. ``["alpha", "north"]``).
         orientation: tab bar orientation (``"horizontal"`` or ``"vertical"``).
         inner_orientation: orientation of nested group tab bars (default
             ``"horizontal"``).
@@ -277,6 +336,7 @@ def create_tabs(
     """
     return Priors.from_mapping(
         priors,
+        selected=selected,
         orientation=orientation,
         inner_orientation=inner_orientation,
         height=height,

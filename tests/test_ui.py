@@ -164,3 +164,54 @@ def test_flat_spec_has_no_height_adjustment():
     # no groups -> leaf widgets keep their full width cap (i.e. full height)
     ui = md.ui.create_tabs({"sigma": md.Gamma()}, height=300)
     assert f"max-width:{int(round(300 * 660 / 360))}px" in ui.text
+
+
+def test_selected_defaults_to_first_tab():
+    ui = md.ui.create_tabs({"a": md.Normal(), "b": md.Gamma()})
+    assert ui.selected == ["a"]
+
+
+def test_selected_initializes_with_tab():
+    ui = md.ui.create_tabs(
+        {"a": md.Normal(), "b": md.Gamma(), "c": md.StudentT()},
+        selected="c",
+    )
+    assert ui.selected == ["c"]
+
+
+def test_selected_dotted_path_for_nested():
+    ui = md.ui.create_tabs(
+        {"alpha": {"north": md.Normal(), "south": md.Normal()},
+         "sigma": md.Gamma()},
+        selected="alpha",
+    )
+    assert ui.selected == ["alpha", "north"]
+
+
+def test_selected_updates_on_tab_switch():
+    ui = md.ui.create_tabs(
+        {"alpha": {"north": md.Normal(), "south": md.Normal()},
+         "sigma": md.Gamma()},
+        selected="alpha",
+    )
+    # switch inner tab from north to south (simulates marimo _update)
+    ui._elements["alpha"]._layout._update("1")
+    assert ui.selected == ["alpha", "south"]
+
+
+def test_selected_survives_clone():
+    ui = md.ui.create_tabs(
+        {"a": md.Normal(), "b": md.Gamma()},
+        selected="b",
+    )
+    clone = ui._clone()
+    assert clone.selected == ["b"]
+
+
+def test_selected_list_path():
+    ui = md.ui.create_tabs(
+        {"alpha": {"north": md.Normal(), "south": md.Normal()},
+         "sigma": md.Gamma()},
+        selected=["alpha", "south"],
+    )
+    assert ui.selected == ["alpha", "south"]
