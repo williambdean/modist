@@ -2,7 +2,8 @@
 .mroot svg { display: block; border-radius: 10px; }
 .mroot svg text { font-family: var(--marimo-font, ui-sans-serif, system-ui, sans-serif); }
 
-.mgrid { stroke: var(--m-grid, #e5e7eb); stroke-width: 1; }
+.mgrid { stroke: var(--m-grid, #e5e7eb); stroke-width: 1; opacity: 0.5; }
+.mgridm { stroke: var(--m-grid, #cbd5e1); stroke-width: 1; }
 .maxis { stroke: var(--m-mut, #9ca3af); stroke-width: 1.5; }
 .mtick { fill: var(--m-mut, #6b7280); font-size: 13px; font-variant-numeric: tabular-nums; }
 
@@ -55,7 +56,8 @@
 .mtip { margin-top: 8px; color: var(--m-mut, #6b7280); font-size: 12px; text-align: center; }
 
 @media (prefers-color-scheme: dark) {
-  .mgrid { stroke: var(--m-grid, #374151); }
+  .mgrid { stroke: var(--m-grid, #374151); opacity: 0.5; }
+  .mgridm { stroke: var(--m-grid, #4b5563); }
   .maxis { stroke: var(--m-mut, #6b7280); }
   .mtick { fill: var(--m-mut, #9ca3af); }
   .mline { stroke: var(--m-acc, #22d3ee); }

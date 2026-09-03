@@ -31,17 +31,58 @@ function elNS(tag, parent, attrs) {
 
 function ticks(d) {
   const span = d[1] - d[0];
-  const raw = span / 10;
-  const mag = 10 ** Math.floor(Math.log10(raw));
-  const norm = raw / mag;
-  const sn = norm < 1.5 ? 1 : norm < 3.5 ? 2 : norm < 7.5 ? 5 : 10;
-  const step = sn * mag;
-  const prec = Math.max(0, -Math.floor(Math.log10(step)));
-  const out = [];
-  for (let i = Math.ceil(d[0] / step - 1e-9) || 0; i * step <= d[1] + 1e-9 && out.length < 14; i++) {
-    out.push(Math.round(i * step * 10 ** prec) / 10 ** prec);
+  // Round an arbitrary spacing up to a "nice" 1/2/5 × 10^k step.
+  const nice = (raw) => {
+    if (!(raw > 0)) return 1;
+    const mag = 10 ** Math.floor(Math.log10(raw));
+    const norm = raw / mag;
+    const sn = norm < 1.5 ? 1 : norm < 3.5 ? 2 : norm < 7.5 ? 5 : 10;
+    return sn * mag;
+  };
+  // Major ticks get labels; minor ticks are unlabeled gridlines that keep the
+  // axis feeling dense even when labels are sparse (very large or very small
+  // scales would otherwise crowd with long digit/zero-heavy labels).
+  // Label density is derived from how wide the labels would be, damped for
+  // high-precision (many-decimal) scales so tiny ranges stay sparse and easy
+  // to read. This stays continuous — no hard tiers — so panning/zooming across
+  // a magnitude boundary never causes a jarring jump in tick count.
+  const step = nice(span / 9); // provisional fine step → precision
+  const p = Math.max(0, -Math.floor(Math.log10(step)));
+  let len;
+  if (Math.abs(span) >= 1) {
+    const d = Math.floor(Math.log10(Math.abs(span))) + 1;
+    len = d + Math.floor((d - 1) / 3); // whole digits + grouping commas
+  } else {
+    len = 2 + p; // "0.000…"
   }
-  return out;
+  const damp = p >= 6 ? 0.45 : p >= 5 ? 0.55 : p >= 4 ? 0.7 : p >= 3 ? 0.85 : 1;
+  const target = Math.max(4, Math.min(12, Math.round((644 / (11.7 * len)) * damp)));
+  const major = nice(span / target);
+  // Fewer minor sub-divisions when majors are already densely labeled: the
+  // minors exist to add grid fidelity when labels are sparse (extreme scales),
+  // and only become clutter when majors are close together.
+  const div = target >= 9 ? 1 : target >= 7 ? 2 : 4;
+  const minor = major / div;
+  // Majors round to their own step's precision; minors keep full float values
+  // (div=4 → exact quarters) so gridlines land on a uniform lattice.
+  const prec = Math.max(0, -Math.floor(Math.log10(major)));
+  const build = (s, extend, p) => {
+    // extend pads one extra step past each edge so the grid runs edge-to-edge
+    // even when the visible domain doesn't land on a "nice" multiple.
+    const out = [];
+    let i = (Math.ceil(d[0] / s - 1e-9) || 0) - (extend ? 1 : 0);
+    const hi = d[1] + (extend ? s : 0) + 1e-9;
+    for (; i * s <= hi && out.length < 100; i++) {
+      const v = i * s;
+      out.push(p === null ? v : Math.round(v * 10 ** p) / 10 ** p);
+    }
+    return out;
+  };
+  return {
+    major: build(major, false, prec),
+    minor: build(minor, true, null),
+    prec,
+  };
 }
 
 function integrate(lo, hi, fn, N) {
@@ -62,8 +103,10 @@ export function fmt(x, dp) {
   // is effectively the origin (e.g. a tick computed as -0 via Math.ceil(-1e-9))
   if (x === 0 || Math.abs(x) < 5e-14) return "0";
   const a = Math.abs(x);
-  if (a >= 1e5) return x.toExponential(2);
-  if (a < 1e-3) return x.toExponential(2);
+  // Axis tick labels are always nice multiples, so comma-formatted values up
+  // to ~1e11 stay readable; only genuinely astronomical values go exponential.
+  if (a >= 1e12) return x.toExponential(2);
+  if (a < 5 * 10 ** (-dp - 1)) return x.toExponential(2);
   return (Math.round(x * 10 ** dp) / 10 ** dp).toLocaleString("en-US", {
     maximumFractionDigits: dp,
   });
@@ -398,10 +441,14 @@ export function createWidget(F, opts) {
 
         while (svg.lastChild && svg.lastChild !== defs) svg.removeChild(svg.lastChild);
 
-        for (const x of ticks(dd)) {
+        const { major, minor, prec } = ticks(dd);
+        for (const x of minor) {
           elNS("line", svg, { class: "mgrid", x1: xt(x, dd), y1: M_T, x2: xt(x, dd), y2: base });
+        }
+        for (const x of major) {
+          elNS("line", svg, { class: "mgridm", x1: xt(x, dd), y1: M_T, x2: xt(x, dd), y2: base });
           const t = elNS("text", svg, { class: "mtick", x: xt(x, dd), y: H - 12, "text-anchor": "middle" });
-          t.textContent = fmt(x, 2);
+          t.textContent = fmt(x, prec);
         }
         elNS("line", svg, { class: "maxis", x1: M_L, y1: base, x2: W - M_R, y2: base });
         elNS("rect", svg, { class: "mpan", x: M_L, y: base - 6, width: plotW, height: 16, rx: 4 });

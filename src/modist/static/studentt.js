@@ -1551,17 +1551,43 @@ function elNS(tag, parent, attrs) {
 }
 function ticks(d) {
   const span = d[1] - d[0];
-  const raw = span / 10;
-  const mag = 10 ** Math.floor(Math.log10(raw));
-  const norm = raw / mag;
-  const sn = norm < 1.5 ? 1 : norm < 3.5 ? 2 : norm < 7.5 ? 5 : 10;
-  const step = sn * mag;
-  const prec = Math.max(0, -Math.floor(Math.log10(step)));
-  const out = [];
-  for (let i = Math.ceil(d[0] / step - 1e-9) || 0; i * step <= d[1] + 1e-9 && out.length < 14; i++) {
-    out.push(Math.round(i * step * 10 ** prec) / 10 ** prec);
+  const nice = (raw) => {
+    if (!(raw > 0)) return 1;
+    const mag = 10 ** Math.floor(Math.log10(raw));
+    const norm = raw / mag;
+    const sn = norm < 1.5 ? 1 : norm < 3.5 ? 2 : norm < 7.5 ? 5 : 10;
+    return sn * mag;
+  };
+  const step = nice(span / 9);
+  const p = Math.max(0, -Math.floor(Math.log10(step)));
+  let len;
+  if (Math.abs(span) >= 1) {
+    const d2 = Math.floor(Math.log10(Math.abs(span))) + 1;
+    len = d2 + Math.floor((d2 - 1) / 3);
+  } else {
+    len = 2 + p;
   }
-  return out;
+  const damp = p >= 6 ? 0.45 : p >= 5 ? 0.55 : p >= 4 ? 0.7 : p >= 3 ? 0.85 : 1;
+  const target = Math.max(4, Math.min(12, Math.round(644 / (11.7 * len) * damp)));
+  const major = nice(span / target);
+  const div = target >= 9 ? 1 : target >= 7 ? 2 : 4;
+  const minor = major / div;
+  const prec = Math.max(0, -Math.floor(Math.log10(major)));
+  const build = (s, extend, p2) => {
+    const out = [];
+    let i = (Math.ceil(d[0] / s - 1e-9) || 0) - (extend ? 1 : 0);
+    const hi = d[1] + (extend ? s : 0) + 1e-9;
+    for (; i * s <= hi && out.length < 100; i++) {
+      const v = i * s;
+      out.push(p2 === null ? v : Math.round(v * 10 ** p2) / 10 ** p2);
+    }
+    return out;
+  };
+  return {
+    major: build(major, false, prec),
+    minor: build(minor, true, null),
+    prec
+  };
 }
 function integrate(lo, hi, fn, N) {
   N = N || 400;
@@ -1577,8 +1603,8 @@ function fmt(x, dp) {
   if (!isFinite(x)) return "\u2013";
   if (x === 0 || Math.abs(x) < 5e-14) return "0";
   const a = Math.abs(x);
-  if (a >= 1e5) return x.toExponential(2);
-  if (a < 1e-3) return x.toExponential(2);
+  if (a >= 1e12) return x.toExponential(2);
+  if (a < 5 * 10 ** (-dp - 1)) return x.toExponential(2);
   return (Math.round(x * 10 ** dp) / 10 ** dp).toLocaleString("en-US", {
     maximumFractionDigits: dp
   });
@@ -1859,10 +1885,14 @@ function createWidget(F3, opts) {
         }
         const dd = currentDomain();
         while (svg.lastChild && svg.lastChild !== defs) svg.removeChild(svg.lastChild);
-        for (const x of ticks(dd)) {
+        const { major, minor, prec } = ticks(dd);
+        for (const x of minor) {
           elNS("line", svg, { class: "mgrid", x1: xt(x, dd), y1: M_T, x2: xt(x, dd), y2: base });
+        }
+        for (const x of major) {
+          elNS("line", svg, { class: "mgridm", x1: xt(x, dd), y1: M_T, x2: xt(x, dd), y2: base });
           const t = elNS("text", svg, { class: "mtick", x: xt(x, dd), y: H - 12, "text-anchor": "middle" });
-          t.textContent = fmt(x, 2);
+          t.textContent = fmt(x, prec);
         }
         elNS("line", svg, { class: "maxis", x1: M_L, y1: base, x2: W - M_R, y2: base });
         elNS("rect", svg, { class: "mpan", x: M_L, y: base - 6, width: plotW, height: 16, rx: 4 });
