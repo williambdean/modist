@@ -35,6 +35,9 @@ class StudentT(DistMixin, anywidget.AnyWidget):
     _css = _CSS
     _param_names = ("mu", "sigma", "nu")
     _dist_name = "StudentT"
+    # pymc's StudentTRV op-input order (verified) — note it differs from
+    # _param_names: nu comes first on the op.
+    _op_param_order = ("nu", "mu", "sigma")
 
     mu = traitlets.Float(0.0).tag(sync=True)
     sigma = traitlets.Float(1.0).tag(sync=True)

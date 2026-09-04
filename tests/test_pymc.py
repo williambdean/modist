@@ -761,6 +761,26 @@ def test_gamma_split_array_alpha_array_beta_seeds_per_element():
     assert np.shape(ui.draw()["g"]) == (2,)
 
 
+def test_gamma_split_scalar_alpha_scalar_beta_seeds_per_element():
+    """A dims'd Gamma with both params as scalars seeds every element from
+    them. pymc broadcasts the scalar rate as ExpandDims(Reciprocal(beta)) —
+    two stacked wrapper layers — so the seed must fold the whole constant
+    subgraph (and invert scale -> rate), not strip a single layer."""
+    with pm.Model(coords={"customer_type": ["A", "B"]}) as model:
+        pm.Gamma("customer spend", alpha=10, beta=4, dims="customer_type")
+    spec = md.pymc.prior_spec(model)["customer spend"]
+    assert spec.params == [
+        {"alpha": 10.0, "beta": 4.0},
+        {"alpha": 10.0, "beta": 4.0},
+    ]
+    ui = md.pymc.create_priors(model)
+    assert ui.value["customer spend"] == {
+        "A": {"alpha": 10.0, "beta": 4.0},
+        "B": {"alpha": 10.0, "beta": 4.0},
+    }
+    assert np.shape(ui.draw()["customer spend"]) == (2,)
+
+
 def test_split_labels_sanitized_from_coords_with_spaces():
     """Coord labels with spaces become identifier-safe tab labels/inputs."""
     with pm.Model(
@@ -784,6 +804,22 @@ def test_split_size_without_dims():
     assert set(ui.value["b"]) == {"0", "1", "2"}
     draws = ui.draw()
     assert np.shape(draws["b"]) == (3,)
+
+
+def test_split_2d_gamma_scalar_params_seed_nested():
+    """A 2-D dims'd Gamma with scalar alpha and scalar rate beta seeds every
+    (outer, inner) widget from them — the rate reaches the op as
+    ExpandDims(Reciprocal(beta)), two stacked wrapper layers, so the seed must
+    fold beneath the reciprocal (regression: beta fell back to the default)."""
+    with pm.Model(coords={"r": ["x", "y"], "c": ["a", "b"]}) as model:
+        pm.Gamma("g", alpha=10, beta=4, dims=("r", "c"))
+    ui = md.pymc.create_priors(model)
+    expected = {"alpha": 10.0, "beta": 4.0}
+    assert ui.value["g"] == {
+        "x": {"a": dict(expected), "b": dict(expected)},
+        "y": {"a": dict(expected), "b": dict(expected)},
+    }
+    assert np.shape(ui.draw()["g"]) == (2, 2)
 
 
 def test_split_2d_nested():
@@ -1037,6 +1073,30 @@ def test_dims_array_param_seeds_per_element():
     assert ui.value["beta"] == {
         "a": {"mu": 0.0, "sigma": 1.0},
         "b": {"mu": 1.0, "sigma": 1.0},
+    }
+
+
+def test_dims_gamma_scalar_params_seed_per_element():
+    """A pymc.dims Gamma with scalar alpha and scalar rate beta seeds both.
+
+    pymc 6 wraps the rate in an xtensor Reciprocal (XElemwise), which the
+    tensor-level constant fold can't evaluate at all — the seed must read the
+    rate constant beneath it (regression: beta silently fell back to the
+    widget default)."""
+    pytest.importorskip("pymc.dims")
+    import pymc.dims as pmd
+
+    with pm.Model(coords={"channel": ["a", "b"]}) as model:
+        pmd.Gamma("g", alpha=10, beta=4, dims="channel")
+    spec = md.pymc.prior_spec(model)["g"]
+    assert spec.params == [
+        {"alpha": 10.0, "beta": 4.0},
+        {"alpha": 10.0, "beta": 4.0},
+    ]
+    ui = md.pymc.create_priors(model)
+    assert ui.value["g"] == {
+        "a": {"alpha": 10.0, "beta": 4.0},
+        "b": {"alpha": 10.0, "beta": 4.0},
     }
 
 

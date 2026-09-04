@@ -33,6 +33,7 @@ class Beta(DistMixin, anywidget.AnyWidget):
     _css = _CSS
     _param_names = ("alpha", "beta")
     _dist_name = "Beta"
+    _op_param_order = ("alpha", "beta")  # pymc's BetaRV op-input order (verified)
 
     alpha = traitlets.Float(2.0).tag(sync=True)
     beta = traitlets.Float(2.0).tag(sync=True)

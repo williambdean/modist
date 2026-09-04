@@ -47,6 +47,8 @@ Examples
 
 from __future__ import annotations
 
+import functools
+import inspect
 import re
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
@@ -70,9 +72,9 @@ from pymc.pytensorf import toposort_replace
 # backend's XTensorConstant (both carry a plain-array `.data`). Imported after
 # the heavy pymc imports; always available alongside pytensor.
 from pytensor.graph.basic import Constant as _Constant
+from pymc.pytensorf import NotConstantValueError, constant_fold
 from pytensor.graph.replace import graph_replace
 from pytensor.graph.traversal import ancestors, explicit_graph_inputs
-from pytensor.tensor.elemwise import Elemwise as _Elemwise
 
 try:
     from pytensor.xtensor.type import XTensorVariable as _XTensorVariable
@@ -134,94 +136,118 @@ def _dist_name(rv: Any) -> str:
     return type(op).__name__.removesuffix("RV")
 
 
+def _fold_inputs(
+    inputs: Sequence[Any],
+) -> list[np.ndarray | float | None]:
+    """Constant-fold each RV op input to a concrete value.
+
+    Uses pymc's own constant folding (``pymc.pytensorf.constant_fold``), so any
+    constant subgraph resolves — broadcasts (``ExpandDims``/``DimShuffle``),
+    Gamma's ``Reciprocal`` rate→scale transform, stacked/``MakeVector`` lists,
+    casts — with no per-op pattern matching. pymc broadcasts a dims'd RV's
+    scalar params to ``(1,)``-shaped arrays, so size-1 folds normalize to a
+    plain ``float`` for scalar handling. A parameter that isn't a constant (an
+    RV hyperparameter, or a shared coords-derived size) folds to ``None``.
+    """
+    folded: list[np.ndarray | float | None] = []
+    for inp in inputs:
+        try:
+            val = constant_fold([inp])[0]
+        except NotConstantValueError:
+            folded.append(None)
+            continue
+        if val is None:
+            # pymc's None size placeholder folds to a constant whose data is None
+            folded.append(None)
+            continue
+        arr = np.asarray(val)
+        folded.append(float(arr.ravel()[0]) if arr.size == 1 else arr)
+    return folded
+
+
+@functools.cache
+def _gamma_op_param_is_scale() -> bool:
+    """Whether pymc feeds Gamma's op a scale (``1/rate``) instead of the rate.
+
+    pymc >= 6 parameterizes the pytensor gamma op in terms of scale and bakes
+    ``Reciprocal(beta)`` into the graph; pymc 5 passed the rate (``lam``)
+    directly. The user-facing ``lam`` kwarg's presence in ``Gamma.dist``'s
+    signature distinguishes the two without version parsing.
+    """
+    import pymc as pm
+
+    return "lam" not in inspect.signature(pm.Gamma.dist).parameters
+
+
+def _fold_beneath_reciprocal(inp: Any) -> np.ndarray | float | None:
+    """Fold a Gamma rate input to the exact user-facing rate.
+
+    pymc >= 6 hands the op ``scale = Reciprocal(rate)`` — an ``Elemwise`` on
+    the classic backend, an ``XElemwise`` under ``pymc.dims``. Folding that
+    numerically double-rounds (a float32 graph seeds ``2.9999999`` for
+    ``beta=3``), and the xtensor reciprocal graph can't be constant-folded at
+    all. The user-facing rate is exactly the constant beneath the reciprocal,
+    so descend through the value-preserving unary wrappers (broadcasts, casts,
+    the reciprocal itself) and fold the innermost node. A reciprocal over a
+    non-constant (a hyperparameter) still fails to fold and yields ``None`` —
+    the family-default fallback.
+    """
+    node = inp
+    while True:
+        owner = getattr(node, "owner", None)
+        if owner is None or len(owner.inputs) != 1:
+            break
+        node = owner.inputs[0]
+    return _fold_inputs([node])[0]
+
+
+def _op_param_seeds(
+    rv: Any, md_cls: type[DistMixin]
+) -> dict[str, np.ndarray | float | None]:
+    """User-facing seed value for each modist parameter, from the RV's op inputs.
+
+    Exact family matches only (``{}`` otherwise): each parameter is read from
+    the op-input position pymc actually uses (the family's ``_op_param_order``)
+    and constant-folded, so broadcasts, stacked lists, and casts resolve without
+    pattern matching. A non-constant (an RV hyperparameter) seeds ``None`` and
+    callers fall back to the family default. For a Gamma RV on pymc >= 6 the
+    second op input is the *scale* — folded beneath the reciprocal to recover
+    the user-facing rate exactly (see :func:`_fold_beneath_reciprocal`).
+    """
+    name = md_cls._dist_name
+    order = md_cls._op_param_order
+    if not order or _dist_name(rv) != name:
+        return {}
+    inputs = rv.owner.inputs[-len(order) :]
+    values = _fold_inputs(inputs)
+    if name == "Gamma" and _gamma_op_param_is_scale():
+        i = order.index("beta")
+        values[i] = _fold_beneath_reciprocal(inputs[i])
+    return dict(zip(order, values))
+
+
 def _default_params(rv: Any, md_cls: type[DistMixin]) -> dict[str, float]:
     """Seed a widget from constant model params for exact-family matches.
 
     ``pm.Normal("intercept", mu=0, sigma=1)`` gives constant ``mu``/``sigma``, so
     seed ``md.Normal(mu=0, sigma=1)``. Only exact family matches are seeded, and
     each modist parameter is read from the op-input position pymc actually uses
-    (their internal order differs from modist's — e.g. StudentT is
-    ``(nu, mu, sigma)``). A parameter that isn't a scalar constant (an RV
-    hyperparameter, or an array for a dims-valued prior) falls back to the family
-    default. Remapped families (``HalfNormal→Gamma``) keep pure defaults because
-    their parameter semantics don't line up.
+    (the family's ``_op_param_order`` — their internal order differs from
+    modist's, e.g. StudentT is ``(nu, mu, sigma)``), constant-folded with pymc's
+    own rewriting so broadcasts and Gamma's rate→scale transform resolve to the
+    user-facing value. A parameter that isn't a scalar constant (an RV
+    hyperparameter, or an array for a dims-valued prior) falls back to the
+    family default. Remapped families (``HalfNormal→Gamma``) keep pure defaults
+    because their parameter semantics don't line up.
     """
-    # pymc's RV op-input parameter order for each modist family (verified).
-    op_order = {
-        "Normal": ["mu", "sigma"],
-        "Beta": ["alpha", "beta"],
-        "Gamma": ["alpha", "beta"],  # pymc's second param is `lam`
-        "StudentT": ["nu", "mu", "sigma"],
-    }
     fallback = {p: md_cls().params[p] for p in md_cls._param_names}
-    if md_cls._dist_name not in op_order or _dist_name(rv) != md_cls._dist_name:
+    if not md_cls._op_param_order:
         return fallback
-    params = op_order[md_cls._dist_name]
-    inputs = rv.owner.inputs[-len(params) :]
-    consts: dict[str, float] = {}
-    for p in md_cls._param_names:
-        val = _as_constant(inputs[params.index(p)])
-        if val is not None:
-            consts[p] = val
-    return {**fallback, **consts}
-
-
-def _as_constant(x: Any) -> float | None:
-    """The float value of a pytensor constant/shared scalar, else ``None``.
-
-    pymc parameterizes some distributions' op inputs through an elementwise
-    transform of the user-facing value. For Gamma the *rate* ``beta`` is passed
-    as ``scale = reciprocal(beta)``, so the RV's second op input arrives as
-    ``Elemwise(reciprocal)(TensorConstant(rate))`` rather than a bare constant.
-    The inner constant is the rate modist's ``beta`` wants directly, so unwrap
-    the reciprocal and read it unchanged. ``DimShuffle`` wrappers (a broadcast
-    of a scalar constant to the RV's vector shape, applied by pymc to e.g.
-    broadcast a scalar ``alpha``) are also transparent — the value is unchanged.
-    """
-    if isinstance(x, _Constant):
-        arr = np.asarray(x.data)
-        if arr.ndim == 0:
-            return float(arr)
-        if arr.size == 1:
-            return float(arr.ravel()[0])
-    inner = _unwrap_input(x)
-    if inner is not None and inner is not x:
-        return _as_constant(inner)
-    return None
-
-
-def _unwrap_input(x: Any) -> _Constant | None:
-    """Strip a single pymc op-input transform layer and return the inner constant.
-
-    pymc wraps certain RV op-inputs in a single transform that does not change
-    the *value* modist wants to seed the widget with:
-
-    - ``DimShuffle``: broadcasts a scalar constant to the RV's vector shape
-      (e.g. ``alpha=2.0`` in a dims'd model).
-    - ``Elemwise(reciprocal)``: converts the user-facing *rate* to the
-      internal *scale* (e.g. ``beta=3.0`` → ``scale = 1/3``).
-
-    Returns the inner ``_Constant`` if a single known layer is present, or
-    ``None`` if the input is already a ``_Constant`` or has an unknown/missing
-    wrapper. Only one level of nesting is handled; deeper trees are not
-    expected from pymc's distribution construction.
-    """
-    owner = getattr(x, "owner", None)
-    if owner is None:
-        return None
-    if isinstance(owner.op, _Elemwise):
-        try:
-            scalar_name = owner.op.scalar_op.name
-        except AttributeError:
-            return None
-        if scalar_name == "reciprocal" and len(owner.inputs) == 1:
-            inner = owner.inputs[0]
-            return inner if isinstance(inner, _Constant) else None
-    # DimShuffle: broadcast a scalar constant (e.g. alpha broadcast to vector)
-    if hasattr(owner.op, "new_order") and len(owner.inputs) == 1:
-        inner = owner.inputs[0]
-        return inner if isinstance(inner, _Constant) else None
-    return None
+    seeds = _op_param_seeds(rv, md_cls)
+    return {
+        **fallback,
+        **{p: v for p, v in seeds.items() if isinstance(v, float)},
+    }
 
 
 def _is_scalar_size(size: Any) -> bool:
@@ -283,34 +309,23 @@ def _split_params(
     default everywhere, since the RV's original-op inputs don't correspond to
     the target family's params.
     """
-    op_order = {
-        "Normal": ["mu", "sigma"],
-        "Beta": ["alpha", "beta"],
-        "Gamma": ["alpha", "beta"],
-        "StudentT": ["nu", "mu", "sigma"],
-    }
-    if md_cls._dist_name not in op_order:
+    order = md_cls._op_param_order
+    if not order:
         return None
     if rv.type.ndim != 1:
         return None
 
-    # exact family match -> the RV's op params line up with md_cls's (seedable).
-    # A remapped family (e.g. HalfNormal -> Gamma) still splits per element, but
-    # its inputs belong to the *original* family and can't seed the target's
-    # params, so it falls through with the family default for every element.
-    exact_match = _dist_name(rv) == md_cls._dist_name
-    params = op_order[md_cls._dist_name]
-    inputs = rv.owner.inputs[-len(params) :]
+    # Folded op-input values (arrays keep per-element values; scalars and
+    # non-constants repeat/default across elements). Family-agnostic — remapped
+    # families still resolve their element count from the original params.
+    folded = _fold_inputs(rv.owner.inputs[-len(order) :])
 
     # resolve the element count
     n: int | None = None
-    for inp in inputs:  # 1. constant array params (bare or pymc-wrapped)
-        inner = inp if isinstance(inp, _Constant) else _unwrap_input(inp)
-        if inner is not None:
-            arr = np.asarray(inner.data)
-            if arr.ndim >= 1 and arr.size > 1:
-                n = int(arr.size)
-                break
+    for val in folded:  # 1. constant array params (bare or pymc-wrapped)
+        if isinstance(val, np.ndarray):
+            n = int(val.size)
+            break
     if n is None:  # 2. dims -> coords length
         dims = model.named_vars_to_dims.get(rv.name, ())
         if len(dims) == 1:
@@ -330,23 +345,18 @@ def _split_params(
 
     default = {p: md_cls().params[p] for p in md_cls._param_names}
     per_elem: list[dict[str, float]] = [default.copy() for _ in range(n)]
-    if not exact_match:
-        return per_elem
-    for p in md_cls._param_names:
-        inp = inputs[params.index(p)]
-        # bare Constant or pymc-wrapped constant (DimShuffle, Elemwise(reciprocal))
-        inner = inp if isinstance(inp, _Constant) else _unwrap_input(inp)
-        if inner is not None:
-            arr = np.asarray(inner.data)
-            if arr.ndim >= 1 and arr.size > 1:
-                flat = arr.ravel()
-                for i in range(n):
-                    per_elem[i][p] = float(flat[i])
-            else:
-                val = _as_constant(inner)
-                if val is not None:
-                    for i in range(n):
-                        per_elem[i][p] = val
+    # exact family match -> the RV's op params line up with md_cls's (seedable,
+    # via `_op_param_seeds`; a remapped family seeds {} -> family defaults).
+    for p, val in _op_param_seeds(rv, md_cls).items():
+        if val is None:
+            continue
+        if isinstance(val, np.ndarray):
+            flat = val.ravel()
+            for i in range(n):
+                per_elem[i][p] = float(flat[i])
+        else:
+            for i in range(n):
+                per_elem[i][p] = val
     return per_elem
 
 
@@ -428,21 +438,11 @@ def _split_params_nd(
     For ``ndim >= 3``, the first two dims become tab levels and remaining dims
     are flattened into composite inner labels (``"b1_c1"``).
     """
-    op_order = {
-        "Normal": ["mu", "sigma"],
-        "Beta": ["alpha", "beta"],
-        "Gamma": ["alpha", "beta"],
-        "StudentT": ["nu", "mu", "sigma"],
-    }
-    if md_cls._dist_name not in op_order:
+    if not md_cls._op_param_order:
         return None
     ndim = _rv_ndim(model, rv)
     if ndim < 2:
         return None
-
-    exact_match = _dist_name(rv) == md_cls._dist_name
-    params = op_order[md_cls._dist_name]
-    inputs = rv.owner.inputs[-len(params) :]
 
     outer_labels, inner_labels, _ = _dims_tab_labels(model, rv)
     n_outer = len(outer_labels)
@@ -453,28 +453,23 @@ def _split_params_nd(
         ol: [default.copy() for _ in range(n_inner)] for ol in outer_labels
     }
 
-    if not exact_match:
-        return nested
-
-    for p in md_cls._param_names:
-        inp = inputs[params.index(p)]
-        inner = inp if isinstance(inp, _Constant) else _unwrap_input(inp)
-        if inner is not None:
-            arr = np.asarray(inner.data)
-            if arr.ndim >= 1 and arr.size > 1:
-                flat = arr.ravel()
-                if flat.size == n_outer * n_inner:
-                    idx = 0
-                    for oi in range(n_outer):
-                        for ii in range(n_inner):
-                            nested[outer_labels[oi]][ii][p] = float(flat[idx])
-                            idx += 1
-            else:
-                val = _as_constant(inner)
-                if val is not None:
-                    for oi in range(n_outer):
-                        for ii in range(n_inner):
-                            nested[outer_labels[oi]][ii][p] = val
+    # exact family match -> the RV's op params line up with md_cls's (seedable,
+    # via `_op_param_seeds`; a remapped family seeds {} -> family defaults).
+    for p, val in _op_param_seeds(rv, md_cls).items():
+        if val is None:
+            continue
+        if isinstance(val, np.ndarray):
+            flat = val.ravel()
+            if flat.size == n_outer * n_inner:
+                idx = 0
+                for oi in range(n_outer):
+                    for ii in range(n_inner):
+                        nested[outer_labels[oi]][ii][p] = float(flat[idx])
+                        idx += 1
+        else:
+            for oi in range(n_outer):
+                for ii in range(n_inner):
+                    nested[outer_labels[oi]][ii][p] = val
     return nested
 
 

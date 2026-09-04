@@ -34,6 +34,10 @@ class Gamma(DistMixin, anywidget.AnyWidget):
     _css = _CSS
     _param_names = ("alpha", "beta")
     _dist_name = "Gamma"
+    # pymc's GammaRV op-input order (verified). pymc >= 6 feeds the op
+    # scale = reciprocal(beta) — the user-facing rate sits beneath a
+    # Reciprocal in the graph; pymc 5 passed the rate (lam) directly.
+    _op_param_order = ("alpha", "beta")
 
     alpha = traitlets.Float(2.0).tag(sync=True)
     beta = traitlets.Float(2.0).tag(sync=True)

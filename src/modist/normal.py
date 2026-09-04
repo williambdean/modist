@@ -34,6 +34,7 @@ class Normal(DistMixin, anywidget.AnyWidget):
     _css = _CSS
     _param_names = ("mu", "sigma")
     _dist_name = "Normal"
+    _op_param_order = ("mu", "sigma")  # pymc's NormalRV op-input order (verified)
 
     mu = traitlets.Float(0.0).tag(sync=True)
     sigma = traitlets.Float(1.0).tag(sync=True)

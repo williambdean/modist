@@ -16,6 +16,11 @@ class DistMixin:
     # Family subclasses set these:
     _param_names: tuple[str, ...] = ()
     _dist_name: str = ""
+    # The order in which pymc's RV op receives the family's parameters, named
+    # by modist's parameters — pymc's internal order can differ (e.g. StudentT
+    # is (nu, mu, sigma)). Empty for families not mapped to a pymc op layout,
+    # which disables seeding widgets from a model's constant params.
+    _op_param_order: tuple[str, ...] = ()
 
     @property
     def params(self) -> Dict[str, float]:
