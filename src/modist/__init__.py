@@ -20,7 +20,7 @@ from .studentt import StudentT
 
 __all__ = ["Normal", "Beta", "Gamma", "StudentT", "DistMixin", "ui", "pymc"]
 
-__version__ = "0.4.0"
+__version__ = "0.5.0"
 
 
 def __getattr__(name: str):
