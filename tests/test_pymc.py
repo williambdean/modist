@@ -163,6 +163,55 @@ def test_sample_prior_predictive_default_and_overrides():
     )
 
 
+def test_sample_prior_predictive_memoized_by_params():
+    # Embedding the panel in marimo tabs can re-run the sampling cell with the
+    # same widget values (tab switches remount the priors anywidgets, which
+    # re-emit their current values). Those ghost re-runs must NOT resample:
+    # identical priors + draws return the SAME draws object; only a genuine
+    # parameter change (or draw-count change) produces a fresh sample.
+    ui = md.pymc.create_priors(_nested_model())
+    first = ui.sample_prior_predictive(10)
+    assert ui.sample_prior_predictive(10) is first
+    # different draw count -> new sample
+    assert ui.sample_prior_predictive(20) is not first
+    # different parameter values (via overrides) -> new sample
+    changed = ui.sample_prior_predictive(10, intercept_mu_sigma=3.0)
+    assert changed is not first
+    # back to the previous parameters -> cache miss (last entry holds the
+    # override state) -> a fresh sample, not the historical one
+    refreshed = ui.sample_prior_predictive(10)
+    assert refreshed is not first
+
+
+def test_draw_memoized_by_params():
+    """draw() is the cached primitive: identical priors + draws return the
+    SAME draws object (tab-switch ghost re-runs must not resample); a genuine
+    parameter change (or draw-count change) produces a fresh sample."""
+    ui = md.pymc.create_priors(_nested_model())
+    first = ui.draw(10)
+    assert ui.draw(10) is first
+    # different draw count -> new sample
+    assert ui.draw(20) is not first
+    # different parameter values (via overrides) -> new sample
+    changed = ui.draw(10, intercept_mu_sigma=3.0)
+    assert changed is not first
+    # back to the previous parameters -> cache miss (last entry holds the
+    # override state) -> a fresh sample, not the historical one
+    refreshed = ui.draw(10)
+    assert refreshed is not first
+
+
+def test_draw_and_sample_prior_predictive_share_sample():
+    """draw() and sample_prior_predictive() share one cache entry, so with
+    identical params the DataTree's prior group is built from the same draws
+    dict — the sampler runs once, not twice."""
+    ui = md.pymc.create_priors(_nested_model())
+    draws = ui.draw(10)
+    dt = ui.sample_prior_predictive(10)
+    for name, arr in draws.items():
+        np.testing.assert_allclose(dt["prior"].ds[name].values[0], arr)
+
+
 def test_mapping_override_and_unknown_family():
     with pm.Model() as model:
         pm.Cauchy("c", alpha=0, beta=1)

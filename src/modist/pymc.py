@@ -728,6 +728,23 @@ def _resolve_outputs(model, outputs: Any) -> list[tuple[str, Any]]:
     return resolved
 
 
+@dataclass
+class _PriorSample:
+    """The single cached prior sample: raw draws plus a lazily-built DataTree.
+
+    ``draw()`` is the cached primitive (``draws`` is the source of truth and
+    may own the sampler run); :meth:`ModelPriors.sample_prior_predictive`
+    builds ``data_tree`` from it on first demand. Both are keyed by
+    :meth:`ModelPriors._prior_cache_key`, so the panel keeps at most one
+    sample and ``draw``/``sample_prior_predictive`` with identical parameters
+    share the same sampler run.
+    """
+
+    key: tuple
+    draws: dict[str, Any]
+    data_tree: DataTree | None = None
+
+
 class ModelPriors(Priors):
     """A :class:`~modist.ui.Priors` panel bound to a ``pm.Model``.
 
@@ -773,6 +790,7 @@ class ModelPriors(Priors):
         self._inputs = inputs
         self._fn = fn
         self._rv_names = list(rv_names)
+        self._prior: _PriorSample | None = None
 
     @property
     def model(self) -> Any:
@@ -801,6 +819,16 @@ class ModelPriors(Priors):
     def draw(self, draws: int = 1, **overrides: float) -> dict[str, Any]:
         """Sample the model with the current widget values.
 
+        The sample is cached (single entry, keyed by draw count + input
+        values): a re-run with unchanged widgets returns the *same* draws
+        instead of re-sampling. This keeps the panel stable when it's embedded
+        in marimo tabs — a tab switch remounts the priors anywidgets, which
+        re-emit their current values and re-run dependent cells, but identical
+        values must not draw a fresh sample. Dragging a prior (or passing
+        ``overrides``) changes the key and produces a fresh sample; only the
+        most recent sample is kept. Use :attr:`fn` directly when you need a
+        genuinely fresh sample on every call.
+
         Args:
             draws: number of draws per RV.
             **overrides: ``{f"{name}_{param}": value}`` overrides applied on top
@@ -818,16 +846,35 @@ class ModelPriors(Priors):
                 f"unknown input(s) {bad}; available: {sorted(self._inputs)}"
             )
         kwargs.update(overrides)
+        key = self._prior_cache_key(draws, overrides)
+        if self._prior is not None and self._prior.key == key:
+            return self._prior.draws
         results = [self._fn(**kwargs) for _ in range(draws)]
         if draws == 1:
-            return dict(zip(self._rv_names, results[0]))
-        return {
-            name: np.stack([r[i] for r in results])
-            for i, name in enumerate(self._rv_names)
-        }
+            sample = dict(zip(self._rv_names, results[0]))
+        else:
+            sample = {
+                name: np.stack([r[i] for r in results])
+                for i, name in enumerate(self._rv_names)
+            }
+        self._prior = _PriorSample(key=key, draws=sample)
+        return sample
 
     def __call__(self, draws: int = 1, **overrides: float) -> dict[str, Any]:
         return self.draw(draws, **overrides)
+
+    def _prior_cache_key(self, draws: int, overrides: dict[str, float]) -> tuple[Any, ...]:
+        """A hashable key identifying a prior sample: draw count + inputs.
+
+        Mirrors :meth:`draw`'s input resolution (current widget values with
+        validated ``overrides`` layered on top) so a re-run carrying identical
+        parameters can be recognized without re-sampling.
+        """
+        merged = {
+            **{k: v for k, v in _flat_inputs(self.value).items() if k in self._inputs},
+            **{k: v for k, v in overrides.items() if k in self._inputs},
+        }
+        return (draws, tuple(sorted(merged.items())))
 
     def sample_prior_predictive(self, draws: int = 500, **overrides: float) -> DataTree:
         """Draw prior/prior-predictive samples as an ``xr.DataTree``.
@@ -843,6 +890,18 @@ class ModelPriors(Priors):
         their shapes and (when named/dims'd) their dims and coords. The sample
         object drops straight into arviz plotting (``az.plot_*`` / ``azp``).
 
+        The sample shares :meth:`draw`'s single-entry cache — keyed by draw
+        count + input values — so a re-run with unchanged widgets returns the
+        *same* ``DataTree`` instead of re-sampling, and calling both
+        ``draw`` and ``sample_prior_predictive`` with identical parameters
+        runs the sampler once. This keeps the panel stable when it's embedded
+        in marimo tabs — a tab switch remounts the priors anywidgets, which
+        re-emit their current values and re-run dependent cells, but identical
+        values must not draw a fresh sample. Dragging a prior (or passing
+        ``overrides``) changes the key and produces a fresh sample. Only the
+        most recent sample is kept (its DataTree built lazily on the first
+        ``sample_prior_predictive`` call), so the cache never grows.
+
         Args:
             draws: number of draws per RV (default 500).
             **overrides: same ``{f"{name}_{param}": value}`` overrides as
@@ -853,8 +912,17 @@ class ModelPriors(Priors):
         """
         import pymc as pm
 
+        key = self._prior_cache_key(draws, overrides)
+        if (
+            self._prior is not None
+            and self._prior.key == key
+            and self._prior.data_tree is not None
+        ):
+            return self._prior.data_tree
         prior_draws = self.draw(draws, **overrides)
-        return pm.to_inference_data(prior=prior_draws, model=self._model)
+        data_tree = pm.to_inference_data(prior=prior_draws, model=self._model)
+        self._prior.data_tree = data_tree
+        return data_tree
 
     def set_distributions(
         self,
