@@ -11,47 +11,8 @@ def _():
     import numpy as np
     import pymc as pm
     import modist as md
-    from pytensor.graph.traversal import explicit_graph_inputs
 
-    return explicit_graph_inputs, md, mo, np, plt, pm
-
-
-@app.cell
-def _(md, mo):
-    priors = {
-        "intercept": md.Normal(mu=1, sigma=1),
-        "slope": md.Normal(mu=1, sigma=0.5),
-        "sigma": md.Gamma(alpha=10, beta=5),
-    }
-    ui = md.ui.create_tabs(priors, height=350)
-
-    w_show_true_line = mo.ui.checkbox(value=False, label="Show true line")
-    w_show_data = mo.ui.checkbox(value=True, label="Show data")
-    w_show_answer = mo.ui.checkbox(value=False, label="Show answer")
-
-    w_xlim = mo.ui.range_slider(
-        start=-1,
-        stop=11,
-        value=[-1, 11],
-        step=0.5,
-        label="x limits",
-    )
-    w_ylim = mo.ui.range_slider(
-        start=-10,
-        stop=20,
-        value=[-5, 15],
-        step=0.5,
-        label="y limits",
-    )
-    return (
-        priors,
-        ui,
-        w_show_answer,
-        w_show_data,
-        w_show_true_line,
-        w_xlim,
-        w_ylim,
-    )
+    return md, mo, np, plt, pm
 
 
 @app.cell
@@ -63,7 +24,9 @@ def _(mo):
         Drag the priors (one draggable distribution per tab) to reshape your
         beliefs about the **intercept**, **slope**, and noise **σ**. The plot
         below shows the resulting *prior predictive* for the response,
-        overlaid on the true synthetic data used to generate it.
+        overlaid on the true synthetic data used to generate it. The priors
+        are defined right inside a `pm.Model` — `md.pymc.create_priors`
+        turns the model's root priors into widgets.
         """
     )
     return (intro,)
@@ -76,9 +39,90 @@ def _(intro):
 
 
 @app.cell
-def _(mo, w_show_data, w_show_true_line, w_xlim, w_ylim):
-    mo.vstack([w_show_true_line, w_show_data, w_xlim, w_ylim])
-    return
+def _(np):
+    rng = np.random.default_rng(7)
+    n = 30
+    intercept_true = 2.0
+    slope_true = 0.7
+    sigma_true = 1.0
+
+    x = np.sort(rng.uniform(-3, 7, n))
+    y = intercept_true + slope_true * x + rng.normal(0, sigma_true, n)
+
+    x_grid = np.linspace(-3, 7, 100)
+    lookups = {
+        "x": x,
+        "x_grid": x_grid,
+        "y": y,
+        "intercept_true": intercept_true,
+        "slope_true": slope_true,
+    }
+    return (lookups,)
+
+
+@app.cell
+def _(lookups, pm):
+    # The model: priors at their demo defaults. `mu` is the expected response
+    # on a fine grid; `obs` carries the prior predictive at the observed x.
+    with pm.Model(
+        coords={
+            "idx": range(len(lookups["x"])),
+            "grid": range(len(lookups["x_grid"])),
+        }
+    ) as model:
+        xgrid = pm.Data("xgrid", lookups["x_grid"], dims="grid")
+        x_data = pm.Data("x_data", lookups["x"], dims="idx")
+        intercept = pm.Normal("intercept", mu=1, sigma=1)
+        slope = pm.Normal("slope", mu=1, sigma=0.5)
+        sigma = pm.Gamma("sigma", alpha=10, beta=5)
+
+        mu = pm.Deterministic("mu", intercept + slope * xgrid, dims="grid")
+        pm.Normal(
+            "obs",
+            mu=intercept + slope * x_data,
+            sigma=sigma,
+            observed=lookups["y"],
+            dims="idx",
+        )
+    return (model,)
+
+
+@app.cell
+def _(md, model):
+    ui = md.pymc.create_priors(model, height=350)
+    return (ui,)
+
+
+@app.cell
+def _(mo):
+    w_show_true_line = mo.ui.checkbox(value=False, label="Show true line")
+    w_show_data = mo.ui.checkbox(value=False, label="Show data")
+    w_show_answer = mo.ui.checkbox(value=False, label="Show answer")
+    w_show_axes = mo.ui.checkbox(value=True, label="Show axes")
+
+    w_xlim = mo.ui.range_slider(
+        start=-5,
+        stop=9,
+        value=[-4, 8],
+        step=0.5,
+        label="x limits",
+    )
+    w_ylim = mo.ui.range_slider(
+        start=-20,
+        stop=30,
+        value=[-10, 20],
+        step=0.5,
+        label="y limits",
+    )
+    mo.vstack([w_show_true_line, w_show_data, w_show_axes, w_xlim, w_ylim])
+    return (
+        w_show_answer,
+        w_show_axes,
+        w_show_data,
+        w_show_true_line,
+        w_xlim,
+        w_ylim,
+    )
 
 
 @app.cell
@@ -104,88 +148,80 @@ def _(mo):
 
 
 @app.cell
+def _(draws, ui):
+    # sample_prior_predictive caches by (draws, current widget values) — a tab
+    # switch remounts the widgets and re-runs this cell, but identical values
+    # return the cached DataTree instead of re-sampling. Dragging a prior
+    # (a real change) produces a fresh sample.
+    idata = ui.sample_prior_predictive(draws)
+    return (idata,)
+
+
+@app.cell
 def _(np):
-    rng = np.random.default_rng(7)
-    n = 30
-    intercept_true = 2.0
-    slope_true = 0.7
-    sigma_true = 1.0
+    def fade_axes(ax, frame_alpha=0.06, tick_alpha=0.25, label_alpha=0.4):
+        for spine in ax.spines.values():
+            spine.set_alpha(frame_alpha)
+        ax.tick_params(axis="both", colors=np.array([1, 1, 1, tick_alpha]))
+        ax.xaxis.label.set_alpha(label_alpha)
+        ax.yaxis.label.set_alpha(label_alpha)
 
-    x = np.sort(rng.uniform(0, 10, n))
-    y = intercept_true + slope_true * x + rng.normal(0, sigma_true, n)
-
-    x_grid = np.linspace(0, 10, 100)
-    return intercept_true, slope_true, x, x_grid, y
-
-
-@app.cell
-def _(explicit_graph_inputs, pm, priors, x_grid):
-    # Build the prior graph ONCE with symbolic scalar inputs (named after each
-    # variable), then compile a sampler. Params are function inputs, so dragging
-    # a widget just re-calls the compiled fn — no recompile per update. The
-    # original distribution instances (kept in `priors`) stay live as you drag.
-    intercept = priors["intercept"].create_variable("intercept")
-    slope = priors["slope"].create_variable("slope")
-    sigma = priors["sigma"].create_variable("sigma")
-
-    mu = intercept + slope * x_grid
-    y_prior = pm.Normal.dist(mu=mu, sigma=sigma)
-
-    sample_prior = pm.compile(
-        list(explicit_graph_inputs(y_prior)),
-        y_prior,
-        random_seed=123,
-    )
-    return (sample_prior,)
-
-
-@app.cell
-def _(draws, sample_prior, ui):
-    # ui.value is {name: {param: value}} — splat everything into the compiled
-    # sampler's symbolic inputs ({name}_{param}).
-    _prior_kwargs = {}
-    for name, params in ui.value.items():
-        _prior_kwargs.update({f"{name}_{k}": v for k, v in params.items()})
-
-    lines = [sample_prior(**_prior_kwargs) for _ in range(draws)]
-    return (lines,)
+    return (fade_axes,)
 
 
 @app.cell
 def _(
-    intercept_true,
-    lines,
+    fade_axes,
+    idata,
+    lookups,
     mo,
     plt,
-    slope_true,
     w_draw_idx,
+    w_show_axes,
     w_show_data,
     w_show_true_line,
     w_xlim,
     w_ylim,
-    x,
-    x_grid,
-    y,
 ):
     fig, ax = plt.subplots(figsize=(8, 4.5))
-    yy = lines[w_draw_idx.value]
 
-    ax.scatter(
-        x_grid,
+    ax.axvline(0, color=(0.6, 0.6, 0.6, 0.25), linewidth=1, zorder=0)
+    ax.axhline(0, color=(0.6, 0.6, 0.6, 0.25), linewidth=1, zorder=0)
+
+    yy = idata["prior"]["mu"].isel(chain=0, draw=w_draw_idx.value).to_numpy()
+    ax.plot(
+        lookups["x_grid"],
         yy,
         color="#3b82f6",
-        alpha=0.35,
-        s=6,
-        label=f"prior predicted data (idx={w_draw_idx.value})",
+        linewidth=2,
+        label=f"prior predictive mean (idx={w_draw_idx.value})",
+    )
+    ax.scatter(
+        lookups["x"],
+        idata["prior_predictive"]["obs"]
+        .isel(chain=0, draw=w_draw_idx.value)
+        .to_numpy(),
+        color="#60a5fa",
+        s=16,
+        zorder=3,
+        label="prior predictive y",
     )
 
     if w_show_data.value:
-        ax.scatter(x, y, color="#111111", zorder=5, label="true data")
+        ax.scatter(
+            lookups["x"],
+            lookups["y"],
+            color="#dc2626",
+            s=16,
+            zorder=5,
+            label="true data",
+        )
 
     if w_show_true_line.value:
         ax.plot(
-            x_grid,
-            intercept_true + slope_true * x_grid,
+            lookups["x_grid"],
+            lookups["intercept_true"]
+            + lookups["slope_true"] * lookups["x_grid"],
             color="#dc2626",
             linestyle="--",
             linewidth=2,
@@ -195,22 +231,30 @@ def _(
     ax.set_ylabel("y")
     ax.set_xlim(*w_xlim.value)
     ax.set_ylim(*w_ylim.value)
-    ax.legend(loc="upper left")
+    ax.legend(loc="upper left", framealpha=0.9)
+    if not w_show_axes.value:
+        fade_axes(ax)
     mo.center(fig)
-    return (yy,)
+    return
 
 
 @app.cell
-def _(mo, y, yy):
+def _(idata, lookups, mo, w_draw_idx):
+    mean_pp_y = (
+        idata["prior_predictive"]["obs"]
+        .isel(chain=0, draw=w_draw_idx.value)
+        .to_numpy()
+        .mean()
+    )
     mo.hstack(
         [
             mo.stat(
-                value=f"{y.mean():.2f}",
+                value=f"{lookups['y'].mean():.2f}",
                 label="mean observed y",
             ),
             mo.stat(
-                value=f"{yy.mean():.2f}",
-                label="mean predictive y",
+                value=f"{mean_pp_y:.2f}",
+                label="mean prior predictive y",
             ),
         ]
     )
@@ -225,6 +269,7 @@ def _(w_show_answer):
 
 @app.cell
 def _(np, plt, ui, w_show_answer):
+    fig_a = None
     if w_show_answer.value:
         fig_a, axes = plt.subplots(1, 3, figsize=(10, 3))
         t_vals = [2.0, 0.7, 1.0]
