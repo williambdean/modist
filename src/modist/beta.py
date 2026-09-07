@@ -3,6 +3,9 @@
 Drag the mean line to translate (at a fixed concentration) or either ``q25`` /
 ``q75`` square to concentrate / spread out. Synced ``alpha`` / ``beta`` traits
 make ``mo.ui.anywidget(...).value`` splat into ``pm.Beta.dist(**w.value)``.
+Constructor kwargs may use any ecosystem's parameter names (``a``/``b``,
+``successes``/``failures``) — they're resolved through the distparams registry
+while ``.params`` stays canonical.
 
 Examples
 --------
@@ -33,6 +36,7 @@ class Beta(DistMixin, anywidget.AnyWidget):
     _css = _CSS
     _param_names = ("alpha", "beta")
     _dist_name = "Beta"
+    _registry_key = "beta"
     _op_param_order = ("alpha", "beta")  # pymc's BetaRV op-input order (verified)
 
     alpha = traitlets.Float(2.0).tag(sync=True)

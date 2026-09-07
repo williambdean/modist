@@ -143,6 +143,23 @@ g.scipy   # scipy.stats.gamma(a=2.0, scale=1/3)  -- rate handled for you
 `w.value` is a plain dict of the synced traits, so `pm.X.dist(**w.value)` works
 with no conversion.
 
+Widget constructors accept **any ecosystem's parameter names** — they're
+resolved through the [distparams](https://github.com/williambdean/distparams)
+registry, so scipy/PyMC/jStat spellings work everywhere:
+
+```python
+md.Normal(loc=0.0, scale=1.0)      # scipy spelling
+md.Normal(mu=0.0, tau=4.0)         # precision -> sigma = 0.5
+md.Gamma(alpha=2.0, scale=3.0)     # scale -> rate = 1/3
+md.Gamma(mu=4.0, sigma=2.0)        # mean/sd parameterization
+md.StudentT(df=5.0)                # df -> nu
+```
+
+`.params` is always the canonical synced set, so the widget view and the
+`pm.X.dist(**...)` splat are unaffected by the spelling you pass in. Conflicts
+(say `sigma=` together with `tau=`) and unknown names raise with a message
+naming every valid option.
+
 ## Jupyter
 
 The widgets are anywidget/ipywidgets under the hood, so they run in plain

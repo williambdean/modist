@@ -5,6 +5,9 @@ left/right to shift (``mu``), the ``q75`` square left/right to set the spread
 (``sigma``), and the tails dial up/down to set the tail weight (``nu``; up =
 fatter tails). One drag always edits one parameter. Synced traits make
 ``mo.ui.anywidget(...).value`` splat into ``pm.StudentT.dist(**w.value)``.
+Constructor kwargs may use any ecosystem's parameter names (``df`` for ``nu``,
+``loc``/``scale``) — they're resolved through the distparams registry while
+``.params`` stays canonical.
 
 Examples
 --------
@@ -35,6 +38,7 @@ class StudentT(DistMixin, anywidget.AnyWidget):
     _css = _CSS
     _param_names = ("mu", "sigma", "nu")
     _dist_name = "StudentT"
+    _registry_key = "student_t"
     # pymc's StudentTRV op-input order (verified) — note it differs from
     # _param_names: nu comes first on the op.
     _op_param_order = ("nu", "mu", "sigma")

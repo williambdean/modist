@@ -4,6 +4,9 @@ Drag the mean line to translate (at a fixed shape) or either ``q25`` / ``q75``
 square to reshape. ``alpha`` is the shape and ``beta`` the rate (pymc / stats
 convention, not the scipy ``scale``). Synced traits make
 ``mo.ui.anywidget(...).value`` splat into ``pm.Gamma.dist(**w.value)``.
+Constructor kwargs may use any ecosystem's parameter names (``shape``/``rate``,
+scipy ``a``/``scale``, mean/sd ``mu``/``sigma``) — they're resolved through
+the distparams registry while ``.params`` stays canonical.
 
 Examples
 --------
@@ -34,6 +37,9 @@ class Gamma(DistMixin, anywidget.AnyWidget):
     _css = _CSS
     _param_names = ("alpha", "beta")
     _dist_name = "Gamma"
+    _registry_key = "gamma"
+    # distparams gamma is canonical (shape, rate); modist spells them alpha/beta.
+    _registry_param_map = {"shape": "alpha", "rate": "beta"}
     # pymc's GammaRV op-input order (verified). pymc >= 6 feeds the op
     # scale = reciprocal(beta) — the user-facing rate sits beneath a
     # Reciprocal in the graph; pymc 5 passed the rate (lam) directly.

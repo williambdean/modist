@@ -74,3 +74,22 @@ with `target_commitish is invalid` if it isn't pushed yet.
 - Tick axis conventions: labeled major ticks + unlabeled minor gridlines.
   Minor spacing/precision must stay uniform regardless of scale (a past bug
   collapsed minors to uneven gaps at decimal ranges).
+
+## Adding a family
+
+A new widget family (e.g. `HalfNormal`) is a new `src/modist/<family>.py`
+class plus a `js/<family>.js` `F` object (register it in `js/index.js` /
+`js/dist/index.js`, then `npm run build:js`). Every Python family **must** set:
+
+- `_param_names` — canonical synced traits (JS syncs `Object.keys(F.defaults)`)
+- `_dist_name` — pymc spelling
+- `_registry_key` — its distparams registry name (`"half_normal"`),
+  required (enforced at class definition); the distribution must exist in or be
+  registered via `distparams` for constructor-kwarg aliases to resolve
+- `_registry_param_map` — only when distparams' canonical names differ from
+  modist's traits (e.g. Gamma `shape/rate` → `alpha/beta`)
+- `_op_param_order` — only when pymc op-input order matters for seeding
+
+Add the family to `tests/test_widgets.py`, `tests/test_aliases.py`, a
+`tests/js/*.test.mjs` probe, and `_DIST_REGISTRY` in `src/modist/pymc.py` if it
+should be seeded from PyMC models.

@@ -3,7 +3,10 @@
 A draggable Normal curve: drag the mean line to reposition, or either of the
 ``\u00b11\u03c3`` squares to reshape the spread. The synced ``mu`` / ``sigma``
 traits make ``mo.ui.anywidget(...).value`` splat directly into a distribution
-constructor, e.g. ``pm.Normal.dist(**w.value)``.
+constructor, e.g. ``pm.Normal.dist(**w.value)``. Constructor kwargs may use any
+ecosystem's parameter names (``loc``/``scale``, ``tau``/``precision``,
+``variance``) — they're resolved through the distparams registry while
+``.params`` stays canonical.
 
 Examples
 --------
@@ -34,6 +37,7 @@ class Normal(DistMixin, anywidget.AnyWidget):
     _css = _CSS
     _param_names = ("mu", "sigma")
     _dist_name = "Normal"
+    _registry_key = "normal"
     _op_param_order = ("mu", "sigma")  # pymc's NormalRV op-input order (verified)
 
     mu = traitlets.Float(0.0).tag(sync=True)

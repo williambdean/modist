@@ -593,6 +593,15 @@ wheels = [
 ]
 
 [[package]]
+name = "distparams"
+version = "0.2.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/54/2a/a4514259d92c5e4013ab5e83b488057e4f7efadc3e2533e4abc5ba0dc433/distparams-0.2.0.tar.gz", hash = "sha256:716697def064aabb97a115e78bb3da143b9739e37c257fa5714de981cdf5d25d", size = 50895, upload-time = "2026-09-07T10:34:41.785Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/fb/6e/26abfc4eddf190168bca020230f4a2613ddfdd4d72617cd1e0667d51eb63/distparams-0.2.0-py3-none-any.whl", hash = "sha256:dd054ab83266185b5838c259ad022b6dfe6f1bedc5a223af2b3320248525eef4", size = 87450, upload-time = "2026-09-07T10:34:40.377Z" },
+]
+
+[[package]]
 name = "docutils"
 version = "0.23"
 source = { registry = "https://pypi.org/simple" }
@@ -1547,6 +1556,7 @@ version = "0.6.0"
 source = { editable = "." }
 dependencies = [
     { name = "anywidget" },
+    { name = "distparams" },
 ]
 
 [package.optional-dependencies]
@@ -1573,6 +1583,7 @@ scipy = [
 requires-dist = [
     { name = "anywidget", specifier = ">=0.11.0" },
     { name = "conjugate-models", marker = "extra == 'dev'" },
+    { name = "distparams", specifier = ">=0.2.0" },
     { name = "ipykernel", marker = "extra == 'dev'", specifier = ">=7.3.0" },
     { name = "jupyter", marker = "extra == 'dev'", specifier = ">=1.0" },
     { name = "jupytext", marker = "extra == 'dev'", specifier = ">=1.19.5" },

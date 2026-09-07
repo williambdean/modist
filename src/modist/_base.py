@@ -1,13 +1,17 @@
-"""Shared lazy adapters for modist widgets.
+"""Shared adapters for modist widgets.
 
 Each widget exposes a ``params`` dict of its canonical synced traits plus lazy
 ``.scipy`` and ``.pymc`` attributes that construct a frozen scipy distribution
-or a pymc distribution from those params. Imports happen only on first access.
+or a pymc distribution from those params. Constructor kwargs are resolved
+through the distparams registry, so any ecosystem's parameter names work.
+scipy and pymc imports happen only on first access.
 """
 
 from __future__ import annotations
 
 from typing import Any, Dict
+
+from distparams import resolve_parameters
 
 
 class DistMixin:
@@ -16,11 +20,42 @@ class DistMixin:
     # Family subclasses set these:
     _param_names: tuple[str, ...] = ()
     _dist_name: str = ""
+    # The distparams registry name used to resolve constructor kwargs. Every
+    # family must set it: ``"normal"``, ``"beta"``, ``"gamma"``, ``"student_t"``.
+    _registry_key: str = ""
+    # Map distparams canonical param names -> modist trait names where they
+    # differ (e.g. Gamma's shape/rate vs modist's alpha/beta).
+    _registry_param_map: dict[str, str] = {}
     # The order in which pymc's RV op receives the family's parameters, named
     # by modist's parameters — pymc's internal order can differ (e.g. StudentT
     # is (nu, mu, sigma)). Empty for families not mapped to a pymc op layout,
     # which disables seeding widgets from a model's constant params.
     _op_param_order: tuple[str, ...] = ()
+
+    def __init_subclass__(cls, **kwargs) -> None:
+        super().__init_subclass__(**kwargs)
+        if not cls._registry_key:
+            raise TypeError(
+                f"{cls.__name__} must set `_registry_key` to its distparams "
+                "registry name (e.g. StudentT -> 'student_t') so constructor "
+                "kwargs can be resolved."
+            )
+
+    def __init__(self, **kwargs) -> None:
+        """Resolve constructor kwargs through the distparams registry.
+
+        Callers may use any ecosystem's parameter names for the family
+        (``loc``/``scale``, ``tau``, ``df``, gamma's ``(mu, sigma)``, ...);
+        resolution happens here so the synced traits (and every anywidget
+        round-trip) stay canonical. Empty kwargs take a fast path untouched.
+        """
+        if kwargs:
+            resolved = resolve_parameters(self._registry_key, **kwargs)
+            kwargs = {
+                self._registry_param_map.get(name, name): value
+                for name, value in resolved.items()
+            }
+        super().__init__(**kwargs)
 
     @property
     def params(self) -> Dict[str, float]:
