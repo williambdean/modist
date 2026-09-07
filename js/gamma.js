@@ -1,5 +1,5 @@
 // gamma.js - Gamma((alpha=shape, beta=rate)) interactive widget, left edge pinned at 0.
-import jStat from "./vendor/jstat.esm.js";
+import jStat from "jstat";
 import { createWidget, fmt } from "./base.js";
 
 const A_MIN = 0.01;

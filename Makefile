@@ -1,7 +1,8 @@
 .PHONY: js test dev venv jupyter jupyter-kernel
 
-# Build bundled JS (source in js/ -> committed src/modist/static/*.js).
-# Requires esbuild: npm install --no-save esbuild
+# Build bundled JS (source in js/ -> committed src/modist/static/*.js plus the
+# committed standalone bundle dist/modist.js).
+# Requires the npm deps: npm install
 js:
 	node build.js
 
@@ -25,4 +26,4 @@ test:
 venv:
 	uv venv
 	uv pip install -e '.[dev]'
-	npm install --no-save esbuild
+	npm install

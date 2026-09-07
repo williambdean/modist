@@ -1,5 +1,5 @@
 // normal.js - Normal((mu, sigma)) interactive widget.
-import jStat from "./vendor/jstat.esm.js";
+import jStat from "jstat";
 import { createWidget, fmt } from "./base.js";
 
 const TAU = 2 * Math.PI;

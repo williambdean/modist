@@ -8,8 +8,22 @@ on:
     tags:
       - "v*.*.*"
 jobs:
+  licenses:
+    # Every production dep is bundled into modist's JS. jStat (MIT) is the only
+    # one; fail the release if anything else creeps in (e.g. a future dep under
+    # a copyleft/unknown license that would flow into the served bundles).
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx license-checker --production --onlyAllow="MIT;ISC;MIT-0;BSD-2-Clause;BSD-3-Clause;Apache-2.0;0BSD"
   build:
     runs-on: ubuntu-latest
+    needs: licenses
     permissions:
       id-token: write
     steps:

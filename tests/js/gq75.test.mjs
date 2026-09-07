@@ -3,7 +3,7 @@
 // dragged above then back below the mean without corrupting alpha/beta.
 import { chromium } from "playwright";
 import { readFileSync } from "node:fs";
-import J from "../../js/vendor/jstat.esm.js";
+import J from "jstat";
 import { STATIC, pageHtml } from "./_helpers.mjs";
 
 const jStat = J.default ?? J;

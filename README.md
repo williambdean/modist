@@ -175,6 +175,37 @@ notebook uses exactly the installed packages. Requires a local
 [JupyterLab](https://jupyter.org/install) (installed alongside jupyter via the
 dev extras).
 
+## JavaScript, no Python
+
+The widgets aren't tied to a notebook. There's a standalone, single-file ESM
+bundle (`dist/modist.js`) that renders them on any page with an element and a
+script tag — the same view used inside marimo/Jupyter. A taste:
+
+```html
+<script type="module">
+  import { beta } from "https://williambdean.github.io/modist/latest/modist.js";
+  const w = beta(document.getElementById("prior"), { alpha: 1, beta: 3 });
+  w.onChange((p) => console.log(p));   // fires on every drag
+</script>
+```
+
+Each factory takes `(element, params?)` and returns a handle:
+`w.params` (live snapshot), `w.set({...})`, `w.reset()`, `w.onChange(fn)`
+(returns an unsubscribe), and `w.destroy()`. The four families export as
+`normal`, `beta`, `gamma`, `studentT`; styles are injected once, and the bundle
+uses CSS `var()` fallbacks so it doesn't need your theme.
+
+For anything that ships to others, pin a release tag instead of `latest/` —
+jsDelivr serves the git tag copy with a year-long immutable cache, while
+`latest/` re-deploys with each release:
+
+```html
+<script type="module">
+  import { gamma, studentT }
+    from "https://cdn.jsdelivr.net/gh/williambdean/modist@vX.Y.Z/dist/modist.js";
+</script>
+```
+
 ## How it works
 
 Each family is its own anywidget class with a small set of synced parameter
@@ -182,20 +213,26 @@ traits (no `x_min`/`x_max`/`n_points`). The view — SVG scaffold, pan/zoom,
 draggable hit lines, and per-family math — lives in a self-contained ESM module.
 
 Source JS lives in [`js/`](js/) (`js/base.js` shared scaffold + one family file,
-all importing a vendored copy of [jStat](https://jstat.github.io/) for
-`pdf`/`cdf`/quantile math). Anywidget delivers `_esm` as a Blob URL, which
-cannot resolve relative imports, so [esbuild](https://esbuild.github.io)
+all importing [jStat](https://jstat.github.io/) for
+`pdf`/`cdf`/quantile math — managed as an npm dependency, kept MIT-only by a
+license gate in the publish workflow). Anywidget delivers `_esm` as a Blob URL,
+which cannot resolve relative imports, so [esbuild](https://esbuild.github.io)
 bundles each family (jStat inlined) into the committed `src/modist/static/*.js`
 files — the same pattern wigglystuff uses for its JS-heavy widgets.
+
+The same esbuild setup also emits `dist/modist.js`, the standalone bundle
+documented above, for JS-only consumers.
 
 ### Rebuilding the JS
 
 ```sh
-make js          # esbuild js/*.js -> src/modist/static/*.js
-make js-watch    # rebuild on every edit (for anywidget hot-reload dev)
+node build.js     # or: `make js` — esbuild js/*.js -> src/modist/static/*.js (and dist/modist.js)
+make js-watch     # rebuild on every edit (for anywidget hot-reload dev)
 ```
 
-Requires a local esbuild (`npm install --no-save esbuild`).
+`src/modist/static/*.js` and `dist/modist.js` are committed (jsDelivr and
+anywidget serve them straight from the repo), so rebuild them whenever `js/`
+changes and include the diff in the commit.
 
 ## Development
 
@@ -207,5 +244,5 @@ npm run test:js  # Playwright JS integration probes (headless Chromium)
 
 ## Acknowledgements
 
-- [jStat](https://jstat.github.io/) — JavaScript statistics library (MIT), vendored and bundled for the pdf/cdf/quantile math.
+- [jStat](https://jstat.github.io/) — JavaScript statistics library (MIT), bundled for the pdf/cdf/quantile math.
 - [wigglystuff](https://github.com/koaning/wigglystuff) — the interaction and architecture model (one class per family, prebuilt ESM per class).

@@ -6,8 +6,12 @@
     "build:js": "node build.js",
     "test:js": "node tests/js/run.mjs"
   },
+  "dependencies": {
+    "jstat": "1.9.6"
+  },
   "devDependencies": {
     "esbuild": "^0.28.2",
+    "license-checker": "^25.0.1",
     "playwright": "^1.62.1"
   }
 }

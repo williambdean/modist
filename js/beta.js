@@ -1,5 +1,5 @@
 // beta.js - Beta((alpha, beta)) interactive widget on the fixed [0, 1] domain.
-import jStat from "./vendor/jstat.esm.js";
+import jStat from "jstat";
 import { createWidget, fmt } from "./base.js";
 
 const K_MIN = 0.02;

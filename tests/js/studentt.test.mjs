@@ -4,7 +4,7 @@
 // anchored to a curve point, so nothing slides sideways while it is dragged).
 import { chromium } from "playwright";
 import { readFileSync } from "node:fs";
-import J from "../../js/vendor/jstat.esm.js";
+import J from "jstat";
 import { STATIC, pageHtml } from "./_helpers.mjs";
 
 const jStat = J.default ?? J;

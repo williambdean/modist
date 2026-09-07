@@ -1,1533 +1,3887 @@
-// js/vendor/jstat.esm.js
-var F = Object.create;
-var K = Object.defineProperty;
-var Y = Object.getOwnPropertyDescriptor;
-var D = Object.getOwnPropertyNames;
-var X = Object.getPrototypeOf;
-var M = Object.prototype.hasOwnProperty;
-var S = (h, u) => () => (u || h((u = { exports: {} }).exports, u), u.exports);
-var j = (h, u, f, q) => {
-  if (u && typeof u == "object" || typeof u == "function") for (let p of D(u)) !M.call(h, p) && p !== f && K(h, p, { get: () => u[p], enumerable: !(q = Y(u, p)) || q.enumerable });
-  return h;
+/*! modist - MIT (c) 2026 Will Dean - https://github.com/williambdean/modist */
+var __create = Object.create;
+var __defProp = Object.defineProperty;
+var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+var __getOwnPropNames = Object.getOwnPropertyNames;
+var __getProtoOf = Object.getPrototypeOf;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __commonJS = (cb, mod) => function __require() {
+  try {
+    return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
+  } catch (e) {
+    throw mod = 0, e;
+  }
 };
-var rr = (h, u, f) => (f = h != null ? F(X(h)) : {}, j(u || !h || !h.__esModule ? K(f, "default", { value: h, enumerable: true }) : f, h));
-var B = S((Z, $) => {
-  (function(h, u) {
-    typeof Z == "object" ? $.exports = u() : typeof define == "function" && define.amd ? define(u) : h.jStat = u();
-  })(Z, function() {
-    var h = (function(u, f) {
-      var q = Array.prototype.concat, p = Array.prototype.slice, w = Object.prototype.toString;
-      function d(a, t) {
-        var c = a > t ? a : t;
-        return u.pow(10, 17 - ~~(u.log(c > 0 ? c : -c) * u.LOG10E));
+var __copyProps = (to, from, except, desc) => {
+  if (from && typeof from === "object" || typeof from === "function") {
+    for (let key of __getOwnPropNames(from))
+      if (!__hasOwnProp.call(to, key) && key !== except)
+        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+  }
+  return to;
+};
+var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
+  // If the importer is in node compatibility mode or this is not an ESM
+  // file that has been converted to a CommonJS file using a Babel-
+  // compatible transform (i.e. "__esModule" has not been set), then set
+  // "default" to the CommonJS "module.exports" for node compatibility.
+  isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
+  mod
+));
+
+// node_modules/jstat/dist/jstat.js
+var require_jstat = __commonJS({
+  "node_modules/jstat/dist/jstat.js"(exports, module) {
+    (function(window, factory) {
+      if (typeof exports === "object") {
+        module.exports = factory();
+      } else if (typeof define === "function" && define.amd) {
+        define(factory);
+      } else {
+        window.jStat = factory();
       }
-      var i = Array.isArray || function(t) {
-        return w.call(t) === "[object Array]";
-      };
-      function r(a) {
-        return w.call(a) === "[object Function]";
-      }
-      function n(a) {
-        return typeof a == "number" ? a - a === 0 : false;
-      }
-      function e(a) {
-        return q.apply([], a);
-      }
-      function o() {
-        return new o._init(arguments);
-      }
-      o.fn = o.prototype, o._init = function(t) {
-        if (i(t[0])) if (i(t[0][0])) {
-          r(t[1]) && (t[0] = o.map(t[0], t[1]));
-          for (var c = 0; c < t[0].length; c++) this[c] = t[0][c];
-          this.length = t[0].length;
-        } else this[0] = r(t[1]) ? o.map(t[0], t[1]) : t[0], this.length = 1;
-        else if (n(t[0])) this[0] = o.seq.apply(null, t), this.length = 1;
-        else {
-          if (t[0] instanceof o) return o(t[0].toArray());
-          this[0] = [], this.length = 1;
+    })(exports, function() {
+      var jStat2 = (function(Math2, undefined2) {
+        var concat = Array.prototype.concat;
+        var slice = Array.prototype.slice;
+        var toString = Object.prototype.toString;
+        function calcRdx(n, m) {
+          var val = n > m ? n : m;
+          return Math2.pow(
+            10,
+            17 - ~~(Math2.log(val > 0 ? val : -val) * Math2.LOG10E)
+          );
         }
-        return this;
-      }, o._init.prototype = o.prototype, o._init.constructor = o, o.utils = { calcRdx: d, isArray: i, isFunction: r, isNumber: n, toVector: e }, o._random_fn = u.random, o.setRandom = function(t) {
-        if (typeof t != "function") throw new TypeError("fn is not a function");
-        o._random_fn = t;
-      }, o.extend = function(t) {
-        var c, g;
-        if (arguments.length === 1) {
-          for (g in t) o[g] = t[g];
-          return this;
+        var isArray = Array.isArray || function isArray2(arg) {
+          return toString.call(arg) === "[object Array]";
+        };
+        function isFunction(arg) {
+          return toString.call(arg) === "[object Function]";
         }
-        for (c = 1; c < arguments.length; c++) for (g in arguments[c]) t[g] = arguments[c][g];
-        return t;
-      }, o.rows = function(t) {
-        return t.length || 1;
-      }, o.cols = function(t) {
-        return t[0].length || 1;
-      }, o.dimensions = function(t) {
-        return { rows: o.rows(t), cols: o.cols(t) };
-      }, o.row = function(t, c) {
-        return i(c) ? c.map(function(g) {
-          return o.row(t, g);
-        }) : t[c];
-      }, o.rowa = function(t, c) {
-        return o.row(t, c);
-      }, o.col = function(t, c) {
-        if (i(c)) {
-          var g = o.arange(t.length).map(function() {
-            return new Array(c.length);
-          });
-          return c.forEach(function(_, k) {
-            o.arange(t.length).forEach(function(R) {
-              g[R][k] = t[R][_];
-            });
-          }), g;
+        function isNumber(num) {
+          return typeof num === "number" ? num - num === 0 : false;
         }
-        for (var y = new Array(t.length), b = 0; b < t.length; b++) y[b] = [t[b][c]];
-        return y;
-      }, o.cola = function(t, c) {
-        return o.col(t, c).map(function(g) {
-          return g[0];
-        });
-      }, o.diag = function(t) {
-        for (var c = o.rows(t), g = new Array(c), y = 0; y < c; y++) g[y] = [t[y][y]];
-        return g;
-      }, o.antidiag = function(t) {
-        for (var c = o.rows(t) - 1, g = new Array(c), y = 0; c >= 0; c--, y++) g[y] = [t[y][c]];
-        return g;
-      }, o.transpose = function(t) {
-        var c = [], g, y, b, _, k;
-        for (i(t[0]) || (t = [t]), y = t.length, b = t[0].length, k = 0; k < b; k++) {
-          for (g = new Array(y), _ = 0; _ < y; _++) g[_] = t[_][k];
-          c.push(g);
+        function toVector(arr) {
+          return concat.apply([], arr);
         }
-        return c.length === 1 ? c[0] : c;
-      }, o.map = function(t, c, g) {
-        var y, b, _, k, R;
-        for (i(t[0]) || (t = [t]), b = t.length, _ = t[0].length, k = g ? t : new Array(b), y = 0; y < b; y++) for (k[y] || (k[y] = new Array(_)), R = 0; R < _; R++) k[y][R] = c(t[y][R], y, R);
-        return k.length === 1 ? k[0] : k;
-      }, o.cumreduce = function(t, c, g) {
-        var y, b, _, k, R;
-        for (i(t[0]) || (t = [t]), b = t.length, _ = t[0].length, k = g ? t : new Array(b), y = 0; y < b; y++) for (k[y] || (k[y] = new Array(_)), _ > 0 && (k[y][0] = t[y][0]), R = 1; R < _; R++) k[y][R] = c(k[y][R - 1], t[y][R]);
-        return k.length === 1 ? k[0] : k;
-      }, o.alter = function(t, c) {
-        return o.map(t, c, true);
-      }, o.create = function(t, c, g) {
-        var y = new Array(t), b, _;
-        for (r(c) && (g = c, c = t), b = 0; b < t; b++) for (y[b] = new Array(c), _ = 0; _ < c; _++) y[b][_] = g(b, _);
-        return y;
-      };
-      function s() {
-        return 0;
-      }
-      o.zeros = function(t, c) {
-        return n(c) || (c = t), o.create(t, c, s);
-      };
-      function l() {
-        return 1;
-      }
-      o.ones = function(t, c) {
-        return n(c) || (c = t), o.create(t, c, l);
-      }, o.rand = function(t, c) {
-        return n(c) || (c = t), o.create(t, c, o._random_fn);
-      };
-      function v(a, t) {
-        return a === t ? 1 : 0;
-      }
-      o.identity = function(t, c) {
-        return n(c) || (c = t), o.create(t, c, v);
-      }, o.symmetric = function(t) {
-        var c = t.length, g, y;
-        if (t.length !== t[0].length) return false;
-        for (g = 0; g < c; g++) for (y = 0; y < c; y++) if (t[y][g] !== t[g][y]) return false;
-        return true;
-      }, o.clear = function(t) {
-        return o.alter(t, s);
-      }, o.seq = function(t, c, g, y) {
-        r(y) || (y = false);
-        var b = [], _ = d(t, c), k = (c * _ - t * _) / ((g - 1) * _), R = t, z;
-        for (z = 0; R <= c && z < g; z++, R = (t * _ + k * _ * z) / _) b.push(y ? y(R, z) : R);
-        return b;
-      }, o.arange = function(t, c, g) {
-        var y = [], b;
-        if (g = g || 1, c === f && (c = t, t = 0), t === c || g === 0) return [];
-        if (t < c && g < 0) return [];
-        if (t > c && g > 0) return [];
-        if (g > 0) for (b = t; b < c; b += g) y.push(b);
-        else for (b = t; b > c; b += g) y.push(b);
-        return y;
-      }, o.slice = /* @__PURE__ */ (function() {
-        function a(c, g, y, b) {
-          var _, k = [], R = c.length;
-          if (g === f && y === f && b === f) return o.copy(c);
-          if (g = g || 0, y = y || c.length, g = g >= 0 ? g : R + g, y = y >= 0 ? y : R + y, b = b || 1, g === y || b === 0) return [];
-          if (g < y && b < 0) return [];
-          if (g > y && b > 0) return [];
-          if (b > 0) for (_ = g; _ < y; _ += b) k.push(c[_]);
-          else for (_ = g; _ > y; _ += b) k.push(c[_]);
-          return k;
+        function jStat3() {
+          return new jStat3._init(arguments);
         }
-        function t(c, g) {
-          var y, b;
-          if (g = g || {}, n(g.row)) {
-            if (n(g.col)) return c[g.row][g.col];
-            var _ = o.rowa(c, g.row);
-            return y = g.col || {}, a(_, y.start, y.end, y.step);
-          }
-          if (n(g.col)) {
-            var k = o.cola(c, g.col);
-            return b = g.row || {}, a(k, b.start, b.end, b.step);
-          }
-          b = g.row || {}, y = g.col || {};
-          var R = a(c, b.start, b.end, b.step);
-          return R.map(function(z) {
-            return a(z, y.start, y.end, y.step);
-          });
-        }
-        return t;
-      })(), o.sliceAssign = function(t, c, g) {
-        var y, b;
-        if (n(c.row)) {
-          if (n(c.col)) return t[c.row][c.col] = g;
-          c.col = c.col || {}, c.col.start = c.col.start || 0, c.col.end = c.col.end || t[0].length, c.col.step = c.col.step || 1, y = o.arange(c.col.start, u.min(t.length, c.col.end), c.col.step);
-          var _ = c.row;
-          return y.forEach(function(R, z) {
-            t[_][R] = g[z];
-          }), t;
-        }
-        if (n(c.col)) {
-          c.row = c.row || {}, c.row.start = c.row.start || 0, c.row.end = c.row.end || t.length, c.row.step = c.row.step || 1, b = o.arange(c.row.start, u.min(t[0].length, c.row.end), c.row.step);
-          var k = c.col;
-          return b.forEach(function(R, z) {
-            t[R][k] = g[z];
-          }), t;
-        }
-        return g[0].length === f && (g = [g]), c.row.start = c.row.start || 0, c.row.end = c.row.end || t.length, c.row.step = c.row.step || 1, c.col.start = c.col.start || 0, c.col.end = c.col.end || t[0].length, c.col.step = c.col.step || 1, b = o.arange(c.row.start, u.min(t.length, c.row.end), c.row.step), y = o.arange(c.col.start, u.min(t[0].length, c.col.end), c.col.step), b.forEach(function(R, z) {
-          y.forEach(function(A, I) {
-            t[R][A] = g[z][I];
-          });
-        }), t;
-      }, o.diagonal = function(t) {
-        var c = o.zeros(t.length, t.length);
-        return t.forEach(function(g, y) {
-          c[y][y] = g;
-        }), c;
-      }, o.copy = function(t) {
-        return t.map(function(c) {
-          return n(c) ? c : c.map(function(g) {
-            return g;
-          });
-        });
-      };
-      var m = o.prototype;
-      return m.length = 0, m.push = Array.prototype.push, m.sort = Array.prototype.sort, m.splice = Array.prototype.splice, m.slice = Array.prototype.slice, m.toArray = function() {
-        return this.length > 1 ? p.call(this) : p.call(this)[0];
-      }, m.map = function(t, c) {
-        return o(o.map(this, t, c));
-      }, m.cumreduce = function(t, c) {
-        return o(o.cumreduce(this, t, c));
-      }, m.alter = function(t) {
-        return o.alter(this, t), this;
-      }, (function(a) {
-        for (var t = 0; t < a.length; t++) (function(c) {
-          m[c] = function(g) {
-            var y = this, b;
-            return g ? (setTimeout(function() {
-              g.call(y, m[c].call(y));
-            }), this) : (b = o[c](this), i(b) ? o(b) : b);
-          };
-        })(a[t]);
-      })("transpose clear symmetric rows cols dimensions diag antidiag".split(" ")), (function(a) {
-        for (var t = 0; t < a.length; t++) (function(c) {
-          m[c] = function(g, y) {
-            var b = this;
-            return y ? (setTimeout(function() {
-              y.call(b, m[c].call(b, g));
-            }), this) : o(o[c](this, g));
-          };
-        })(a[t]);
-      })("row col".split(" ")), (function(a) {
-        for (var t = 0; t < a.length; t++) (function(c) {
-          m[c] = function() {
-            return o(o[c].apply(null, arguments));
-          };
-        })(a[t]);
-      })("create zeros ones rand identity".split(" ")), o;
-    })(Math);
-    return (function(u, f) {
-      var q = u.utils.isFunction;
-      function p(i, r) {
-        return i - r;
-      }
-      function w(i, r, n) {
-        return f.max(r, f.min(i, n));
-      }
-      u.sum = function(r) {
-        for (var n = 0, e = r.length; --e >= 0; ) n += r[e];
-        return n;
-      }, u.sumsqrd = function(r) {
-        for (var n = 0, e = r.length; --e >= 0; ) n += r[e] * r[e];
-        return n;
-      }, u.sumsqerr = function(r) {
-        for (var n = u.mean(r), e = 0, o = r.length, s; --o >= 0; ) s = r[o] - n, e += s * s;
-        return e;
-      }, u.sumrow = function(r) {
-        for (var n = 0, e = r.length; --e >= 0; ) n += r[e];
-        return n;
-      }, u.product = function(r) {
-        for (var n = 1, e = r.length; --e >= 0; ) n *= r[e];
-        return n;
-      }, u.min = function(r) {
-        for (var n = r[0], e = 0; ++e < r.length; ) r[e] < n && (n = r[e]);
-        return n;
-      }, u.max = function(r) {
-        for (var n = r[0], e = 0; ++e < r.length; ) r[e] > n && (n = r[e]);
-        return n;
-      }, u.unique = function(r) {
-        for (var n = {}, e = [], o = 0; o < r.length; o++) n[r[o]] || (n[r[o]] = true, e.push(r[o]));
-        return e;
-      }, u.mean = function(r) {
-        return u.sum(r) / r.length;
-      }, u.meansqerr = function(r) {
-        return u.sumsqerr(r) / r.length;
-      }, u.geomean = function(r) {
-        var n = r.map(f.log), e = u.mean(n);
-        return f.exp(e);
-      }, u.median = function(r) {
-        var n = r.length, e = r.slice().sort(p);
-        return n & 1 ? e[n / 2 | 0] : (e[n / 2 - 1] + e[n / 2]) / 2;
-      }, u.cumsum = function(r) {
-        return u.cumreduce(r, function(n, e) {
-          return n + e;
-        });
-      }, u.cumprod = function(r) {
-        return u.cumreduce(r, function(n, e) {
-          return n * e;
-        });
-      }, u.diff = function(r) {
-        var n = [], e = r.length, o;
-        for (o = 1; o < e; o++) n.push(r[o] - r[o - 1]);
-        return n;
-      }, u.rank = function(i) {
-        var r, n = [], e = {};
-        for (r = 0; r < i.length; r++) {
-          var o = i[r];
-          e[o] ? e[o]++ : (e[o] = 1, n.push(o));
-        }
-        var s = n.sort(p), l = {}, v = 1;
-        for (r = 0; r < s.length; r++) {
-          var o = s[r], m = e[o], a = v, t = v + m - 1, c = (a + t) / 2;
-          l[o] = c, v += m;
-        }
-        return i.map(function(g) {
-          return l[g];
-        });
-      }, u.mode = function(r) {
-        var n = r.length, e = r.slice().sort(p), o = 1, s = 0, l = 0, v = [], m;
-        for (m = 0; m < n; m++) e[m] === e[m + 1] ? o++ : (o > s ? (v = [e[m]], s = o, l = 0) : o === s && (v.push(e[m]), l++), o = 1);
-        return l === 0 ? v[0] : v;
-      }, u.range = function(r) {
-        return u.max(r) - u.min(r);
-      }, u.variance = function(r, n) {
-        return u.sumsqerr(r) / (r.length - (n ? 1 : 0));
-      }, u.pooledvariance = function(r) {
-        var n = r.reduce(function(o, s) {
-          return o + u.sumsqerr(s);
-        }, 0), e = r.reduce(function(o, s) {
-          return o + s.length;
-        }, 0);
-        return n / (e - r.length);
-      }, u.deviation = function(i) {
-        for (var r = u.mean(i), n = i.length, e = new Array(n), o = 0; o < n; o++) e[o] = i[o] - r;
-        return e;
-      }, u.stdev = function(r, n) {
-        return f.sqrt(u.variance(r, n));
-      }, u.pooledstdev = function(r) {
-        return f.sqrt(u.pooledvariance(r));
-      }, u.meandev = function(r) {
-        for (var n = u.mean(r), e = [], o = r.length - 1; o >= 0; o--) e.push(f.abs(r[o] - n));
-        return u.mean(e);
-      }, u.meddev = function(r) {
-        for (var n = u.median(r), e = [], o = r.length - 1; o >= 0; o--) e.push(f.abs(r[o] - n));
-        return u.median(e);
-      }, u.coeffvar = function(r) {
-        return u.stdev(r) / u.mean(r);
-      }, u.quartiles = function(r) {
-        var n = r.length, e = r.slice().sort(p);
-        return [e[f.round(n / 4) - 1], e[f.round(n / 2) - 1], e[f.round(n * 3 / 4) - 1]];
-      }, u.quantiles = function(r, n, e, o) {
-        var s = r.slice().sort(p), l = [n.length], v = r.length, m, a, t, c, g, y;
-        for (typeof e > "u" && (e = 3 / 8), typeof o > "u" && (o = 3 / 8), m = 0; m < n.length; m++) a = n[m], t = e + a * (1 - e - o), c = v * a + t, g = f.floor(w(c, 1, v - 1)), y = w(c - g, 0, 1), l[m] = (1 - y) * s[g - 1] + y * s[g];
-        return l;
-      }, u.percentile = function(r, n, e) {
-        var o = r.slice().sort(p), s = n * (o.length + (e ? 1 : -1)) + (e ? 0 : 1), l = parseInt(s), v = s - l;
-        return l + 1 < o.length ? o[l - 1] + v * (o[l] - o[l - 1]) : o[l - 1];
-      }, u.percentileOfScore = function(r, n, e) {
-        var o = 0, s = r.length, l = false, v, m;
-        for (e === "strict" && (l = true), m = 0; m < s; m++) v = r[m], (l && v < n || !l && v <= n) && o++;
-        return o / s;
-      }, u.histogram = function(r, n) {
-        n = n || 4;
-        var e = u.min(r), o = (u.max(r) - e) / n, s = r.length, l = [], v;
-        for (v = 0; v < n; v++) l[v] = 0;
-        for (v = 0; v < s; v++) l[f.min(f.floor((r[v] - e) / o), n - 1)] += 1;
-        return l;
-      }, u.covariance = function(r, n) {
-        var e = u.mean(r), o = u.mean(n), s = r.length, l = new Array(s), v;
-        for (v = 0; v < s; v++) l[v] = (r[v] - e) * (n[v] - o);
-        return u.sum(l) / (s - 1);
-      }, u.corrcoeff = function(r, n) {
-        return u.covariance(r, n) / u.stdev(r, 1) / u.stdev(n, 1);
-      }, u.spearmancoeff = function(i, r) {
-        return i = u.rank(i), r = u.rank(r), u.corrcoeff(i, r);
-      }, u.stanMoment = function(r, n) {
-        for (var e = u.mean(r), o = u.stdev(r), s = r.length, l = 0, v = 0; v < s; v++) l += f.pow((r[v] - e) / o, n);
-        return l / r.length;
-      }, u.skewness = function(r) {
-        return u.stanMoment(r, 3);
-      }, u.kurtosis = function(r) {
-        return u.stanMoment(r, 4) - 3;
-      };
-      var d = u.prototype;
-      (function(i) {
-        for (var r = 0; r < i.length; r++) (function(n) {
-          d[n] = function(e, o) {
-            var s = [], l = 0, v = this;
-            if (q(e) && (o = e, e = false), o) return setTimeout(function() {
-              o.call(v, d[n].call(v, e));
-            }), this;
-            if (this.length > 1) {
-              for (v = e === true ? this : this.transpose(); l < v.length; l++) s[l] = u[n](v[l]);
-              return s;
-            }
-            return u[n](this[0], e);
-          };
-        })(i[r]);
-      })("cumsum cumprod".split(" ")), (function(i) {
-        for (var r = 0; r < i.length; r++) (function(n) {
-          d[n] = function(e, o) {
-            var s = [], l = 0, v = this;
-            if (q(e) && (o = e, e = false), o) return setTimeout(function() {
-              o.call(v, d[n].call(v, e));
-            }), this;
-            if (this.length > 1) {
-              for (n !== "sumrow" && (v = e === true ? this : this.transpose()); l < v.length; l++) s[l] = u[n](v[l]);
-              return e === true ? u[n](u.utils.toVector(s)) : s;
-            }
-            return u[n](this[0], e);
-          };
-        })(i[r]);
-      })("sum sumsqrd sumsqerr sumrow product min max unique mean meansqerr geomean median diff rank mode range variance deviation stdev meandev meddev coeffvar quartiles histogram skewness kurtosis".split(" ")), (function(i) {
-        for (var r = 0; r < i.length; r++) (function(n) {
-          d[n] = function() {
-            var e = [], o = 0, s = this, l = Array.prototype.slice.call(arguments), v;
-            if (q(l[l.length - 1])) {
-              v = l[l.length - 1];
-              var m = l.slice(0, l.length - 1);
-              return setTimeout(function() {
-                v.call(s, d[n].apply(s, m));
-              }), this;
+        jStat3.fn = jStat3.prototype;
+        jStat3._init = function _init(args) {
+          if (isArray(args[0])) {
+            if (isArray(args[0][0])) {
+              if (isFunction(args[1]))
+                args[0] = jStat3.map(args[0], args[1]);
+              for (var i = 0; i < args[0].length; i++)
+                this[i] = args[0][i];
+              this.length = args[0].length;
             } else {
-              v = void 0;
-              var a = function(c) {
-                return u[n].apply(s, [c].concat(l));
-              };
+              this[0] = isFunction(args[1]) ? jStat3.map(args[0], args[1]) : args[0];
+              this.length = 1;
             }
-            if (this.length > 1) {
-              for (s = s.transpose(); o < s.length; o++) e[o] = a(s[o]);
-              return e;
-            }
-            return a(this[0]);
+          } else if (isNumber(args[0])) {
+            this[0] = jStat3.seq.apply(null, args);
+            this.length = 1;
+          } else if (args[0] instanceof jStat3) {
+            return jStat3(args[0].toArray());
+          } else {
+            this[0] = [];
+            this.length = 1;
+          }
+          return this;
+        };
+        jStat3._init.prototype = jStat3.prototype;
+        jStat3._init.constructor = jStat3;
+        jStat3.utils = {
+          calcRdx,
+          isArray,
+          isFunction,
+          isNumber,
+          toVector
+        };
+        jStat3._random_fn = Math2.random;
+        jStat3.setRandom = function setRandom(fn) {
+          if (typeof fn !== "function")
+            throw new TypeError("fn is not a function");
+          jStat3._random_fn = fn;
+        };
+        jStat3.extend = function extend(obj) {
+          var i, j;
+          if (arguments.length === 1) {
+            for (j in obj)
+              jStat3[j] = obj[j];
+            return this;
+          }
+          for (i = 1; i < arguments.length; i++) {
+            for (j in arguments[i])
+              obj[j] = arguments[i][j];
+          }
+          return obj;
+        };
+        jStat3.rows = function rows(arr) {
+          return arr.length || 1;
+        };
+        jStat3.cols = function cols(arr) {
+          return arr[0].length || 1;
+        };
+        jStat3.dimensions = function dimensions(arr) {
+          return {
+            rows: jStat3.rows(arr),
+            cols: jStat3.cols(arr)
           };
-        })(i[r]);
-      })("quantiles percentileOfScore".split(" "));
-    })(h, Math), (function(u, f) {
-      u.gammaln = function(p) {
-        var w = 0, d = [76.18009172947146, -86.50532032941678, 24.01409824083091, -1.231739572450155, 0.001208650973866179, -5395239384953e-18], i = 1.000000000190015, r, n, e;
-        for (e = (n = r = p) + 5.5, e -= (r + 0.5) * f.log(e); w < 6; w++) i += d[w] / ++n;
-        return f.log(2.5066282746310007 * i / r) - e;
-      }, u.loggam = function(p) {
-        var w, d, i, r, n, e, o, s = [0.08333333333333333, -0.002777777777777778, 7936507936507937e-19, -5952380952380952e-19, 8417508417508418e-19, -0.001917526917526918, 0.00641025641025641, -0.02955065359477124, 0.1796443723688307, -1.3924322169059];
-        if (w = p, o = 0, p == 1 || p == 2) return 0;
-        for (p <= 7 && (o = f.floor(7 - p), w = p + o), d = 1 / (w * w), i = 2 * f.PI, n = s[9], e = 8; e >= 0; e--) n *= d, n += s[e];
-        if (r = n / w + 0.5 * f.log(i) + (w - 0.5) * f.log(w) - w, p <= 7) for (e = 1; e <= o; e++) r -= f.log(w - 1), w -= 1;
-        return r;
-      }, u.gammafn = function(p) {
-        var w = [-1.716185138865495, 24.76565080557592, -379.80425647094563, 629.3311553128184, 866.9662027904133, -31451.272968848367, -36144.413418691176, 66456.14382024054], d = [-30.8402300119739, 315.35062697960416, -1015.1563674902192, -3107.771671572311, 22538.11842098015, 4755.846277527881, -134659.9598649693, -115132.2596755535], i = false, r = 0, n = 0, e = 0, o = p, s, l, v, m;
-        if (p > 171.6243769536076) return 1 / 0;
-        if (o <= 0) if (m = o % 1 + 36e-17, m) i = (o & 1 ? -1 : 1) * f.PI / f.sin(f.PI * m), o = 1 - o;
-        else return 1 / 0;
-        for (v = o, o < 1 ? l = o++ : l = (o -= r = (o | 0) - 1) - 1, s = 0; s < 8; ++s) e = (e + w[s]) * l, n = n * l + d[s];
-        if (m = e / n + 1, v < o) m /= v;
-        else if (v > o) for (s = 0; s < r; ++s) m *= o, o++;
-        return i && (m = i / m), m;
-      }, u.gammap = function(p, w) {
-        return u.lowRegGamma(p, w) * u.gammafn(p);
-      }, u.lowRegGamma = function(p, w) {
-        var d = u.gammaln(p), i = p, r = 1 / p, n = r, e = w + 1 - p, o = 1 / 1e-30, s = 1 / e, l = s, v = 1, m = -~(f.log(p >= 1 ? p : 1 / p) * 8.5 + p * 0.4 + 17), a;
-        if (w < 0 || p <= 0) return NaN;
-        if (w < p + 1) {
-          for (; v <= m; v++) r += n *= w / ++i;
-          return r * f.exp(-w + p * f.log(w) - d);
-        }
-        for (; v <= m; v++) a = -v * (v - p), e += 2, s = a * s + e, o = e + a / o, s = 1 / s, l *= s * o;
-        return 1 - l * f.exp(-w + p * f.log(w) - d);
-      }, u.factorialln = function(p) {
-        return p < 0 ? NaN : u.gammaln(p + 1);
-      }, u.factorial = function(p) {
-        return p < 0 ? NaN : u.gammafn(p + 1);
-      }, u.combination = function(p, w) {
-        return p > 170 || w > 170 ? f.exp(u.combinationln(p, w)) : u.factorial(p) / u.factorial(w) / u.factorial(p - w);
-      }, u.combinationln = function(p, w) {
-        return u.factorialln(p) - u.factorialln(w) - u.factorialln(p - w);
-      }, u.permutation = function(p, w) {
-        return u.factorial(p) / u.factorial(p - w);
-      }, u.betafn = function(p, w) {
-        if (!(p <= 0 || w <= 0)) return p + w > 170 ? f.exp(u.betaln(p, w)) : u.gammafn(p) * u.gammafn(w) / u.gammafn(p + w);
-      }, u.betaln = function(p, w) {
-        return u.gammaln(p) + u.gammaln(w) - u.gammaln(p + w);
-      }, u.betacf = function(p, w, d) {
-        var i = 1e-30, r = 1, n = w + d, e = w + 1, o = w - 1, s = 1, l = 1 - n * p / e, v, m, a, t;
-        for (f.abs(l) < i && (l = i), l = 1 / l, t = l; r <= 100 && (v = 2 * r, m = r * (d - r) * p / ((o + v) * (w + v)), l = 1 + m * l, f.abs(l) < i && (l = i), s = 1 + m / s, f.abs(s) < i && (s = i), l = 1 / l, t *= l * s, m = -(w + r) * (n + r) * p / ((w + v) * (e + v)), l = 1 + m * l, f.abs(l) < i && (l = i), s = 1 + m / s, f.abs(s) < i && (s = i), l = 1 / l, a = l * s, t *= a, !(f.abs(a - 1) < 3e-7)); r++) ;
-        return t;
-      }, u.gammapinv = function(p, w) {
-        var d = 0, i = w - 1, r = 1e-8, n = u.gammaln(w), e, o, s, l, v, m, a;
-        if (p >= 1) return f.max(100, w + 100 * f.sqrt(w));
-        if (p <= 0) return 0;
-        for (w > 1 ? (m = f.log(i), a = f.exp(i * (m - 1) - n), v = p < 0.5 ? p : 1 - p, s = f.sqrt(-2 * f.log(v)), e = (2.30753 + s * 0.27061) / (1 + s * (0.99229 + s * 0.04481)) - s, p < 0.5 && (e = -e), e = f.max(1e-3, w * f.pow(1 - 1 / (9 * w) - e / (3 * f.sqrt(w)), 3))) : (s = 1 - w * (0.253 + w * 0.12), p < s ? e = f.pow(p / s, 1 / w) : e = 1 - f.log(1 - (p - s) / (1 - s))); d < 12; d++) {
-          if (e <= 0) return 0;
-          if (o = u.lowRegGamma(w, e) - p, w > 1 ? s = a * f.exp(-(e - i) + i * (f.log(e) - m)) : s = f.exp(-e + i * f.log(e) - n), l = o / s, e -= s = l / (1 - 0.5 * f.min(1, l * ((w - 1) / e - 1))), e <= 0 && (e = 0.5 * (e + s)), f.abs(s) < r * e) break;
-        }
-        return e;
-      }, u.erf = function(p) {
-        var w = [-1.3026537197817094, 0.6419697923564902, 0.019476473204185836, -0.00956151478680863, -946595344482036e-18, 366839497852761e-18, 42523324806907e-18, -20278578112534e-18, -1624290004647e-18, 130365583558e-17, 15626441722e-18, -85238095915e-18, 6529054439e-18, 5059343495e-18, -991364156e-18, -227365122e-18, 96467911e-18, 2394038e-18, -6886027e-18, 894487e-18, 313092e-18, -112708e-18, 381e-18, 7106e-18, -1523e-18, -94e-18, 121e-18, -28e-18], d = w.length - 1, i = false, r = 0, n = 0, e, o, s, l;
-        for (p < 0 && (p = -p, i = true), e = 2 / (2 + p), o = 4 * e - 2; d > 0; d--) s = r, r = o * r - n + w[d], n = s;
-        return l = e * f.exp(-p * p + 0.5 * (w[0] + o * r) - n), i ? l - 1 : 1 - l;
-      }, u.erfc = function(p) {
-        return 1 - u.erf(p);
-      }, u.erfcinv = function(p) {
-        var w = 0, d, i, r, n;
-        if (p >= 2) return -100;
-        if (p <= 0) return 100;
-        for (n = p < 1 ? p : 2 - p, r = f.sqrt(-2 * f.log(n / 2)), d = -0.70711 * ((2.30753 + r * 0.27061) / (1 + r * (0.99229 + r * 0.04481)) - r); w < 2; w++) i = u.erfc(d) - n, d += i / (1.1283791670955126 * f.exp(-d * d) - d * i);
-        return p < 1 ? d : -d;
-      }, u.ibetainv = function(p, w, d) {
-        var i = 1e-8, r = w - 1, n = d - 1, e = 0, o, s, l, v, m, a, t, c, g, y, b;
-        if (p <= 0) return 0;
-        if (p >= 1) return 1;
-        for (w >= 1 && d >= 1 ? (l = p < 0.5 ? p : 1 - p, v = f.sqrt(-2 * f.log(l)), t = (2.30753 + v * 0.27061) / (1 + v * (0.99229 + v * 0.04481)) - v, p < 0.5 && (t = -t), c = (t * t - 3) / 6, g = 2 / (1 / (2 * w - 1) + 1 / (2 * d - 1)), y = t * f.sqrt(c + g) / g - (1 / (2 * d - 1) - 1 / (2 * w - 1)) * (c + 5 / 6 - 2 / (3 * g)), t = w / (w + d * f.exp(2 * y))) : (o = f.log(w / (w + d)), s = f.log(d / (w + d)), v = f.exp(w * o) / w, m = f.exp(d * s) / d, y = v + m, p < v / y ? t = f.pow(w * y * p, 1 / w) : t = 1 - f.pow(d * y * (1 - p), 1 / d)), b = -u.gammaln(w) - u.gammaln(d) + u.gammaln(w + d); e < 10; e++) {
-          if (t === 0 || t === 1) return t;
-          if (a = u.ibeta(t, w, d) - p, v = f.exp(r * f.log(t) + n * f.log(1 - t) + b), m = a / v, t -= v = m / (1 - 0.5 * f.min(1, m * (r / t - n / (1 - t)))), t <= 0 && (t = 0.5 * (t + v)), t >= 1 && (t = 0.5 * (t + v + 1)), f.abs(v) < i * t && e > 0) break;
-        }
-        return t;
-      }, u.ibeta = function(p, w, d) {
-        var i = p === 0 || p === 1 ? 0 : f.exp(u.gammaln(w + d) - u.gammaln(w) - u.gammaln(d) + w * f.log(p) + d * f.log(1 - p));
-        return p < 0 || p > 1 ? false : p < (w + 1) / (w + d + 2) ? i * u.betacf(p, w, d) / w : 1 - i * u.betacf(1 - p, d, w) / d;
-      }, u.randn = function(p, w) {
-        var d, i, r, n, e;
-        if (w || (w = p), p) return u.create(p, w, function() {
-          return u.randn();
-        });
-        do
-          d = u._random_fn(), i = 1.7156 * (u._random_fn() - 0.5), r = d - 0.449871, n = f.abs(i) + 0.386595, e = r * r + n * (0.196 * n - 0.25472 * r);
-        while (e > 0.27597 && (e > 0.27846 || i * i > -4 * f.log(d) * d * d));
-        return i / d;
-      }, u.randg = function(p, w, d) {
-        var i = p, r, n, e, o, s, l;
-        if (d || (d = w), p || (p = 1), w) return l = u.zeros(w, d), l.alter(function() {
-          return u.randg(p);
-        }), l;
-        p < 1 && (p += 1), r = p - 1 / 3, n = 1 / f.sqrt(9 * r);
-        do {
-          do
-            s = u.randn(), o = 1 + n * s;
-          while (o <= 0);
-          o = o * o * o, e = u._random_fn();
-        } while (e > 1 - 0.331 * f.pow(s, 4) && f.log(e) > 0.5 * s * s + r * (1 - o + f.log(o)));
-        if (p == i) return r * o;
-        do
-          e = u._random_fn();
-        while (e === 0);
-        return f.pow(e, 1 / i) * r * o;
-      }, (function(q) {
-        for (var p = 0; p < q.length; p++) (function(w) {
-          u.fn[w] = function() {
-            return u(u.map(this, function(d) {
-              return u[w](d);
-            }));
-          };
-        })(q[p]);
-      })("gammaln gammafn factorial factorialln".split(" ")), (function(q) {
-        for (var p = 0; p < q.length; p++) (function(w) {
-          u.fn[w] = function() {
-            return u(u[w].apply(null, arguments));
-          };
-        })(q[p]);
-      })("randn".split(" "));
-    })(h, Math), (function(u, f) {
-      (function(i) {
-        for (var r = 0; r < i.length; r++) (function(n) {
-          u[n] = function e(o, s, l) {
-            return this instanceof e ? (this._a = o, this._b = s, this._c = l, this) : new e(o, s, l);
-          }, u.fn[n] = function(e, o, s) {
-            var l = u[n](e, o, s);
-            return l.data = this, l;
-          }, u[n].prototype.sample = function(e) {
-            var o = this._a, s = this._b, l = this._c;
-            return e ? u.alter(e, function() {
-              return u[n].sample(o, s, l);
-            }) : u[n].sample(o, s, l);
-          }, (function(e) {
-            for (var o = 0; o < e.length; o++) (function(s) {
-              u[n].prototype[s] = function(l) {
-                var v = this._a, m = this._b, a = this._c;
-                return !l && l !== 0 && (l = this.data), typeof l != "number" ? u.fn.map.call(l, function(t) {
-                  return u[n][s](t, v, m, a);
-                }) : u[n][s](l, v, m, a);
-              };
-            })(e[o]);
-          })("pdf cdf inv".split(" ")), (function(e) {
-            for (var o = 0; o < e.length; o++) (function(s) {
-              u[n].prototype[s] = function() {
-                return u[n][s](this._a, this._b, this._c);
-              };
-            })(e[o]);
-          })("mean median mode variance".split(" "));
-        })(i[r]);
-      })("beta centralF cauchy chisquare exponential gamma invgamma kumaraswamy laplace lognormal noncentralt normal pareto studentt weibull uniform binomial negbin hypgeom poisson triangular tukey arcsine".split(" ")), u.extend(u.beta, { pdf: function(r, n, e) {
-        return r > 1 || r < 0 ? 0 : n == 1 && e == 1 ? 1 : n < 512 && e < 512 ? f.pow(r, n - 1) * f.pow(1 - r, e - 1) / u.betafn(n, e) : f.exp((n - 1) * f.log(r) + (e - 1) * f.log(1 - r) - u.betaln(n, e));
-      }, cdf: function(r, n, e) {
-        return r > 1 || r < 0 ? (r > 1) * 1 : u.ibeta(r, n, e);
-      }, inv: function(r, n, e) {
-        return u.ibetainv(r, n, e);
-      }, mean: function(r, n) {
-        return r / (r + n);
-      }, median: function(r, n) {
-        return u.ibetainv(0.5, r, n);
-      }, mode: function(r, n) {
-        return (r - 1) / (r + n - 2);
-      }, sample: function(r, n) {
-        var e = u.randg(r);
-        return e / (e + u.randg(n));
-      }, variance: function(r, n) {
-        return r * n / (f.pow(r + n, 2) * (r + n + 1));
-      } }), u.extend(u.centralF, { pdf: function(r, n, e) {
-        var o, s, l;
-        return r < 0 ? 0 : n <= 2 ? r === 0 && n < 2 ? 1 / 0 : r === 0 && n === 2 ? 1 : 1 / u.betafn(n / 2, e / 2) * f.pow(n / e, n / 2) * f.pow(r, n / 2 - 1) * f.pow(1 + n / e * r, -(n + e) / 2) : (o = n * r / (e + r * n), s = e / (e + r * n), l = n * s / 2, l * u.binomial.pdf((n - 2) / 2, (n + e - 2) / 2, o));
-      }, cdf: function(r, n, e) {
-        return r < 0 ? 0 : u.ibeta(n * r / (n * r + e), n / 2, e / 2);
-      }, inv: function(r, n, e) {
-        return e / (n * (1 / u.ibetainv(r, n / 2, e / 2) - 1));
-      }, mean: function(r, n) {
-        return n > 2 ? n / (n - 2) : void 0;
-      }, mode: function(r, n) {
-        return r > 2 ? n * (r - 2) / (r * (n + 2)) : void 0;
-      }, sample: function(r, n) {
-        var e = u.randg(r / 2) * 2, o = u.randg(n / 2) * 2;
-        return e / r / (o / n);
-      }, variance: function(r, n) {
-        if (!(n <= 4)) return 2 * n * n * (r + n - 2) / (r * (n - 2) * (n - 2) * (n - 4));
-      } }), u.extend(u.cauchy, { pdf: function(r, n, e) {
-        return e < 0 ? 0 : e / (f.pow(r - n, 2) + f.pow(e, 2)) / f.PI;
-      }, cdf: function(r, n, e) {
-        return f.atan((r - n) / e) / f.PI + 0.5;
-      }, inv: function(i, r, n) {
-        return r + n * f.tan(f.PI * (i - 0.5));
-      }, median: function(r) {
-        return r;
-      }, mode: function(r) {
-        return r;
-      }, sample: function(r, n) {
-        return u.randn() * f.sqrt(1 / (2 * u.randg(0.5))) * n + r;
-      } }), u.extend(u.chisquare, { pdf: function(r, n) {
-        return r < 0 ? 0 : r === 0 && n === 2 ? 0.5 : f.exp((n / 2 - 1) * f.log(r) - r / 2 - n / 2 * f.log(2) - u.gammaln(n / 2));
-      }, cdf: function(r, n) {
-        return r < 0 ? 0 : u.lowRegGamma(n / 2, r / 2);
-      }, inv: function(i, r) {
-        return 2 * u.gammapinv(i, 0.5 * r);
-      }, mean: function(i) {
-        return i;
-      }, median: function(r) {
-        return r * f.pow(1 - 2 / (9 * r), 3);
-      }, mode: function(r) {
-        return r - 2 > 0 ? r - 2 : 0;
-      }, sample: function(r) {
-        return u.randg(r / 2) * 2;
-      }, variance: function(r) {
-        return 2 * r;
-      } }), u.extend(u.exponential, { pdf: function(r, n) {
-        return r < 0 ? 0 : n * f.exp(-n * r);
-      }, cdf: function(r, n) {
-        return r < 0 ? 0 : 1 - f.exp(-n * r);
-      }, inv: function(i, r) {
-        return -f.log(1 - i) / r;
-      }, mean: function(i) {
-        return 1 / i;
-      }, median: function(i) {
-        return 1 / i * f.log(2);
-      }, mode: function() {
-        return 0;
-      }, sample: function(r) {
-        return -1 / r * f.log(u._random_fn());
-      }, variance: function(i) {
-        return f.pow(i, -2);
-      } }), u.extend(u.gamma, { pdf: function(r, n, e) {
-        return r < 0 ? 0 : r === 0 && n === 1 ? 1 / e : f.exp((n - 1) * f.log(r) - r / e - u.gammaln(n) - n * f.log(e));
-      }, cdf: function(r, n, e) {
-        return r < 0 ? 0 : u.lowRegGamma(n, r / e);
-      }, inv: function(i, r, n) {
-        return u.gammapinv(i, r) * n;
-      }, mean: function(i, r) {
-        return i * r;
-      }, mode: function(r, n) {
-        if (r > 1) return (r - 1) * n;
-      }, sample: function(r, n) {
-        return u.randg(r) * n;
-      }, variance: function(r, n) {
-        return r * n * n;
-      } }), u.extend(u.invgamma, { pdf: function(r, n, e) {
-        return r <= 0 ? 0 : f.exp(-(n + 1) * f.log(r) - e / r - u.gammaln(n) + n * f.log(e));
-      }, cdf: function(r, n, e) {
-        return r <= 0 ? 0 : 1 - u.lowRegGamma(n, e / r);
-      }, inv: function(i, r, n) {
-        return n / u.gammapinv(1 - i, r);
-      }, mean: function(i, r) {
-        return i > 1 ? r / (i - 1) : void 0;
-      }, mode: function(r, n) {
-        return n / (r + 1);
-      }, sample: function(r, n) {
-        return n / u.randg(r);
-      }, variance: function(r, n) {
-        if (!(r <= 2)) return n * n / ((r - 1) * (r - 1) * (r - 2));
-      } }), u.extend(u.kumaraswamy, { pdf: function(r, n, e) {
-        return r === 0 && n === 1 ? e : r === 1 && e === 1 ? n : f.exp(f.log(n) + f.log(e) + (n - 1) * f.log(r) + (e - 1) * f.log(1 - f.pow(r, n)));
-      }, cdf: function(r, n, e) {
-        return r < 0 ? 0 : r > 1 ? 1 : 1 - f.pow(1 - f.pow(r, n), e);
-      }, inv: function(r, n, e) {
-        return f.pow(1 - f.pow(1 - r, 1 / e), 1 / n);
-      }, mean: function(i, r) {
-        return r * u.gammafn(1 + 1 / i) * u.gammafn(r) / u.gammafn(1 + 1 / i + r);
-      }, median: function(r, n) {
-        return f.pow(1 - f.pow(2, -1 / n), 1 / r);
-      }, mode: function(r, n) {
-        if (r >= 1 && n >= 1 && r !== 1 && n !== 1) return f.pow((r - 1) / (r * n - 1), 1 / r);
-      }, variance: function() {
-        throw new Error("variance not yet implemented");
-      } }), u.extend(u.lognormal, { pdf: function(r, n, e) {
-        return r <= 0 ? 0 : f.exp(-f.log(r) - 0.5 * f.log(2 * f.PI) - f.log(e) - f.pow(f.log(r) - n, 2) / (2 * e * e));
-      }, cdf: function(r, n, e) {
-        return r < 0 ? 0 : 0.5 + 0.5 * u.erf((f.log(r) - n) / f.sqrt(2 * e * e));
-      }, inv: function(i, r, n) {
-        return f.exp(-1.4142135623730951 * n * u.erfcinv(2 * i) + r);
-      }, mean: function(r, n) {
-        return f.exp(r + n * n / 2);
-      }, median: function(r) {
-        return f.exp(r);
-      }, mode: function(r, n) {
-        return f.exp(r - n * n);
-      }, sample: function(r, n) {
-        return f.exp(u.randn() * n + r);
-      }, variance: function(r, n) {
-        return (f.exp(n * n) - 1) * f.exp(2 * r + n * n);
-      } }), u.extend(u.noncentralt, { pdf: function(r, n, e) {
-        var o = 1e-14;
-        return f.abs(e) < o ? u.studentt.pdf(r, n) : f.abs(r) < o ? f.exp(u.gammaln((n + 1) / 2) - e * e / 2 - 0.5 * f.log(f.PI * n) - u.gammaln(n / 2)) : n / r * (u.noncentralt.cdf(r * f.sqrt(1 + 2 / n), n + 2, e) - u.noncentralt.cdf(r, n, e));
-      }, cdf: function(r, n, e) {
-        var o = 1e-14, s = 200;
-        if (f.abs(e) < o) return u.studentt.cdf(r, n);
-        var l = false;
-        r < 0 && (l = true, e = -e);
-        for (var v = u.normal.cdf(-e, 0, 1), m = o + 1, a = m, t = r * r / (r * r + n), c = 0, g = f.exp(-e * e / 2), y = f.exp(-e * e / 2 - 0.5 * f.log(2) - u.gammaln(3 / 2)) * e; c < s || a > o || m > o; ) a = m, c > 0 && (g *= e * e / (2 * c), y *= e * e / (2 * (c + 1 / 2))), m = g * u.beta.cdf(t, c + 0.5, n / 2) + y * u.beta.cdf(t, c + 1, n / 2), v += 0.5 * m, c++;
-        return l ? 1 - v : v;
-      } }), u.extend(u.normal, { pdf: function(r, n, e) {
-        return f.exp(-0.5 * f.log(2 * f.PI) - f.log(e) - f.pow(r - n, 2) / (2 * e * e));
-      }, cdf: function(r, n, e) {
-        return 0.5 * (1 + u.erf((r - n) / f.sqrt(2 * e * e)));
-      }, inv: function(i, r, n) {
-        return -1.4142135623730951 * n * u.erfcinv(2 * i) + r;
-      }, mean: function(i) {
-        return i;
-      }, median: function(r) {
-        return r;
-      }, mode: function(i) {
-        return i;
-      }, sample: function(r, n) {
-        return u.randn() * n + r;
-      }, variance: function(i, r) {
-        return r * r;
-      } }), u.extend(u.pareto, { pdf: function(r, n, e) {
-        return r < n ? 0 : e * f.pow(n, e) / f.pow(r, e + 1);
-      }, cdf: function(r, n, e) {
-        return r < n ? 0 : 1 - f.pow(n / r, e);
-      }, inv: function(r, n, e) {
-        return n / f.pow(1 - r, 1 / e);
-      }, mean: function(r, n) {
-        if (!(n <= 1)) return n * f.pow(r, n) / (n - 1);
-      }, median: function(r, n) {
-        return r * (n * f.SQRT2);
-      }, mode: function(r) {
-        return r;
-      }, variance: function(i, r) {
-        if (!(r <= 2)) return i * i * r / (f.pow(r - 1, 2) * (r - 2));
-      } }), u.extend(u.studentt, { pdf: function(r, n) {
-        return n = n > 1e100 ? 1e100 : n, 1 / (f.sqrt(n) * u.betafn(0.5, n / 2)) * f.pow(1 + r * r / n, -((n + 1) / 2));
-      }, cdf: function(r, n) {
-        var e = n / 2;
-        return u.ibeta((r + f.sqrt(r * r + n)) / (2 * f.sqrt(r * r + n)), e, e);
-      }, inv: function(i, r) {
-        var n = u.ibetainv(2 * f.min(i, 1 - i), 0.5 * r, 0.5);
-        return n = f.sqrt(r * (1 - n) / n), i > 0.5 ? n : -n;
-      }, mean: function(r) {
-        return r > 1 ? 0 : void 0;
-      }, median: function() {
-        return 0;
-      }, mode: function() {
-        return 0;
-      }, sample: function(r) {
-        return u.randn() * f.sqrt(r / (2 * u.randg(r / 2)));
-      }, variance: function(r) {
-        return r > 2 ? r / (r - 2) : r > 1 ? 1 / 0 : void 0;
-      } }), u.extend(u.weibull, { pdf: function(r, n, e) {
-        return r < 0 || n < 0 || e < 0 ? 0 : e / n * f.pow(r / n, e - 1) * f.exp(-f.pow(r / n, e));
-      }, cdf: function(r, n, e) {
-        return r < 0 ? 0 : 1 - f.exp(-f.pow(r / n, e));
-      }, inv: function(i, r, n) {
-        return r * f.pow(-f.log(1 - i), 1 / n);
-      }, mean: function(i, r) {
-        return i * u.gammafn(1 + 1 / r);
-      }, median: function(r, n) {
-        return r * f.pow(f.log(2), 1 / n);
-      }, mode: function(r, n) {
-        return n <= 1 ? 0 : r * f.pow((n - 1) / n, 1 / n);
-      }, sample: function(r, n) {
-        return r * f.pow(-f.log(u._random_fn()), 1 / n);
-      }, variance: function(r, n) {
-        return r * r * u.gammafn(1 + 2 / n) - f.pow(u.weibull.mean(r, n), 2);
-      } }), u.extend(u.uniform, { pdf: function(r, n, e) {
-        return r < n || r > e ? 0 : 1 / (e - n);
-      }, cdf: function(r, n, e) {
-        return r < n ? 0 : r < e ? (r - n) / (e - n) : 1;
-      }, inv: function(i, r, n) {
-        return r + i * (n - r);
-      }, mean: function(r, n) {
-        return 0.5 * (r + n);
-      }, median: function(r, n) {
-        return u.mean(r, n);
-      }, mode: function() {
-        throw new Error("mode is not yet implemented");
-      }, sample: function(r, n) {
-        return r / 2 + n / 2 + (n / 2 - r / 2) * (2 * u._random_fn() - 1);
-      }, variance: function(r, n) {
-        return f.pow(n - r, 2) / 12;
-      } });
-      function q(i, r, n, e) {
-        for (var o = 0, s = 1, l = 1, v = 1, m = 0, a = 0, t; f.abs((l - a) / l) > e; ) a = l, t = -(r + m) * (r + n + m) * i / (r + 2 * m) / (r + 2 * m + 1), o = l + t * o, s = v + t * s, m = m + 1, t = m * (n - m) * i / (r + 2 * m - 1) / (r + 2 * m), l = o + t * l, v = s + t * v, o = o / v, s = s / v, l = l / v, v = 1;
-        return l / r;
-      }
-      u.extend(u.binomial, { pdf: function(r, n, e) {
-        return e === 0 || e === 1 ? n * e === r ? 1 : 0 : u.combination(n, r) * f.pow(e, r) * f.pow(1 - e, n - r);
-      }, cdf: function(r, n, e) {
-        var o, s = 1e-10;
-        if (r < 0) return 0;
-        if (r >= n) return 1;
-        if (e < 0 || e > 1 || n <= 0) return NaN;
-        r = f.floor(r);
-        var l = e, v = r + 1, m = n - r, a = v + m, t = f.exp(u.gammaln(a) - u.gammaln(m) - u.gammaln(v) + v * f.log(l) + m * f.log(1 - l));
-        return l < (v + 1) / (a + 2) ? o = t * q(l, v, m, s) : o = 1 - t * q(1 - l, m, v, s), f.round((1 - o) * (1 / s)) / (1 / s);
-      } }), u.extend(u.negbin, { pdf: function(r, n, e) {
-        return r !== r >>> 0 ? false : r < 0 ? 0 : u.combination(r + n - 1, n - 1) * f.pow(1 - e, r) * f.pow(e, n);
-      }, cdf: function(r, n, e) {
-        var o = 0, s = 0;
-        if (r < 0) return 0;
-        for (; s <= r; s++) o += u.negbin.pdf(s, n, e);
-        return o;
-      } }), u.extend(u.hypgeom, { pdf: function(r, n, e, o) {
-        if (r !== r | 0) return false;
-        if (r < 0 || r < e - (n - o)) return 0;
-        if (r > o || r > e) return 0;
-        if (e * 2 > n) return o * 2 > n ? u.hypgeom.pdf(n - e - o + r, n, n - e, n - o) : u.hypgeom.pdf(o - r, n, n - e, o);
-        if (o * 2 > n) return u.hypgeom.pdf(e - r, n, e, n - o);
-        if (e < o) return u.hypgeom.pdf(r, n, o, e);
-        for (var s = 1, l = 0, v = 0; v < r; v++) {
-          for (; s > 1 && l < o; ) s *= 1 - e / (n - l), l++;
-          s *= (o - v) * (e - v) / ((v + 1) * (n - e - o + v + 1));
-        }
-        for (; l < o; l++) s *= 1 - e / (n - l);
-        return f.min(1, f.max(0, s));
-      }, cdf: function(r, n, e, o) {
-        if (r < 0 || r < e - (n - o)) return 0;
-        if (r >= o || r >= e) return 1;
-        if (e * 2 > n) return o * 2 > n ? u.hypgeom.cdf(n - e - o + r, n, n - e, n - o) : 1 - u.hypgeom.cdf(o - r - 1, n, n - e, o);
-        if (o * 2 > n) return 1 - u.hypgeom.cdf(e - r - 1, n, e, n - o);
-        if (e < o) return u.hypgeom.cdf(r, n, o, e);
-        for (var s = 1, l = 1, v = 0, m = 0; m < r; m++) {
-          for (; s > 1 && v < o; ) {
-            var a = 1 - e / (n - v);
-            l *= a, s *= a, v++;
-          }
-          l *= (o - m) * (e - m) / ((m + 1) * (n - e - o + m + 1)), s += l;
-        }
-        for (; v < o; v++) s *= 1 - e / (n - v);
-        return f.min(1, f.max(0, s));
-      } }), u.extend(u.poisson, { pdf: function(r, n) {
-        return n < 0 || r % 1 !== 0 || r < 0 ? 0 : f.pow(n, r) * f.exp(-n) / u.factorial(r);
-      }, cdf: function(r, n) {
-        var e = [], o = 0;
-        if (r < 0) return 0;
-        for (; o <= r; o++) e.push(u.poisson.pdf(o, n));
-        return u.sum(e);
-      }, mean: function(i) {
-        return i;
-      }, variance: function(i) {
-        return i;
-      }, sampleSmall: function(r) {
-        var n = 1, e = 0, o = f.exp(-r);
-        do
-          e++, n *= u._random_fn();
-        while (n > o);
-        return e - 1;
-      }, sampleLarge: function(r) {
-        var n = r, e, o, s, l, v, m, a, t, c, g;
-        for (l = f.sqrt(n), v = f.log(n), a = 0.931 + 2.53 * l, m = -0.059 + 0.02483 * a, t = 1.1239 + 1.1328 / (a - 3.4), c = 0.9277 - 3.6224 / (a - 2); ; ) {
-          if (o = f.random() - 0.5, s = f.random(), g = 0.5 - f.abs(o), e = f.floor((2 * m / g + a) * o + n + 0.43), g >= 0.07 && s <= c) return e;
-          if (!(e < 0 || g < 0.013 && s > g) && f.log(s) + f.log(t) - f.log(m / (g * g) + a) <= -n + e * v - u.loggam(e + 1)) return e;
-        }
-      }, sample: function(r) {
-        return r < 10 ? this.sampleSmall(r) : this.sampleLarge(r);
-      } }), u.extend(u.triangular, { pdf: function(r, n, e, o) {
-        return e <= n || o < n || o > e ? NaN : r < n || r > e ? 0 : r < o ? 2 * (r - n) / ((e - n) * (o - n)) : r === o ? 2 / (e - n) : 2 * (e - r) / ((e - n) * (e - o));
-      }, cdf: function(r, n, e, o) {
-        return e <= n || o < n || o > e ? NaN : r <= n ? 0 : r >= e ? 1 : r <= o ? f.pow(r - n, 2) / ((e - n) * (o - n)) : 1 - f.pow(e - r, 2) / ((e - n) * (e - o));
-      }, inv: function(r, n, e, o) {
-        return e <= n || o < n || o > e ? NaN : r <= (o - n) / (e - n) ? n + (e - n) * f.sqrt(r * ((o - n) / (e - n))) : n + (e - n) * (1 - f.sqrt((1 - r) * (1 - (o - n) / (e - n))));
-      }, mean: function(r, n, e) {
-        return (r + n + e) / 3;
-      }, median: function(r, n, e) {
-        if (e <= (r + n) / 2) return n - f.sqrt((n - r) * (n - e)) / f.sqrt(2);
-        if (e > (r + n) / 2) return r + f.sqrt((n - r) * (e - r)) / f.sqrt(2);
-      }, mode: function(r, n, e) {
-        return e;
-      }, sample: function(r, n, e) {
-        var o = u._random_fn();
-        return o < (e - r) / (n - r) ? r + f.sqrt(o * (n - r) * (e - r)) : n - f.sqrt((1 - o) * (n - r) * (n - e));
-      }, variance: function(r, n, e) {
-        return (r * r + n * n + e * e - r * n - r * e - n * e) / 18;
-      } }), u.extend(u.arcsine, { pdf: function(r, n, e) {
-        return e <= n ? NaN : r <= n || r >= e ? 0 : 2 / f.PI * f.pow(f.pow(e - n, 2) - f.pow(2 * r - n - e, 2), -0.5);
-      }, cdf: function(r, n, e) {
-        return r < n ? 0 : r < e ? 2 / f.PI * f.asin(f.sqrt((r - n) / (e - n))) : 1;
-      }, inv: function(i, r, n) {
-        return r + (0.5 - 0.5 * f.cos(f.PI * i)) * (n - r);
-      }, mean: function(r, n) {
-        return n <= r ? NaN : (r + n) / 2;
-      }, median: function(r, n) {
-        return n <= r ? NaN : (r + n) / 2;
-      }, mode: function() {
-        throw new Error("mode is not yet implemented");
-      }, sample: function(r, n) {
-        return (r + n) / 2 + (n - r) / 2 * f.sin(2 * f.PI * u.uniform.sample(0, 1));
-      }, variance: function(r, n) {
-        return n <= r ? NaN : f.pow(n - r, 2) / 8;
-      } });
-      function p(i) {
-        return i / f.abs(i);
-      }
-      u.extend(u.laplace, { pdf: function(r, n, e) {
-        return e <= 0 ? 0 : f.exp(-f.abs(r - n) / e) / (2 * e);
-      }, cdf: function(r, n, e) {
-        return e <= 0 ? 0 : r < n ? 0.5 * f.exp((r - n) / e) : 1 - 0.5 * f.exp(-(r - n) / e);
-      }, mean: function(i) {
-        return i;
-      }, median: function(i) {
-        return i;
-      }, mode: function(i) {
-        return i;
-      }, variance: function(i, r) {
-        return 2 * r * r;
-      }, sample: function(r, n) {
-        var e = u._random_fn() - 0.5;
-        return r - n * p(e) * f.log(1 - 2 * f.abs(e));
-      } });
-      function w(i, r, n) {
-        var e = 12, o = 6, s = -30, l = -50, v = 60, m = 8, a = 3, t = 2, c = 3, g = [0.9815606342467192, 0.9041172563704749, 0.7699026741943047, 0.5873179542866175, 0.3678314989981802, 0.1252334085114689], y = [0.04717533638651183, 0.10693932599531843, 0.16007832854334622, 0.20316742672306592, 0.2334925365383548, 0.24914704581340277], b = i * 0.5;
-        if (b >= m) return 1;
-        var _ = 2 * u.normal.cdf(b, 0, 1, 1, 0) - 1;
-        _ >= f.exp(l / n) ? _ = f.pow(_, n) : _ = 0;
-        var k;
-        i > a ? k = t : k = c;
-        for (var R = b, z = (m - b) / k, A = R + z, I = 0, E = n - 1, V = 1; V <= k; V++) {
-          for (var U = 0, P = 0.5 * (A + R), N = 0.5 * (A - R), L = 1; L <= e; L++) {
-            var O, T;
-            o < L ? (O = e - L + 1, T = g[O - 1]) : (O = L, T = -g[O - 1]);
-            var G = N * T, x = P + G, Q = x * x;
-            if (Q > v) break;
-            var W2 = 2 * u.normal.cdf(x, 0, 1, 1, 0), C = 2 * u.normal.cdf(x, i, 1, 1, 0), H2 = W2 * 0.5 - C * 0.5;
-            H2 >= f.exp(s / E) && (H2 = y[O - 1] * f.exp(-(0.5 * Q)) * f.pow(H2, E), U += H2);
-          }
-          U *= 2 * N * n / f.sqrt(2 * f.PI), I += U, R = A, A += z;
-        }
-        return _ += I, _ <= f.exp(s / r) ? 0 : (_ = f.pow(_, r), _ >= 1 ? 1 : _);
-      }
-      function d(i, r, n) {
-        var e = 0.322232421088, o = 0.099348462606, s = -1, l = 0.588581570495, v = -0.342242088547, m = 0.531103462366, a = -0.204231210125, t = 0.10353775285, c = -453642210148e-16, g = 0.0038560700634, y = 0.8832, b = 0.2368, _ = 1.214, k = 1.208, R = 1.4142, z = 120, A = 0.5 - 0.5 * i, I = f.sqrt(f.log(1 / (A * A))), E = I + ((((I * c + a) * I + v) * I + s) * I + e) / ((((I * g + t) * I + m) * I + l) * I + o);
-        n < z && (E += (E * E * E + E) / n / 4);
-        var V = y - b * E;
-        return n < z && (V += -_ / n + k * E / n), E * (V * f.log(r - 1) + R);
-      }
-      u.extend(u.tukey, { cdf: function(r, n, e) {
-        var o = 1, s = n, l = 16, v = 8, m = -30, a = 1e-14, t = 100, c = 800, g = 5e3, y = 25e3, b = 1, _ = 0.5, k = 0.25, R = 0.125, z = [0.9894009349916499, 0.9445750230732326, 0.8656312023878318, 0.755404408355003, 0.6178762444026438, 0.45801677765722737, 0.2816035507792589, 0.09501250983763744], A = [0.027152459411754096, 0.062253523938647894, 0.09515851168249279, 0.12462897125553388, 0.14959598881657674, 0.16915651939500254, 0.18260341504492358, 0.1894506104550685];
-        if (r <= 0) return 0;
-        if (e < 2 || o < 1 || s < 2) return NaN;
-        if (!Number.isFinite(r)) return 1;
-        if (e > y) return w(r, o, s);
-        var I = e * 0.5, E = I * f.log(e) - e * f.log(2) - u.gammaln(I), V = I - 1, U = e * 0.25, P;
-        e <= t ? P = b : e <= c ? P = _ : e <= g ? P = k : P = R, E += f.log(P);
-        for (var N = 0, L = 1; L <= 50; L++) {
-          for (var O = 0, T = (2 * L - 1) * P, G = 1; G <= l; G++) {
-            var x, Q;
-            v < G ? (x = G - v - 1, Q = E + V * f.log(T + z[x] * P) - (z[x] * P + T) * U) : (x = G - 1, Q = E + V * f.log(T - z[x] * P) + (z[x] * P - T) * U);
-            var W2;
-            if (Q >= m) {
-              v < G ? W2 = r * f.sqrt((z[x] * P + T) * 0.5) : W2 = r * f.sqrt((-(z[x] * P) + T) * 0.5);
-              var C = w(W2, o, s), H2 = C * A[x] * f.exp(Q);
-              O += H2;
-            }
-          }
-          if (L * P >= 1 && O <= a) break;
-          N += O;
-        }
-        if (O > a) throw new Error("tukey.cdf failed to converge");
-        return N > 1 && (N = 1), N;
-      }, inv: function(i, r, n) {
-        var e = 1, o = r, s = 1e-4, l = 50;
-        if (n < 2 || e < 1 || o < 2) return NaN;
-        if (i < 0 || i > 1) return NaN;
-        if (i === 0) return 0;
-        if (i === 1) return 1 / 0;
-        var v = d(i, o, n), m = u.tukey.cdf(v, r, n) - i, a;
-        m > 0 ? a = f.max(0, v - 1) : a = v + 1;
-        for (var t = u.tukey.cdf(a, r, n) - i, c, g = 1; g < l; g++) {
-          c = a - t * (a - v) / (t - m), m = t, v = a, c < 0 && (c = 0, t = -i), t = u.tukey.cdf(c, r, n) - i, a = c;
-          var y = f.abs(a - v);
-          if (y < s) return c;
-        }
-        throw new Error("tukey.inv failed to converge");
-      } });
-    })(h, Math), (function(u, f) {
-      var q = Array.prototype.push, p = u.utils.isArray;
-      function w(d) {
-        return p(d) || d instanceof u;
-      }
-      u.extend({ add: function(i, r) {
-        return w(r) ? (w(r[0]) || (r = [r]), u.map(i, function(n, e, o) {
-          return n + r[e][o];
-        })) : u.map(i, function(n) {
-          return n + r;
-        });
-      }, subtract: function(i, r) {
-        return w(r) ? (w(r[0]) || (r = [r]), u.map(i, function(n, e, o) {
-          return n - r[e][o] || 0;
-        })) : u.map(i, function(n) {
-          return n - r;
-        });
-      }, divide: function(i, r) {
-        return w(r) ? (w(r[0]) || (r = [r]), u.multiply(i, u.inv(r))) : u.map(i, function(n) {
-          return n / r;
-        });
-      }, multiply: function(i, r) {
-        var n, e, o, s, l, v, m, a;
-        if (i.length === void 0 && r.length === void 0) return i * r;
-        if (l = i.length, v = i[0].length, m = u.zeros(l, o = w(r) ? r[0].length : v), a = 0, w(r)) {
-          for (; a < o; a++) for (n = 0; n < l; n++) {
-            for (s = 0, e = 0; e < v; e++) s += i[n][e] * r[e][a];
-            m[n][a] = s;
-          }
-          return l === 1 && a === 1 ? m[0][0] : m;
-        }
-        return u.map(i, function(t) {
-          return t * r;
-        });
-      }, outer: function(i, r) {
-        return u.multiply(i.map(function(n) {
-          return [n];
-        }), [r]);
-      }, dot: function(i, r) {
-        w(i[0]) || (i = [i]), w(r[0]) || (r = [r]);
-        for (var n = i[0].length === 1 && i.length !== 1 ? u.transpose(i) : i, e = r[0].length === 1 && r.length !== 1 ? u.transpose(r) : r, o = [], s = 0, l = n.length, v = n[0].length, m, a; s < l; s++) {
-          for (o[s] = [], m = 0, a = 0; a < v; a++) m += n[s][a] * e[s][a];
-          o[s] = m;
-        }
-        return o.length === 1 ? o[0] : o;
-      }, pow: function(i, r) {
-        return u.map(i, function(n) {
-          return f.pow(n, r);
-        });
-      }, exp: function(i) {
-        return u.map(i, function(r) {
-          return f.exp(r);
-        });
-      }, log: function(i) {
-        return u.map(i, function(r) {
-          return f.log(r);
-        });
-      }, abs: function(i) {
-        return u.map(i, function(r) {
-          return f.abs(r);
-        });
-      }, norm: function(i, r) {
-        var n = 0, e = 0;
-        for (isNaN(r) && (r = 2), w(i[0]) && (i = i[0]); e < i.length; e++) n += f.pow(f.abs(i[e]), r);
-        return f.pow(n, 1 / r);
-      }, angle: function(i, r) {
-        return f.acos(u.dot(i, r) / (u.norm(i) * u.norm(r)));
-      }, aug: function(i, r) {
-        var n = [], e;
-        for (e = 0; e < i.length; e++) n.push(i[e].slice());
-        for (e = 0; e < n.length; e++) q.apply(n[e], r[e]);
-        return n;
-      }, inv: function(i) {
-        for (var r = i.length, n = i[0].length, e = u.identity(r, n), o = u.gauss_jordan(i, e), s = [], l = 0, v; l < r; l++) for (s[l] = [], v = n; v < o[0].length; v++) s[l][v - n] = o[l][v];
-        return s;
-      }, det: function d(i) {
-        if (i.length === 2) return i[0][0] * i[1][1] - i[0][1] * i[1][0];
-        for (var r = 0, n = 0; n < i.length; n++) {
-          for (var e = [], o = 1; o < i.length; o++) {
-            e[o - 1] = [];
-            for (var s = 0; s < i.length; s++) s < n ? e[o - 1][s] = i[o][s] : s > n && (e[o - 1][s - 1] = i[o][s]);
-          }
-          var l = n % 2 ? -1 : 1;
-          r += d(e) * i[0][n] * l;
-        }
-        return r;
-      }, gauss_elimination: function(i, r) {
-        var n = 0, e = 0, o = i.length, s = i[0].length, l = 1, v = 0, m = [], a, t, c, g;
-        for (i = u.aug(i, r), a = i[0].length, n = 0; n < o; n++) {
-          for (t = i[n][n], e = n, g = n + 1; g < s; g++) t < f.abs(i[g][n]) && (t = i[g][n], e = g);
-          if (e != n) for (g = 0; g < a; g++) c = i[n][g], i[n][g] = i[e][g], i[e][g] = c;
-          for (e = n + 1; e < o; e++) for (l = i[e][n] / i[n][n], g = n; g < a; g++) i[e][g] = i[e][g] - l * i[n][g];
-        }
-        for (n = o - 1; n >= 0; n--) {
-          for (v = 0, e = n + 1; e <= o - 1; e++) v = v + m[e] * i[n][e];
-          m[n] = (i[n][a - 1] - v) / i[n][n];
-        }
-        return m;
-      }, gauss_jordan: function(i, r) {
-        var n = u.aug(i, r), e = n.length, o = n[0].length, s = 0, l, v, m;
-        for (v = 0; v < e; v++) {
-          var a = v;
-          for (m = v + 1; m < e; m++) f.abs(n[m][v]) > f.abs(n[a][v]) && (a = m);
-          var t = n[v];
-          for (n[v] = n[a], n[a] = t, m = v + 1; m < e; m++) for (s = n[m][v] / n[v][v], l = v; l < o; l++) n[m][l] -= n[v][l] * s;
-        }
-        for (v = e - 1; v >= 0; v--) {
-          for (s = n[v][v], m = 0; m < v; m++) for (l = o - 1; l > v - 1; l--) n[m][l] -= n[v][l] * n[m][v] / s;
-          for (n[v][v] /= s, l = e; l < o; l++) n[v][l] /= s;
-        }
-        return n;
-      }, triaUpSolve: function(i, r) {
-        var n = i[0].length, e = u.zeros(1, n)[0], o, s = false;
-        return r[0].length != null && (r = r.map(function(l) {
-          return l[0];
-        }), s = true), u.arange(n - 1, -1, -1).forEach(function(l) {
-          o = u.arange(l + 1, n).map(function(v) {
-            return e[v] * i[l][v];
-          }), e[l] = (r[l] - u.sum(o)) / i[l][l];
-        }), s ? e.map(function(l) {
-          return [l];
-        }) : e;
-      }, triaLowSolve: function(i, r) {
-        var n = i[0].length, e = u.zeros(1, n)[0], o, s = false;
-        return r[0].length != null && (r = r.map(function(l) {
-          return l[0];
-        }), s = true), u.arange(n).forEach(function(l) {
-          o = u.arange(l).map(function(v) {
-            return i[l][v] * e[v];
-          }), e[l] = (r[l] - u.sum(o)) / i[l][l];
-        }), s ? e.map(function(l) {
-          return [l];
-        }) : e;
-      }, lu: function(i) {
-        var r = i.length, n = u.identity(r), e = u.zeros(i.length, i[0].length), o;
-        return u.arange(r).forEach(function(s) {
-          e[0][s] = i[0][s];
-        }), u.arange(1, r).forEach(function(s) {
-          u.arange(s).forEach(function(l) {
-            o = u.arange(l).map(function(v) {
-              return n[s][v] * e[v][l];
-            }), n[s][l] = (i[s][l] - u.sum(o)) / e[l][l];
-          }), u.arange(s, r).forEach(function(l) {
-            o = u.arange(s).map(function(v) {
-              return n[s][v] * e[v][l];
-            }), e[s][l] = i[o.length][l] - u.sum(o);
-          });
-        }), [n, e];
-      }, cholesky: function(i) {
-        var r = i.length, n = u.zeros(i.length, i[0].length), e;
-        return u.arange(r).forEach(function(o) {
-          e = u.arange(o).map(function(s) {
-            return f.pow(n[o][s], 2);
-          }), n[o][o] = f.sqrt(i[o][o] - u.sum(e)), u.arange(o + 1, r).forEach(function(s) {
-            e = u.arange(o).map(function(l) {
-              return n[o][l] * n[s][l];
-            }), n[s][o] = (i[o][s] - u.sum(e)) / n[o][o];
-          });
-        }), n;
-      }, gauss_jacobi: function(i, r, n, e) {
-        for (var o = 0, s = 0, l = i.length, v = [], m = [], a = [], t, c, g, y; o < l; o++) for (v[o] = [], m[o] = [], a[o] = [], s = 0; s < l; s++) o > s ? (v[o][s] = i[o][s], m[o][s] = a[o][s] = 0) : o < s ? (m[o][s] = i[o][s], v[o][s] = a[o][s] = 0) : (a[o][s] = i[o][s], v[o][s] = m[o][s] = 0);
-        for (g = u.multiply(u.multiply(u.inv(a), u.add(v, m)), -1), c = u.multiply(u.inv(a), r), t = n, y = u.add(u.multiply(g, n), c), o = 2; f.abs(u.norm(u.subtract(y, t))) > e; ) t = y, y = u.add(u.multiply(g, t), c), o++;
-        return y;
-      }, gauss_seidel: function(i, r, n, e) {
-        for (var o = 0, s = i.length, l = [], v = [], m = [], a, t, c, g, y; o < s; o++) for (l[o] = [], v[o] = [], m[o] = [], a = 0; a < s; a++) o > a ? (l[o][a] = i[o][a], v[o][a] = m[o][a] = 0) : o < a ? (v[o][a] = i[o][a], l[o][a] = m[o][a] = 0) : (m[o][a] = i[o][a], l[o][a] = v[o][a] = 0);
-        for (g = u.multiply(u.multiply(u.inv(u.add(m, l)), v), -1), c = u.multiply(u.inv(u.add(m, l)), r), t = n, y = u.add(u.multiply(g, n), c), o = 2; f.abs(u.norm(u.subtract(y, t))) > e; ) t = y, y = u.add(u.multiply(g, t), c), o = o + 1;
-        return y;
-      }, SOR: function(i, r, n, e, o) {
-        for (var s = 0, l = i.length, v = [], m = [], a = [], t, c, g, y, b; s < l; s++) for (v[s] = [], m[s] = [], a[s] = [], t = 0; t < l; t++) s > t ? (v[s][t] = i[s][t], m[s][t] = a[s][t] = 0) : s < t ? (m[s][t] = i[s][t], v[s][t] = a[s][t] = 0) : (a[s][t] = i[s][t], v[s][t] = m[s][t] = 0);
-        for (y = u.multiply(u.inv(u.add(a, u.multiply(v, o))), u.subtract(u.multiply(a, 1 - o), u.multiply(m, o))), g = u.multiply(u.multiply(u.inv(u.add(a, u.multiply(v, o))), r), o), c = n, b = u.add(u.multiply(y, n), g), s = 2; f.abs(u.norm(u.subtract(b, c))) > e; ) c = b, b = u.add(u.multiply(y, c), g), s++;
-        return b;
-      }, householder: function(i) {
-        for (var r = i.length, n = i[0].length, e = 0, o = [], s = [], l, v, m, a, t; e < r - 1; e++) {
-          for (l = 0, a = e + 1; a < n; a++) l += i[a][e] * i[a][e];
-          for (t = i[e + 1][e] > 0 ? -1 : 1, l = t * f.sqrt(l), v = f.sqrt((l * l - i[e + 1][e] * l) / 2), o = u.zeros(r, 1), o[e + 1][0] = (i[e + 1][e] - l) / (2 * v), m = e + 2; m < r; m++) o[m][0] = i[m][e] / (2 * v);
-          s = u.subtract(u.identity(r, n), u.multiply(u.multiply(o, u.transpose(o)), 2)), i = u.multiply(s, u.multiply(i, s));
-        }
-        return i;
-      }, QR: (function() {
-        var d = u.sum, i = u.arange;
-        function r(n) {
-          var e = n.length, o = n[0].length, s = u.zeros(o, o);
-          n = u.copy(n);
-          var l, v, m;
-          for (v = 0; v < o; v++) {
-            for (s[v][v] = f.sqrt(d(i(e).map(function(a) {
-              return n[a][v] * n[a][v];
-            }))), l = 0; l < e; l++) n[l][v] = n[l][v] / s[v][v];
-            for (m = v + 1; m < o; m++) for (s[v][m] = d(i(e).map(function(a) {
-              return n[a][v] * n[a][m];
-            })), l = 0; l < e; l++) n[l][m] = n[l][m] - n[l][v] * s[v][m];
-          }
-          return [n, s];
-        }
-        return r;
-      })(), lstsq: /* @__PURE__ */ (function() {
-        function d(r) {
-          r = u.copy(r);
-          var n = r.length, e = u.identity(n);
-          return u.arange(n - 1, -1, -1).forEach(function(o) {
-            u.sliceAssign(e, { row: o }, u.divide(u.slice(e, { row: o }), r[o][o])), u.sliceAssign(r, { row: o }, u.divide(u.slice(r, { row: o }), r[o][o])), u.arange(o).forEach(function(s) {
-              var l = u.multiply(r[s][o], -1), v = u.slice(r, { row: s }), m = u.multiply(u.slice(r, { row: o }), l);
-              u.sliceAssign(r, { row: s }, u.add(v, m));
-              var a = u.slice(e, { row: s }), t = u.multiply(u.slice(e, { row: o }), l);
-              u.sliceAssign(e, { row: s }, u.add(a, t));
+        };
+        jStat3.row = function row(arr, index) {
+          if (isArray(index)) {
+            return index.map(function(i) {
+              return jStat3.row(arr, i);
             });
-          }), e;
-        }
-        function i(r, n) {
-          var e = false;
-          n[0].length === void 0 && (n = n.map(function(y) {
-            return [y];
-          }), e = true);
-          var o = u.QR(r), s = o[0], l = o[1], v = r[0].length, m = u.slice(s, { col: { end: v } }), a = u.slice(l, { row: { end: v } }), t = d(a), c = u.transpose(m);
-          c[0].length === void 0 && (c = [c]);
-          var g = u.multiply(u.multiply(t, c), n);
-          return g.length === void 0 && (g = [[g]]), e ? g.map(function(y) {
-            return y[0];
-          }) : g;
-        }
-        return i;
-      })(), jacobi: function(i) {
-        for (var r = 1, n = i.length, e = u.identity(n, n), o = [], s, l, v, m, a, t, c, g; r === 1; ) {
-          for (t = i[0][1], m = 0, a = 1, l = 0; l < n; l++) for (v = 0; v < n; v++) l != v && t < f.abs(i[l][v]) && (t = f.abs(i[l][v]), m = l, a = v);
-          for (i[m][m] === i[a][a] ? c = i[m][a] > 0 ? f.PI / 4 : -f.PI / 4 : c = f.atan(2 * i[m][a] / (i[m][m] - i[a][a])) / 2, g = u.identity(n, n), g[m][m] = f.cos(c), g[m][a] = -f.sin(c), g[a][m] = f.sin(c), g[a][a] = f.cos(c), e = u.multiply(e, g), s = u.multiply(u.multiply(u.inv(g), i), g), i = s, r = 0, l = 1; l < n; l++) for (v = 1; v < n; v++) l != v && f.abs(i[l][v]) > 1e-3 && (r = 1);
-        }
-        for (l = 0; l < n; l++) o.push(i[l][l]);
-        return [e, o];
-      }, rungekutta: function(i, r, n, e, o, s) {
-        var l, v, m, a, t;
-        if (s === 2) for (; e <= n; ) l = r * i(e, o), v = r * i(e + r, o + l), m = o + (l + v) / 2, o = m, e = e + r;
-        if (s === 4) for (; e <= n; ) l = r * i(e, o), v = r * i(e + r / 2, o + l / 2), a = r * i(e + r / 2, o + v / 2), t = r * i(e + r, o + a), m = o + (l + 2 * v + 2 * a + t) / 6, o = m, e = e + r;
-        return o;
-      }, romberg: function(i, r, n, e) {
-        for (var o = 0, s = (n - r) / 2, l = [], v = [], m = [], a, t, c, g, y; o < e / 2; ) {
-          for (y = i(r), c = r, g = 0; c <= n; c = c + s, g++) l[g] = c;
-          for (a = l.length, c = 1; c < a - 1; c++) y += (c % 2 !== 0 ? 4 : 2) * i(l[c]);
-          y = s / 3 * (y + i(n)), m[o] = y, s /= 2, o++;
-        }
-        for (t = m.length, a = 1; t !== 1; ) {
-          for (c = 0; c < t - 1; c++) v[c] = (f.pow(4, a) * m[c + 1] - m[c]) / (f.pow(4, a) - 1);
-          t = v.length, m = v, v = [], a++;
-        }
-        return m;
-      }, richardson: function(i, r, n, e) {
-        function o(b, _) {
-          for (var k = 0, R = b.length, z; k < R; k++) b[k] === _ && (z = k);
-          return z;
-        }
-        for (var s = f.abs(n - i[o(i, n) + 1]), l = 0, v = [], m = [], a, t, c, g, y; e >= s; ) a = o(i, n + e), t = o(i, n), v[l] = (r[a] - 2 * r[t] + r[2 * t - a]) / (e * e), e /= 2, l++;
-        for (g = v.length, c = 1; g != 1; ) {
-          for (y = 0; y < g - 1; y++) m[y] = (f.pow(4, c) * v[y + 1] - v[y]) / (f.pow(4, c) - 1);
-          g = m.length, v = m, m = [], c++;
-        }
-        return v;
-      }, simpson: function(i, r, n, e) {
-        for (var o = (n - r) / e, s = i(r), l = [], v = r, m = 0, a = 1, t; v <= n; v = v + o, m++) l[m] = v;
-        for (t = l.length; a < t - 1; a++) s += (a % 2 !== 0 ? 4 : 2) * i(l[a]);
-        return o / 3 * (s + i(n));
-      }, hermite: function(i, r, n, e) {
-        for (var o = i.length, s = 0, l = 0, v = [], m = [], a = [], t = [], c; l < o; l++) {
-          for (v[l] = 1, c = 0; c < o; c++) l != c && (v[l] *= (e - i[c]) / (i[l] - i[c]));
-          for (m[l] = 0, c = 0; c < o; c++) l != c && (m[l] += 1 / (i[l] - i[c]));
-          a[l] = (1 - 2 * (e - i[l]) * m[l]) * (v[l] * v[l]), t[l] = (e - i[l]) * (v[l] * v[l]), s += a[l] * r[l] + t[l] * n[l];
-        }
-        return s;
-      }, lagrange: function(i, r, n) {
-        for (var e = 0, o = 0, s, l, v = i.length; o < v; o++) {
-          for (l = r[o], s = 0; s < v; s++) o != s && (l *= (n - i[s]) / (i[o] - i[s]));
-          e += l;
-        }
-        return e;
-      }, cubic_spline: function(i, r, n) {
-        for (var e = i.length, o = 0, s, l = [], v = [], m = [], a = [], t = [], c = [], g = []; o < e - 1; o++) t[o] = i[o + 1] - i[o];
-        for (m[0] = 0, o = 1; o < e - 1; o++) m[o] = 3 / t[o] * (r[o + 1] - r[o]) - 3 / t[o - 1] * (r[o] - r[o - 1]);
-        for (o = 1; o < e - 1; o++) l[o] = [], v[o] = [], l[o][o - 1] = t[o - 1], l[o][o] = 2 * (t[o - 1] + t[o]), l[o][o + 1] = t[o], v[o][0] = m[o];
-        for (a = u.multiply(u.inv(l), v), s = 0; s < e - 1; s++) c[s] = (r[s + 1] - r[s]) / t[s] - t[s] * (a[s + 1][0] + 2 * a[s][0]) / 3, g[s] = (a[s + 1][0] - a[s][0]) / (3 * t[s]);
-        for (s = 0; s < e && !(i[s] > n); s++) ;
-        return s -= 1, r[s] + (n - i[s]) * c[s] + u.sq(n - i[s]) * a[s] + (n - i[s]) * u.sq(n - i[s]) * g[s];
-      }, gauss_quadrature: function() {
-        throw new Error("gauss_quadrature not yet implemented");
-      }, PCA: function(i) {
-        var r = i.length, n = i[0].length, e = 0, o, s, l = [], v = [], m = [], a = [], t = [], c = [], g = [], y = [], b = [], _ = [];
-        for (e = 0; e < r; e++) l[e] = u.sum(i[e]) / n;
-        for (e = 0; e < n; e++) for (g[e] = [], o = 0; o < r; o++) g[e][o] = i[o][e] - l[o];
-        for (g = u.transpose(g), e = 0; e < r; e++) for (y[e] = [], o = 0; o < r; o++) y[e][o] = u.dot([g[e]], [g[o]]) / (n - 1);
-        for (m = u.jacobi(y), b = m[0], v = m[1], _ = u.transpose(b), e = 0; e < v.length; e++) for (o = e; o < v.length; o++) v[e] < v[o] && (s = v[e], v[e] = v[o], v[o] = s, a = _[e], _[e] = _[o], _[o] = a);
-        for (c = u.transpose(g), e = 0; e < r; e++) for (t[e] = [], o = 0; o < c.length; o++) t[e][o] = u.dot([_[e]], [c[o]]);
-        return [i, v, _, t];
-      } }), (function(d) {
-        for (var i = 0; i < d.length; i++) (function(r) {
-          u.fn[r] = function(n, e) {
-            var o = this;
-            return e ? (setTimeout(function() {
-              e.call(o, u.fn[r].call(o, n));
-            }, 15), this) : typeof u[r](this, n) == "number" ? u[r](this, n) : u(u[r](this, n));
-          };
-        })(d[i]);
-      })("add divide multiply subtract dot pow exp log abs norm angle".split(" "));
-    })(h, Math), (function(u, f) {
-      var q = [].slice, p = u.utils.isNumber, w = u.utils.isArray;
-      u.extend({ zscore: function() {
-        var r = q.call(arguments);
-        return p(r[1]) ? (r[0] - r[1]) / r[2] : (r[0] - u.mean(r[1])) / u.stdev(r[1], r[2]);
-      }, ztest: function() {
-        var r = q.call(arguments), n;
-        return w(r[1]) ? (n = u.zscore(r[0], r[1], r[3]), r[2] === 1 ? u.normal.cdf(-f.abs(n), 0, 1) : u.normal.cdf(-f.abs(n), 0, 1) * 2) : r.length > 2 ? (n = u.zscore(r[0], r[1], r[2]), r[3] === 1 ? u.normal.cdf(-f.abs(n), 0, 1) : u.normal.cdf(-f.abs(n), 0, 1) * 2) : (n = r[0], r[1] === 1 ? u.normal.cdf(-f.abs(n), 0, 1) : u.normal.cdf(-f.abs(n), 0, 1) * 2);
-      } }), u.extend(u.fn, { zscore: function(r, n) {
-        return (r - this.mean()) / this.stdev(n);
-      }, ztest: function(r, n, e) {
-        var o = f.abs(this.zscore(r, e));
-        return n === 1 ? u.normal.cdf(-o, 0, 1) : u.normal.cdf(-o, 0, 1) * 2;
-      } }), u.extend({ tscore: function() {
-        var r = q.call(arguments);
-        return r.length === 4 ? (r[0] - r[1]) / (r[2] / f.sqrt(r[3])) : (r[0] - u.mean(r[1])) / (u.stdev(r[1], true) / f.sqrt(r[1].length));
-      }, ttest: function() {
-        var r = q.call(arguments), n;
-        return r.length === 5 ? (n = f.abs(u.tscore(r[0], r[1], r[2], r[3])), r[4] === 1 ? u.studentt.cdf(-n, r[3] - 1) : u.studentt.cdf(-n, r[3] - 1) * 2) : p(r[1]) ? (n = f.abs(r[0]), r[2] == 1 ? u.studentt.cdf(-n, r[1] - 1) : u.studentt.cdf(-n, r[1] - 1) * 2) : (n = f.abs(u.tscore(r[0], r[1])), r[2] == 1 ? u.studentt.cdf(-n, r[1].length - 1) : u.studentt.cdf(-n, r[1].length - 1) * 2);
-      } }), u.extend(u.fn, { tscore: function(r) {
-        return (r - this.mean()) / (this.stdev(true) / f.sqrt(this.cols()));
-      }, ttest: function(r, n) {
-        return n === 1 ? 1 - u.studentt.cdf(f.abs(this.tscore(r)), this.cols() - 1) : u.studentt.cdf(-f.abs(this.tscore(r)), this.cols() - 1) * 2;
-      } }), u.extend({ anovafscore: function() {
-        var r = q.call(arguments), n, e, o, s, l, v, m, a;
-        if (r.length === 1) {
-          for (l = new Array(r[0].length), m = 0; m < r[0].length; m++) l[m] = r[0][m];
-          r = l;
-        }
-        for (e = new Array(), m = 0; m < r.length; m++) e = e.concat(r[m]);
-        for (o = u.mean(e), n = 0, m = 0; m < r.length; m++) n = n + r[m].length * f.pow(u.mean(r[m]) - o, 2);
-        for (n /= r.length - 1, v = 0, m = 0; m < r.length; m++) for (s = u.mean(r[m]), a = 0; a < r[m].length; a++) v += f.pow(r[m][a] - s, 2);
-        return v /= e.length - r.length, n / v;
-      }, anovaftest: function() {
-        var r = q.call(arguments), n, e, o, s;
-        if (p(r[0])) return 1 - u.centralF.cdf(r[0], r[1], r[2]);
-        var l = u.anovafscore(r);
-        for (n = r.length - 1, o = 0, s = 0; s < r.length; s++) o = o + r[s].length;
-        return e = o - n - 1, 1 - u.centralF.cdf(l, n, e);
-      }, ftest: function(r, n, e) {
-        return 1 - u.centralF.cdf(r, n, e);
-      } }), u.extend(u.fn, { anovafscore: function() {
-        return u.anovafscore(this.toArray());
-      }, anovaftes: function() {
-        var r = 0, n;
-        for (n = 0; n < this.length; n++) r = r + this[n].length;
-        return u.ftest(this.anovafscore(), this.length - 1, r - this.length);
-      } }), u.extend({ qscore: function() {
-        var r = q.call(arguments), n, e, o, s, l;
-        return p(r[0]) ? (n = r[0], e = r[1], o = r[2], s = r[3], l = r[4]) : (n = u.mean(r[0]), e = u.mean(r[1]), o = r[0].length, s = r[1].length, l = r[2]), f.abs(n - e) / (l * f.sqrt((1 / o + 1 / s) / 2));
-      }, qtest: function() {
-        var r = q.call(arguments), n;
-        r.length === 3 ? (n = r[0], r = r.slice(1)) : r.length === 7 ? (n = u.qscore(r[0], r[1], r[2], r[3], r[4]), r = r.slice(5)) : (n = u.qscore(r[0], r[1], r[2]), r = r.slice(3));
-        var e = r[0], o = r[1];
-        return 1 - u.tukey.cdf(n, o, e - o);
-      }, tukeyhsd: function(r) {
-        for (var n = u.pooledstdev(r), e = r.map(function(a) {
-          return u.mean(a);
-        }), o = r.reduce(function(a, t) {
-          return a + t.length;
-        }, 0), s = [], l = 0; l < r.length; ++l) for (var v = l + 1; v < r.length; ++v) {
-          var m = u.qtest(e[l], e[v], r[l].length, r[v].length, n, o, r.length);
-          s.push([[l, v], m]);
-        }
-        return s;
-      } }), u.extend({ normalci: function() {
-        var r = q.call(arguments), n = new Array(2), e;
-        return r.length === 4 ? e = f.abs(u.normal.inv(r[1] / 2, 0, 1) * r[2] / f.sqrt(r[3])) : e = f.abs(u.normal.inv(r[1] / 2, 0, 1) * u.stdev(r[2]) / f.sqrt(r[2].length)), n[0] = r[0] - e, n[1] = r[0] + e, n;
-      }, tci: function() {
-        var r = q.call(arguments), n = new Array(2), e;
-        return r.length === 4 ? e = f.abs(u.studentt.inv(r[1] / 2, r[3] - 1) * r[2] / f.sqrt(r[3])) : e = f.abs(u.studentt.inv(r[1] / 2, r[2].length - 1) * u.stdev(r[2], true) / f.sqrt(r[2].length)), n[0] = r[0] - e, n[1] = r[0] + e, n;
-      }, significant: function(r, n) {
-        return r < n;
-      } }), u.extend(u.fn, { normalci: function(r, n) {
-        return u.normalci(r, n, this.toArray());
-      }, tci: function(r, n) {
-        return u.tci(r, n, this.toArray());
-      } });
-      function d(i, r, n, e) {
-        if (i > 1 || n > 1 || i <= 0 || n <= 0) throw new Error("Proportions should be greater than 0 and less than 1");
-        var o = (i * r + n * e) / (r + e), s = f.sqrt(o * (1 - o) * (1 / r + 1 / e));
-        return (i - n) / s;
-      }
-      u.extend(u.fn, { oneSidedDifferenceOfProportions: function(r, n, e, o) {
-        var s = d(r, n, e, o);
-        return u.ztest(s, 1);
-      }, twoSidedDifferenceOfProportions: function(r, n, e, o) {
-        var s = d(r, n, e, o);
-        return u.ztest(s, 2);
-      } });
-    })(h, Math), h.models = /* @__PURE__ */ (function() {
-      function u(d) {
-        var i = d[0].length, r = h.arange(i).map(function(n) {
-          var e = h.arange(i).filter(function(o) {
-            return o !== n;
-          });
-          return f(h.col(d, n).map(function(o) {
-            return o[0];
-          }), h.col(d, e));
-        });
-        return r;
-      }
-      function f(d, i) {
-        var r = d.length, n = i[0].length - 1, e = r - n - 1, o = h.lstsq(i, d), s = h.multiply(i, o.map(function(g) {
-          return [g];
-        })).map(function(g) {
-          return g[0];
-        }), l = h.subtract(d, s), v = h.mean(d), m = h.sum(s.map(function(g) {
-          return Math.pow(g - v, 2);
-        })), a = h.sum(d.map(function(g, y) {
-          return Math.pow(g - s[y], 2);
-        })), t = m + a, c = m / t;
-        return { exog: i, endog: d, nobs: r, df_model: n, df_resid: e, coef: o, predict: s, resid: l, ybar: v, SST: t, SSE: m, SSR: a, R2: c };
-      }
-      function q(d) {
-        var i = u(d.exog), r = Math.sqrt(d.SSR / d.df_resid), n = i.map(function(v) {
-          var m = v.SST, a = v.R2;
-          return r / Math.sqrt(m * (1 - a));
-        }), e = d.coef.map(function(v, m) {
-          return (v - 0) / n[m];
-        }), o = e.map(function(v) {
-          var m = h.studentt.cdf(v, d.df_resid);
-          return (m > 0.5 ? 1 - m : m) * 2;
-        }), s = h.studentt.inv(0.975, d.df_resid), l = d.coef.map(function(v, m) {
-          var a = s * n[m];
-          return [v - a, v + a];
-        });
-        return { se: n, t: e, p: o, sigmaHat: r, interval95: l };
-      }
-      function p(d) {
-        var i = d.R2 / d.df_model / ((1 - d.R2) / d.df_resid), r = function(e, o, s) {
-          return h.beta.cdf(e / (s / o + e), o / 2, s / 2);
-        }, n = 1 - r(i, d.df_model, d.df_resid);
-        return { F_statistic: i, pvalue: n };
-      }
-      function w(d, i) {
-        var r = f(d, i), n = q(r), e = p(r), o = 1 - (1 - r.R2) * ((r.nobs - 1) / r.df_resid);
-        return r.t = n, r.f = e, r.adjust_R2 = o, r;
-      }
-      return { ols: w };
-    })(), h.extend({ buildxmatrix: function() {
-      for (var f = new Array(arguments.length), q = 0; q < arguments.length; q++) {
-        var p = [1];
-        f[q] = p.concat(arguments[q]);
-      }
-      return h(f);
-    }, builddxmatrix: function() {
-      for (var f = new Array(arguments[0].length), q = 0; q < arguments[0].length; q++) {
-        var p = [1];
-        f[q] = p.concat(arguments[0][q]);
-      }
-      return h(f);
-    }, buildjxmatrix: function(f) {
-      for (var q = new Array(f.length), p = 0; p < f.length; p++) q[p] = f[p];
-      return h.builddxmatrix(q);
-    }, buildymatrix: function(f) {
-      return h(f).transpose();
-    }, buildjymatrix: function(f) {
-      return f.transpose();
-    }, matrixmult: function(f, q) {
-      var p, w, d, i, r;
-      if (f.cols() == q.rows()) {
-        if (q.rows() > 1) {
-          for (i = [], p = 0; p < f.rows(); p++) for (i[p] = [], w = 0; w < q.cols(); w++) {
-            for (r = 0, d = 0; d < f.cols(); d++) r += f.toArray()[p][d] * q.toArray()[d][w];
-            i[p][w] = r;
           }
-          return h(i);
+          return arr[index];
+        };
+        jStat3.rowa = function rowa(arr, i) {
+          return jStat3.row(arr, i);
+        };
+        jStat3.col = function col(arr, index) {
+          if (isArray(index)) {
+            var submat = jStat3.arange(arr.length).map(function() {
+              return new Array(index.length);
+            });
+            index.forEach(function(ind, i2) {
+              jStat3.arange(arr.length).forEach(function(j) {
+                submat[j][i2] = arr[j][ind];
+              });
+            });
+            return submat;
+          }
+          var column = new Array(arr.length);
+          for (var i = 0; i < arr.length; i++)
+            column[i] = [arr[i][index]];
+          return column;
+        };
+        jStat3.cola = function cola(arr, i) {
+          return jStat3.col(arr, i).map(function(a) {
+            return a[0];
+          });
+        };
+        jStat3.diag = function diag(arr) {
+          var nrow = jStat3.rows(arr);
+          var res = new Array(nrow);
+          for (var row = 0; row < nrow; row++)
+            res[row] = [arr[row][row]];
+          return res;
+        };
+        jStat3.antidiag = function antidiag(arr) {
+          var nrow = jStat3.rows(arr) - 1;
+          var res = new Array(nrow);
+          for (var i = 0; nrow >= 0; nrow--, i++)
+            res[i] = [arr[i][nrow]];
+          return res;
+        };
+        jStat3.transpose = function transpose(arr) {
+          var obj = [];
+          var objArr, rows, cols, j, i;
+          if (!isArray(arr[0]))
+            arr = [arr];
+          rows = arr.length;
+          cols = arr[0].length;
+          for (i = 0; i < cols; i++) {
+            objArr = new Array(rows);
+            for (j = 0; j < rows; j++)
+              objArr[j] = arr[j][i];
+            obj.push(objArr);
+          }
+          return obj.length === 1 ? obj[0] : obj;
+        };
+        jStat3.map = function map(arr, func, toAlter) {
+          var row, nrow, ncol, res, col;
+          if (!isArray(arr[0]))
+            arr = [arr];
+          nrow = arr.length;
+          ncol = arr[0].length;
+          res = toAlter ? arr : new Array(nrow);
+          for (row = 0; row < nrow; row++) {
+            if (!res[row])
+              res[row] = new Array(ncol);
+            for (col = 0; col < ncol; col++)
+              res[row][col] = func(arr[row][col], row, col);
+          }
+          return res.length === 1 ? res[0] : res;
+        };
+        jStat3.cumreduce = function cumreduce(arr, func, toAlter) {
+          var row, nrow, ncol, res, col;
+          if (!isArray(arr[0]))
+            arr = [arr];
+          nrow = arr.length;
+          ncol = arr[0].length;
+          res = toAlter ? arr : new Array(nrow);
+          for (row = 0; row < nrow; row++) {
+            if (!res[row])
+              res[row] = new Array(ncol);
+            if (ncol > 0)
+              res[row][0] = arr[row][0];
+            for (col = 1; col < ncol; col++)
+              res[row][col] = func(res[row][col - 1], arr[row][col]);
+          }
+          return res.length === 1 ? res[0] : res;
+        };
+        jStat3.alter = function alter(arr, func) {
+          return jStat3.map(arr, func, true);
+        };
+        jStat3.create = function create(rows, cols, func) {
+          var res = new Array(rows);
+          var i, j;
+          if (isFunction(cols)) {
+            func = cols;
+            cols = rows;
+          }
+          for (i = 0; i < rows; i++) {
+            res[i] = new Array(cols);
+            for (j = 0; j < cols; j++)
+              res[i][j] = func(i, j);
+          }
+          return res;
+        };
+        function retZero() {
+          return 0;
         }
-        for (i = [], p = 0; p < f.rows(); p++) for (i[p] = [], w = 0; w < q.cols(); w++) {
-          for (r = 0, d = 0; d < f.cols(); d++) r += f.toArray()[p][d] * q.toArray()[w];
-          i[p][w] = r;
+        jStat3.zeros = function zeros(rows, cols) {
+          if (!isNumber(cols))
+            cols = rows;
+          return jStat3.create(rows, cols, retZero);
+        };
+        function retOne() {
+          return 1;
         }
-        return h(i);
-      }
-    }, regress: function(f, q) {
-      var p = h.xtranspxinv(f), w = f.transpose(), d = h.matrixmult(h(p), w);
-      return h.matrixmult(d, q);
-    }, regresst: function(f, q, p) {
-      var w = h.regress(f, q), d = {};
-      d.anova = {};
-      var i = h.jMatYBar(f, w);
-      d.yBar = i;
-      var r = q.mean();
-      d.anova.residuals = h.residuals(q, i), d.anova.ssr = h.ssr(i, r), d.anova.msr = d.anova.ssr / (f[0].length - 1), d.anova.sse = h.sse(q, i), d.anova.mse = d.anova.sse / (q.length - (f[0].length - 1) - 1), d.anova.sst = h.sst(q, r), d.anova.mst = d.anova.sst / (q.length - 1), d.anova.r2 = 1 - d.anova.sse / d.anova.sst, d.anova.r2 < 0 && (d.anova.r2 = 0), d.anova.fratio = d.anova.msr / d.anova.mse, d.anova.pvalue = h.anovaftest(d.anova.fratio, f[0].length - 1, q.length - (f[0].length - 1) - 1), d.anova.rmse = Math.sqrt(d.anova.mse), d.anova.r2adj = 1 - d.anova.mse / d.anova.mst, d.anova.r2adj < 0 && (d.anova.r2adj = 0), d.stats = new Array(f[0].length);
-      for (var n = h.xtranspxinv(f), e, o, s, l = 0; l < w.length; l++) e = Math.sqrt(d.anova.mse * Math.abs(n[l][l])), o = Math.abs(w[l] / e), s = h.ttest(o, q.length - f[0].length - 1, p), d.stats[l] = [w[l], e, o, s];
-      return d.regress = w, d;
-    }, xtranspx: function(f) {
-      return h.matrixmult(f.transpose(), f);
-    }, xtranspxinv: function(f) {
-      var q = h.matrixmult(f.transpose(), f), p = h.inv(q);
-      return p;
-    }, jMatYBar: function(f, q) {
-      var p = h.matrixmult(f, q);
-      return new h(p);
-    }, residuals: function(f, q) {
-      return h.matrixsubtract(f, q);
-    }, ssr: function(f, q) {
-      for (var p = 0, w = 0; w < f.length; w++) p += Math.pow(f[w] - q, 2);
-      return p;
-    }, sse: function(f, q) {
-      for (var p = 0, w = 0; w < f.length; w++) p += Math.pow(f[w] - q[w], 2);
-      return p;
-    }, sst: function(f, q) {
-      for (var p = 0, w = 0; w < f.length; w++) p += Math.pow(f[w] - q, 2);
-      return p;
-    }, matrixsubtract: function(f, q) {
-      for (var p = new Array(f.length), w = 0; w < f.length; w++) {
-        p[w] = new Array(f[w].length);
-        for (var d = 0; d < f[w].length; d++) p[w][d] = f[w][d] - q[w][d];
-      }
-      return h(p);
-    } }), h.jStat = h, h;
-  });
+        jStat3.ones = function ones(rows, cols) {
+          if (!isNumber(cols))
+            cols = rows;
+          return jStat3.create(rows, cols, retOne);
+        };
+        jStat3.rand = function rand(rows, cols) {
+          if (!isNumber(cols))
+            cols = rows;
+          return jStat3.create(rows, cols, jStat3._random_fn);
+        };
+        function retIdent(i, j) {
+          return i === j ? 1 : 0;
+        }
+        jStat3.identity = function identity(rows, cols) {
+          if (!isNumber(cols))
+            cols = rows;
+          return jStat3.create(rows, cols, retIdent);
+        };
+        jStat3.symmetric = function symmetric(arr) {
+          var size = arr.length;
+          var row, col;
+          if (arr.length !== arr[0].length)
+            return false;
+          for (row = 0; row < size; row++) {
+            for (col = 0; col < size; col++)
+              if (arr[col][row] !== arr[row][col])
+                return false;
+          }
+          return true;
+        };
+        jStat3.clear = function clear(arr) {
+          return jStat3.alter(arr, retZero);
+        };
+        jStat3.seq = function seq(min, max, length, func) {
+          if (!isFunction(func))
+            func = false;
+          var arr = [];
+          var hival = calcRdx(min, max);
+          var step = (max * hival - min * hival) / ((length - 1) * hival);
+          var current = min;
+          var cnt;
+          for (cnt = 0; current <= max && cnt < length; cnt++, current = (min * hival + step * hival * cnt) / hival) {
+            arr.push(func ? func(current, cnt) : current);
+          }
+          return arr;
+        };
+        jStat3.arange = function arange(start, end, step) {
+          var rl = [];
+          var i;
+          step = step || 1;
+          if (end === undefined2) {
+            end = start;
+            start = 0;
+          }
+          if (start === end || step === 0) {
+            return [];
+          }
+          if (start < end && step < 0) {
+            return [];
+          }
+          if (start > end && step > 0) {
+            return [];
+          }
+          if (step > 0) {
+            for (i = start; i < end; i += step) {
+              rl.push(i);
+            }
+          } else {
+            for (i = start; i > end; i += step) {
+              rl.push(i);
+            }
+          }
+          return rl;
+        };
+        jStat3.slice = /* @__PURE__ */ (function() {
+          function _slice(list, start, end, step) {
+            var i;
+            var rl = [];
+            var length = list.length;
+            if (start === undefined2 && end === undefined2 && step === undefined2) {
+              return jStat3.copy(list);
+            }
+            start = start || 0;
+            end = end || list.length;
+            start = start >= 0 ? start : length + start;
+            end = end >= 0 ? end : length + end;
+            step = step || 1;
+            if (start === end || step === 0) {
+              return [];
+            }
+            if (start < end && step < 0) {
+              return [];
+            }
+            if (start > end && step > 0) {
+              return [];
+            }
+            if (step > 0) {
+              for (i = start; i < end; i += step) {
+                rl.push(list[i]);
+              }
+            } else {
+              for (i = start; i > end; i += step) {
+                rl.push(list[i]);
+              }
+            }
+            return rl;
+          }
+          function slice2(list, rcSlice) {
+            var colSlice, rowSlice;
+            rcSlice = rcSlice || {};
+            if (isNumber(rcSlice.row)) {
+              if (isNumber(rcSlice.col))
+                return list[rcSlice.row][rcSlice.col];
+              var row = jStat3.rowa(list, rcSlice.row);
+              colSlice = rcSlice.col || {};
+              return _slice(row, colSlice.start, colSlice.end, colSlice.step);
+            }
+            if (isNumber(rcSlice.col)) {
+              var col = jStat3.cola(list, rcSlice.col);
+              rowSlice = rcSlice.row || {};
+              return _slice(col, rowSlice.start, rowSlice.end, rowSlice.step);
+            }
+            rowSlice = rcSlice.row || {};
+            colSlice = rcSlice.col || {};
+            var rows = _slice(list, rowSlice.start, rowSlice.end, rowSlice.step);
+            return rows.map(function(row2) {
+              return _slice(row2, colSlice.start, colSlice.end, colSlice.step);
+            });
+          }
+          return slice2;
+        })();
+        jStat3.sliceAssign = function sliceAssign(A, rcSlice, B) {
+          var nl, ml;
+          if (isNumber(rcSlice.row)) {
+            if (isNumber(rcSlice.col))
+              return A[rcSlice.row][rcSlice.col] = B;
+            rcSlice.col = rcSlice.col || {};
+            rcSlice.col.start = rcSlice.col.start || 0;
+            rcSlice.col.end = rcSlice.col.end || A[0].length;
+            rcSlice.col.step = rcSlice.col.step || 1;
+            nl = jStat3.arange(
+              rcSlice.col.start,
+              Math2.min(A.length, rcSlice.col.end),
+              rcSlice.col.step
+            );
+            var m = rcSlice.row;
+            nl.forEach(function(n2, i) {
+              A[m][n2] = B[i];
+            });
+            return A;
+          }
+          if (isNumber(rcSlice.col)) {
+            rcSlice.row = rcSlice.row || {};
+            rcSlice.row.start = rcSlice.row.start || 0;
+            rcSlice.row.end = rcSlice.row.end || A.length;
+            rcSlice.row.step = rcSlice.row.step || 1;
+            ml = jStat3.arange(
+              rcSlice.row.start,
+              Math2.min(A[0].length, rcSlice.row.end),
+              rcSlice.row.step
+            );
+            var n = rcSlice.col;
+            ml.forEach(function(m2, j) {
+              A[m2][n] = B[j];
+            });
+            return A;
+          }
+          if (B[0].length === undefined2) {
+            B = [B];
+          }
+          rcSlice.row.start = rcSlice.row.start || 0;
+          rcSlice.row.end = rcSlice.row.end || A.length;
+          rcSlice.row.step = rcSlice.row.step || 1;
+          rcSlice.col.start = rcSlice.col.start || 0;
+          rcSlice.col.end = rcSlice.col.end || A[0].length;
+          rcSlice.col.step = rcSlice.col.step || 1;
+          ml = jStat3.arange(
+            rcSlice.row.start,
+            Math2.min(A.length, rcSlice.row.end),
+            rcSlice.row.step
+          );
+          nl = jStat3.arange(
+            rcSlice.col.start,
+            Math2.min(A[0].length, rcSlice.col.end),
+            rcSlice.col.step
+          );
+          ml.forEach(function(m2, i) {
+            nl.forEach(function(n2, j) {
+              A[m2][n2] = B[i][j];
+            });
+          });
+          return A;
+        };
+        jStat3.diagonal = function diagonal(diagArray) {
+          var mat = jStat3.zeros(diagArray.length, diagArray.length);
+          diagArray.forEach(function(t, i) {
+            mat[i][i] = t;
+          });
+          return mat;
+        };
+        jStat3.copy = function copy(A) {
+          return A.map(function(row) {
+            if (isNumber(row))
+              return row;
+            return row.map(function(t) {
+              return t;
+            });
+          });
+        };
+        var jProto = jStat3.prototype;
+        jProto.length = 0;
+        jProto.push = Array.prototype.push;
+        jProto.sort = Array.prototype.sort;
+        jProto.splice = Array.prototype.splice;
+        jProto.slice = Array.prototype.slice;
+        jProto.toArray = function toArray() {
+          return this.length > 1 ? slice.call(this) : slice.call(this)[0];
+        };
+        jProto.map = function map(func, toAlter) {
+          return jStat3(jStat3.map(this, func, toAlter));
+        };
+        jProto.cumreduce = function cumreduce(func, toAlter) {
+          return jStat3(jStat3.cumreduce(this, func, toAlter));
+        };
+        jProto.alter = function alter(func) {
+          jStat3.alter(this, func);
+          return this;
+        };
+        (function(funcs) {
+          for (var i = 0; i < funcs.length; i++) (function(passfunc) {
+            jProto[passfunc] = function(func) {
+              var self = this, results;
+              if (func) {
+                setTimeout(function() {
+                  func.call(self, jProto[passfunc].call(self));
+                });
+                return this;
+              }
+              results = jStat3[passfunc](this);
+              return isArray(results) ? jStat3(results) : results;
+            };
+          })(funcs[i]);
+        })("transpose clear symmetric rows cols dimensions diag antidiag".split(" "));
+        (function(funcs) {
+          for (var i = 0; i < funcs.length; i++) (function(passfunc) {
+            jProto[passfunc] = function(index, func) {
+              var self = this;
+              if (func) {
+                setTimeout(function() {
+                  func.call(self, jProto[passfunc].call(self, index));
+                });
+                return this;
+              }
+              return jStat3(jStat3[passfunc](this, index));
+            };
+          })(funcs[i]);
+        })("row col".split(" "));
+        (function(funcs) {
+          for (var i = 0; i < funcs.length; i++) (function(passfunc) {
+            jProto[passfunc] = function() {
+              return jStat3(jStat3[passfunc].apply(null, arguments));
+            };
+          })(funcs[i]);
+        })("create zeros ones rand identity".split(" "));
+        return jStat3;
+      })(Math);
+      (function(jStat3, Math2) {
+        var isFunction = jStat3.utils.isFunction;
+        function ascNum(a, b) {
+          return a - b;
+        }
+        function clip(arg, min, max) {
+          return Math2.max(min, Math2.min(arg, max));
+        }
+        jStat3.sum = function sum(arr) {
+          var sum2 = 0;
+          var i = arr.length;
+          while (--i >= 0)
+            sum2 += arr[i];
+          return sum2;
+        };
+        jStat3.sumsqrd = function sumsqrd(arr) {
+          var sum = 0;
+          var i = arr.length;
+          while (--i >= 0)
+            sum += arr[i] * arr[i];
+          return sum;
+        };
+        jStat3.sumsqerr = function sumsqerr(arr) {
+          var mean = jStat3.mean(arr);
+          var sum = 0;
+          var i = arr.length;
+          var tmp;
+          while (--i >= 0) {
+            tmp = arr[i] - mean;
+            sum += tmp * tmp;
+          }
+          return sum;
+        };
+        jStat3.sumrow = function sumrow(arr) {
+          var sum = 0;
+          var i = arr.length;
+          while (--i >= 0)
+            sum += arr[i];
+          return sum;
+        };
+        jStat3.product = function product(arr) {
+          var prod = 1;
+          var i = arr.length;
+          while (--i >= 0)
+            prod *= arr[i];
+          return prod;
+        };
+        jStat3.min = function min(arr) {
+          var low = arr[0];
+          var i = 0;
+          while (++i < arr.length)
+            if (arr[i] < low)
+              low = arr[i];
+          return low;
+        };
+        jStat3.max = function max(arr) {
+          var high = arr[0];
+          var i = 0;
+          while (++i < arr.length)
+            if (arr[i] > high)
+              high = arr[i];
+          return high;
+        };
+        jStat3.unique = function unique(arr) {
+          var hash = {}, _arr = [];
+          for (var i = 0; i < arr.length; i++) {
+            if (!hash[arr[i]]) {
+              hash[arr[i]] = true;
+              _arr.push(arr[i]);
+            }
+          }
+          return _arr;
+        };
+        jStat3.mean = function mean(arr) {
+          return jStat3.sum(arr) / arr.length;
+        };
+        jStat3.meansqerr = function meansqerr(arr) {
+          return jStat3.sumsqerr(arr) / arr.length;
+        };
+        jStat3.geomean = function geomean(arr) {
+          var logs = arr.map(Math2.log);
+          var meanOfLogs = jStat3.mean(logs);
+          return Math2.exp(meanOfLogs);
+        };
+        jStat3.median = function median(arr) {
+          var arrlen = arr.length;
+          var _arr = arr.slice().sort(ascNum);
+          return !(arrlen & 1) ? (_arr[arrlen / 2 - 1] + _arr[arrlen / 2]) / 2 : _arr[arrlen / 2 | 0];
+        };
+        jStat3.cumsum = function cumsum(arr) {
+          return jStat3.cumreduce(arr, function(a, b) {
+            return a + b;
+          });
+        };
+        jStat3.cumprod = function cumprod(arr) {
+          return jStat3.cumreduce(arr, function(a, b) {
+            return a * b;
+          });
+        };
+        jStat3.diff = function diff(arr) {
+          var diffs = [];
+          var arrLen = arr.length;
+          var i;
+          for (i = 1; i < arrLen; i++)
+            diffs.push(arr[i] - arr[i - 1]);
+          return diffs;
+        };
+        jStat3.rank = function(arr) {
+          var i;
+          var distinctNumbers = [];
+          var numberCounts = {};
+          for (i = 0; i < arr.length; i++) {
+            var number = arr[i];
+            if (numberCounts[number]) {
+              numberCounts[number]++;
+            } else {
+              numberCounts[number] = 1;
+              distinctNumbers.push(number);
+            }
+          }
+          var sortedDistinctNumbers = distinctNumbers.sort(ascNum);
+          var numberRanks = {};
+          var currentRank = 1;
+          for (i = 0; i < sortedDistinctNumbers.length; i++) {
+            var number = sortedDistinctNumbers[i];
+            var count = numberCounts[number];
+            var first = currentRank;
+            var last = currentRank + count - 1;
+            var rank = (first + last) / 2;
+            numberRanks[number] = rank;
+            currentRank += count;
+          }
+          return arr.map(function(number2) {
+            return numberRanks[number2];
+          });
+        };
+        jStat3.mode = function mode(arr) {
+          var arrLen = arr.length;
+          var _arr = arr.slice().sort(ascNum);
+          var count = 1;
+          var maxCount = 0;
+          var numMaxCount = 0;
+          var mode_arr = [];
+          var i;
+          for (i = 0; i < arrLen; i++) {
+            if (_arr[i] === _arr[i + 1]) {
+              count++;
+            } else {
+              if (count > maxCount) {
+                mode_arr = [_arr[i]];
+                maxCount = count;
+                numMaxCount = 0;
+              } else if (count === maxCount) {
+                mode_arr.push(_arr[i]);
+                numMaxCount++;
+              }
+              count = 1;
+            }
+          }
+          return numMaxCount === 0 ? mode_arr[0] : mode_arr;
+        };
+        jStat3.range = function range(arr) {
+          return jStat3.max(arr) - jStat3.min(arr);
+        };
+        jStat3.variance = function variance(arr, flag) {
+          return jStat3.sumsqerr(arr) / (arr.length - (flag ? 1 : 0));
+        };
+        jStat3.pooledvariance = function pooledvariance(arr) {
+          var sumsqerr = arr.reduce(function(a, samples) {
+            return a + jStat3.sumsqerr(samples);
+          }, 0);
+          var count = arr.reduce(function(a, samples) {
+            return a + samples.length;
+          }, 0);
+          return sumsqerr / (count - arr.length);
+        };
+        jStat3.deviation = function(arr) {
+          var mean = jStat3.mean(arr);
+          var arrlen = arr.length;
+          var dev = new Array(arrlen);
+          for (var i = 0; i < arrlen; i++) {
+            dev[i] = arr[i] - mean;
+          }
+          return dev;
+        };
+        jStat3.stdev = function stdev(arr, flag) {
+          return Math2.sqrt(jStat3.variance(arr, flag));
+        };
+        jStat3.pooledstdev = function pooledstdev(arr) {
+          return Math2.sqrt(jStat3.pooledvariance(arr));
+        };
+        jStat3.meandev = function meandev(arr) {
+          var mean = jStat3.mean(arr);
+          var a = [];
+          for (var i = arr.length - 1; i >= 0; i--) {
+            a.push(Math2.abs(arr[i] - mean));
+          }
+          return jStat3.mean(a);
+        };
+        jStat3.meddev = function meddev(arr) {
+          var median = jStat3.median(arr);
+          var a = [];
+          for (var i = arr.length - 1; i >= 0; i--) {
+            a.push(Math2.abs(arr[i] - median));
+          }
+          return jStat3.median(a);
+        };
+        jStat3.coeffvar = function coeffvar(arr) {
+          return jStat3.stdev(arr) / jStat3.mean(arr);
+        };
+        jStat3.quartiles = function quartiles(arr) {
+          var arrlen = arr.length;
+          var _arr = arr.slice().sort(ascNum);
+          return [
+            _arr[Math2.round(arrlen / 4) - 1],
+            _arr[Math2.round(arrlen / 2) - 1],
+            _arr[Math2.round(arrlen * 3 / 4) - 1]
+          ];
+        };
+        jStat3.quantiles = function quantiles(arr, quantilesArray, alphap, betap) {
+          var sortedArray = arr.slice().sort(ascNum);
+          var quantileVals = [quantilesArray.length];
+          var n = arr.length;
+          var i, p, m, aleph, k, gamma;
+          if (typeof alphap === "undefined")
+            alphap = 3 / 8;
+          if (typeof betap === "undefined")
+            betap = 3 / 8;
+          for (i = 0; i < quantilesArray.length; i++) {
+            p = quantilesArray[i];
+            m = alphap + p * (1 - alphap - betap);
+            aleph = n * p + m;
+            k = Math2.floor(clip(aleph, 1, n - 1));
+            gamma = clip(aleph - k, 0, 1);
+            quantileVals[i] = (1 - gamma) * sortedArray[k - 1] + gamma * sortedArray[k];
+          }
+          return quantileVals;
+        };
+        jStat3.percentile = function percentile(arr, k, exclusive) {
+          var _arr = arr.slice().sort(ascNum);
+          var realIndex = k * (_arr.length + (exclusive ? 1 : -1)) + (exclusive ? 0 : 1);
+          var index = parseInt(realIndex);
+          var frac = realIndex - index;
+          if (index + 1 < _arr.length) {
+            return _arr[index - 1] + frac * (_arr[index] - _arr[index - 1]);
+          } else {
+            return _arr[index - 1];
+          }
+        };
+        jStat3.percentileOfScore = function percentileOfScore(arr, score, kind) {
+          var counter = 0;
+          var len = arr.length;
+          var strict = false;
+          var value, i;
+          if (kind === "strict")
+            strict = true;
+          for (i = 0; i < len; i++) {
+            value = arr[i];
+            if (strict && value < score || !strict && value <= score) {
+              counter++;
+            }
+          }
+          return counter / len;
+        };
+        jStat3.histogram = function histogram(arr, binCnt) {
+          binCnt = binCnt || 4;
+          var first = jStat3.min(arr);
+          var binWidth = (jStat3.max(arr) - first) / binCnt;
+          var len = arr.length;
+          var bins = [];
+          var i;
+          for (i = 0; i < binCnt; i++)
+            bins[i] = 0;
+          for (i = 0; i < len; i++)
+            bins[Math2.min(Math2.floor((arr[i] - first) / binWidth), binCnt - 1)] += 1;
+          return bins;
+        };
+        jStat3.covariance = function covariance(arr1, arr2) {
+          var u = jStat3.mean(arr1);
+          var v = jStat3.mean(arr2);
+          var arr1Len = arr1.length;
+          var sq_dev = new Array(arr1Len);
+          var i;
+          for (i = 0; i < arr1Len; i++)
+            sq_dev[i] = (arr1[i] - u) * (arr2[i] - v);
+          return jStat3.sum(sq_dev) / (arr1Len - 1);
+        };
+        jStat3.corrcoeff = function corrcoeff(arr1, arr2) {
+          return jStat3.covariance(arr1, arr2) / jStat3.stdev(arr1, 1) / jStat3.stdev(arr2, 1);
+        };
+        jStat3.spearmancoeff = function(arr1, arr2) {
+          arr1 = jStat3.rank(arr1);
+          arr2 = jStat3.rank(arr2);
+          return jStat3.corrcoeff(arr1, arr2);
+        };
+        jStat3.stanMoment = function stanMoment(arr, n) {
+          var mu = jStat3.mean(arr);
+          var sigma = jStat3.stdev(arr);
+          var len = arr.length;
+          var skewSum = 0;
+          for (var i = 0; i < len; i++)
+            skewSum += Math2.pow((arr[i] - mu) / sigma, n);
+          return skewSum / arr.length;
+        };
+        jStat3.skewness = function skewness(arr) {
+          return jStat3.stanMoment(arr, 3);
+        };
+        jStat3.kurtosis = function kurtosis(arr) {
+          return jStat3.stanMoment(arr, 4) - 3;
+        };
+        var jProto = jStat3.prototype;
+        (function(funcs) {
+          for (var i = 0; i < funcs.length; i++) (function(passfunc) {
+            jProto[passfunc] = function(fullbool, func) {
+              var arr = [];
+              var i2 = 0;
+              var tmpthis = this;
+              if (isFunction(fullbool)) {
+                func = fullbool;
+                fullbool = false;
+              }
+              if (func) {
+                setTimeout(function() {
+                  func.call(tmpthis, jProto[passfunc].call(tmpthis, fullbool));
+                });
+                return this;
+              }
+              if (this.length > 1) {
+                tmpthis = fullbool === true ? this : this.transpose();
+                for (; i2 < tmpthis.length; i2++)
+                  arr[i2] = jStat3[passfunc](tmpthis[i2]);
+                return arr;
+              }
+              return jStat3[passfunc](this[0], fullbool);
+            };
+          })(funcs[i]);
+        })("cumsum cumprod".split(" "));
+        (function(funcs) {
+          for (var i = 0; i < funcs.length; i++) (function(passfunc) {
+            jProto[passfunc] = function(fullbool, func) {
+              var arr = [];
+              var i2 = 0;
+              var tmpthis = this;
+              if (isFunction(fullbool)) {
+                func = fullbool;
+                fullbool = false;
+              }
+              if (func) {
+                setTimeout(function() {
+                  func.call(tmpthis, jProto[passfunc].call(tmpthis, fullbool));
+                });
+                return this;
+              }
+              if (this.length > 1) {
+                if (passfunc !== "sumrow")
+                  tmpthis = fullbool === true ? this : this.transpose();
+                for (; i2 < tmpthis.length; i2++)
+                  arr[i2] = jStat3[passfunc](tmpthis[i2]);
+                return fullbool === true ? jStat3[passfunc](jStat3.utils.toVector(arr)) : arr;
+              }
+              return jStat3[passfunc](this[0], fullbool);
+            };
+          })(funcs[i]);
+        })("sum sumsqrd sumsqerr sumrow product min max unique mean meansqerr geomean median diff rank mode range variance deviation stdev meandev meddev coeffvar quartiles histogram skewness kurtosis".split(" "));
+        (function(funcs) {
+          for (var i = 0; i < funcs.length; i++) (function(passfunc) {
+            jProto[passfunc] = function() {
+              var arr = [];
+              var i2 = 0;
+              var tmpthis = this;
+              var args = Array.prototype.slice.call(arguments);
+              var callbackFunction;
+              if (isFunction(args[args.length - 1])) {
+                callbackFunction = args[args.length - 1];
+                var argsToPass = args.slice(0, args.length - 1);
+                setTimeout(function() {
+                  callbackFunction.call(
+                    tmpthis,
+                    jProto[passfunc].apply(tmpthis, argsToPass)
+                  );
+                });
+                return this;
+              } else {
+                callbackFunction = void 0;
+                var curriedFunction = function curriedFunction2(vector) {
+                  return jStat3[passfunc].apply(tmpthis, [vector].concat(args));
+                };
+              }
+              if (this.length > 1) {
+                tmpthis = tmpthis.transpose();
+                for (; i2 < tmpthis.length; i2++)
+                  arr[i2] = curriedFunction(tmpthis[i2]);
+                return arr;
+              }
+              return curriedFunction(this[0]);
+            };
+          })(funcs[i]);
+        })("quantiles percentileOfScore".split(" "));
+      })(jStat2, Math);
+      (function(jStat3, Math2) {
+        jStat3.gammaln = function gammaln(x) {
+          var j = 0;
+          var cof = [
+            76.18009172947146,
+            -86.50532032941678,
+            24.01409824083091,
+            -1.231739572450155,
+            0.001208650973866179,
+            -5395239384953e-18
+          ];
+          var ser = 1.000000000190015;
+          var xx, y, tmp;
+          tmp = (y = xx = x) + 5.5;
+          tmp -= (xx + 0.5) * Math2.log(tmp);
+          for (; j < 6; j++)
+            ser += cof[j] / ++y;
+          return Math2.log(2.5066282746310007 * ser / xx) - tmp;
+        };
+        jStat3.loggam = function loggam(x) {
+          var x0, x2, xp, gl, gl0;
+          var k, n;
+          var a = [
+            0.08333333333333333,
+            -0.002777777777777778,
+            7936507936507937e-19,
+            -5952380952380952e-19,
+            8417508417508418e-19,
+            -0.001917526917526918,
+            0.00641025641025641,
+            -0.02955065359477124,
+            0.1796443723688307,
+            -1.3924322169059
+          ];
+          x0 = x;
+          n = 0;
+          if (x == 1 || x == 2) {
+            return 0;
+          }
+          if (x <= 7) {
+            n = Math2.floor(7 - x);
+            x0 = x + n;
+          }
+          x2 = 1 / (x0 * x0);
+          xp = 2 * Math2.PI;
+          gl0 = a[9];
+          for (k = 8; k >= 0; k--) {
+            gl0 *= x2;
+            gl0 += a[k];
+          }
+          gl = gl0 / x0 + 0.5 * Math2.log(xp) + (x0 - 0.5) * Math2.log(x0) - x0;
+          if (x <= 7) {
+            for (k = 1; k <= n; k++) {
+              gl -= Math2.log(x0 - 1);
+              x0 -= 1;
+            }
+          }
+          return gl;
+        };
+        jStat3.gammafn = function gammafn(x) {
+          var p = [
+            -1.716185138865495,
+            24.76565080557592,
+            -379.80425647094563,
+            629.3311553128184,
+            866.9662027904133,
+            -31451.272968848367,
+            -36144.413418691176,
+            66456.14382024054
+          ];
+          var q = [
+            -30.8402300119739,
+            315.35062697960416,
+            -1015.1563674902192,
+            -3107.771671572311,
+            22538.11842098015,
+            4755.846277527881,
+            -134659.9598649693,
+            -115132.2596755535
+          ];
+          var fact = false;
+          var n = 0;
+          var xden = 0;
+          var xnum = 0;
+          var y = x;
+          var i, z, yi, res;
+          if (x > 171.6243769536076) {
+            return Infinity;
+          }
+          if (y <= 0) {
+            res = y % 1 + 36e-17;
+            if (res) {
+              fact = (!(y & 1) ? 1 : -1) * Math2.PI / Math2.sin(Math2.PI * res);
+              y = 1 - y;
+            } else {
+              return Infinity;
+            }
+          }
+          yi = y;
+          if (y < 1) {
+            z = y++;
+          } else {
+            z = (y -= n = (y | 0) - 1) - 1;
+          }
+          for (i = 0; i < 8; ++i) {
+            xnum = (xnum + p[i]) * z;
+            xden = xden * z + q[i];
+          }
+          res = xnum / xden + 1;
+          if (yi < y) {
+            res /= yi;
+          } else if (yi > y) {
+            for (i = 0; i < n; ++i) {
+              res *= y;
+              y++;
+            }
+          }
+          if (fact) {
+            res = fact / res;
+          }
+          return res;
+        };
+        jStat3.gammap = function gammap(a, x) {
+          return jStat3.lowRegGamma(a, x) * jStat3.gammafn(a);
+        };
+        jStat3.lowRegGamma = function lowRegGamma(a, x) {
+          var aln = jStat3.gammaln(a);
+          var ap = a;
+          var sum = 1 / a;
+          var del = sum;
+          var b = x + 1 - a;
+          var c = 1 / 1e-30;
+          var d = 1 / b;
+          var h = d;
+          var i = 1;
+          var ITMAX = -~(Math2.log(a >= 1 ? a : 1 / a) * 8.5 + a * 0.4 + 17);
+          var an;
+          if (x < 0 || a <= 0) {
+            return NaN;
+          } else if (x < a + 1) {
+            for (; i <= ITMAX; i++) {
+              sum += del *= x / ++ap;
+            }
+            return sum * Math2.exp(-x + a * Math2.log(x) - aln);
+          }
+          for (; i <= ITMAX; i++) {
+            an = -i * (i - a);
+            b += 2;
+            d = an * d + b;
+            c = b + an / c;
+            d = 1 / d;
+            h *= d * c;
+          }
+          return 1 - h * Math2.exp(-x + a * Math2.log(x) - aln);
+        };
+        jStat3.factorialln = function factorialln(n) {
+          return n < 0 ? NaN : jStat3.gammaln(n + 1);
+        };
+        jStat3.factorial = function factorial(n) {
+          return n < 0 ? NaN : jStat3.gammafn(n + 1);
+        };
+        jStat3.combination = function combination(n, m) {
+          return n > 170 || m > 170 ? Math2.exp(jStat3.combinationln(n, m)) : jStat3.factorial(n) / jStat3.factorial(m) / jStat3.factorial(n - m);
+        };
+        jStat3.combinationln = function combinationln(n, m) {
+          return jStat3.factorialln(n) - jStat3.factorialln(m) - jStat3.factorialln(n - m);
+        };
+        jStat3.permutation = function permutation(n, m) {
+          return jStat3.factorial(n) / jStat3.factorial(n - m);
+        };
+        jStat3.betafn = function betafn(x, y) {
+          if (x <= 0 || y <= 0)
+            return void 0;
+          return x + y > 170 ? Math2.exp(jStat3.betaln(x, y)) : jStat3.gammafn(x) * jStat3.gammafn(y) / jStat3.gammafn(x + y);
+        };
+        jStat3.betaln = function betaln(x, y) {
+          return jStat3.gammaln(x) + jStat3.gammaln(y) - jStat3.gammaln(x + y);
+        };
+        jStat3.betacf = function betacf(x, a, b) {
+          var fpmin = 1e-30;
+          var m = 1;
+          var qab = a + b;
+          var qap = a + 1;
+          var qam = a - 1;
+          var c = 1;
+          var d = 1 - qab * x / qap;
+          var m2, aa, del, h;
+          if (Math2.abs(d) < fpmin)
+            d = fpmin;
+          d = 1 / d;
+          h = d;
+          for (; m <= 100; m++) {
+            m2 = 2 * m;
+            aa = m * (b - m) * x / ((qam + m2) * (a + m2));
+            d = 1 + aa * d;
+            if (Math2.abs(d) < fpmin)
+              d = fpmin;
+            c = 1 + aa / c;
+            if (Math2.abs(c) < fpmin)
+              c = fpmin;
+            d = 1 / d;
+            h *= d * c;
+            aa = -(a + m) * (qab + m) * x / ((a + m2) * (qap + m2));
+            d = 1 + aa * d;
+            if (Math2.abs(d) < fpmin)
+              d = fpmin;
+            c = 1 + aa / c;
+            if (Math2.abs(c) < fpmin)
+              c = fpmin;
+            d = 1 / d;
+            del = d * c;
+            h *= del;
+            if (Math2.abs(del - 1) < 3e-7)
+              break;
+          }
+          return h;
+        };
+        jStat3.gammapinv = function gammapinv(p, a) {
+          var j = 0;
+          var a1 = a - 1;
+          var EPS = 1e-8;
+          var gln = jStat3.gammaln(a);
+          var x, err, t, u, pp, lna1, afac;
+          if (p >= 1)
+            return Math2.max(100, a + 100 * Math2.sqrt(a));
+          if (p <= 0)
+            return 0;
+          if (a > 1) {
+            lna1 = Math2.log(a1);
+            afac = Math2.exp(a1 * (lna1 - 1) - gln);
+            pp = p < 0.5 ? p : 1 - p;
+            t = Math2.sqrt(-2 * Math2.log(pp));
+            x = (2.30753 + t * 0.27061) / (1 + t * (0.99229 + t * 0.04481)) - t;
+            if (p < 0.5)
+              x = -x;
+            x = Math2.max(
+              1e-3,
+              a * Math2.pow(1 - 1 / (9 * a) - x / (3 * Math2.sqrt(a)), 3)
+            );
+          } else {
+            t = 1 - a * (0.253 + a * 0.12);
+            if (p < t)
+              x = Math2.pow(p / t, 1 / a);
+            else
+              x = 1 - Math2.log(1 - (p - t) / (1 - t));
+          }
+          for (; j < 12; j++) {
+            if (x <= 0)
+              return 0;
+            err = jStat3.lowRegGamma(a, x) - p;
+            if (a > 1)
+              t = afac * Math2.exp(-(x - a1) + a1 * (Math2.log(x) - lna1));
+            else
+              t = Math2.exp(-x + a1 * Math2.log(x) - gln);
+            u = err / t;
+            x -= t = u / (1 - 0.5 * Math2.min(1, u * ((a - 1) / x - 1)));
+            if (x <= 0)
+              x = 0.5 * (x + t);
+            if (Math2.abs(t) < EPS * x)
+              break;
+          }
+          return x;
+        };
+        jStat3.erf = function erf(x) {
+          var cof = [
+            -1.3026537197817094,
+            0.6419697923564902,
+            0.019476473204185836,
+            -0.00956151478680863,
+            -946595344482036e-18,
+            366839497852761e-18,
+            42523324806907e-18,
+            -20278578112534e-18,
+            -1624290004647e-18,
+            130365583558e-17,
+            15626441722e-18,
+            -85238095915e-18,
+            6529054439e-18,
+            5059343495e-18,
+            -991364156e-18,
+            -227365122e-18,
+            96467911e-18,
+            2394038e-18,
+            -6886027e-18,
+            894487e-18,
+            313092e-18,
+            -112708e-18,
+            381e-18,
+            7106e-18,
+            -1523e-18,
+            -94e-18,
+            121e-18,
+            -28e-18
+          ];
+          var j = cof.length - 1;
+          var isneg = false;
+          var d = 0;
+          var dd = 0;
+          var t, ty, tmp, res;
+          if (x < 0) {
+            x = -x;
+            isneg = true;
+          }
+          t = 2 / (2 + x);
+          ty = 4 * t - 2;
+          for (; j > 0; j--) {
+            tmp = d;
+            d = ty * d - dd + cof[j];
+            dd = tmp;
+          }
+          res = t * Math2.exp(-x * x + 0.5 * (cof[0] + ty * d) - dd);
+          return isneg ? res - 1 : 1 - res;
+        };
+        jStat3.erfc = function erfc(x) {
+          return 1 - jStat3.erf(x);
+        };
+        jStat3.erfcinv = function erfcinv(p) {
+          var j = 0;
+          var x, err, t, pp;
+          if (p >= 2)
+            return -100;
+          if (p <= 0)
+            return 100;
+          pp = p < 1 ? p : 2 - p;
+          t = Math2.sqrt(-2 * Math2.log(pp / 2));
+          x = -0.70711 * ((2.30753 + t * 0.27061) / (1 + t * (0.99229 + t * 0.04481)) - t);
+          for (; j < 2; j++) {
+            err = jStat3.erfc(x) - pp;
+            x += err / (1.1283791670955126 * Math2.exp(-x * x) - x * err);
+          }
+          return p < 1 ? x : -x;
+        };
+        jStat3.ibetainv = function ibetainv(p, a, b) {
+          var EPS = 1e-8;
+          var a1 = a - 1;
+          var b1 = b - 1;
+          var j = 0;
+          var lna, lnb, pp, t, u, err, x, al, h, w, afac;
+          if (p <= 0)
+            return 0;
+          if (p >= 1)
+            return 1;
+          if (a >= 1 && b >= 1) {
+            pp = p < 0.5 ? p : 1 - p;
+            t = Math2.sqrt(-2 * Math2.log(pp));
+            x = (2.30753 + t * 0.27061) / (1 + t * (0.99229 + t * 0.04481)) - t;
+            if (p < 0.5)
+              x = -x;
+            al = (x * x - 3) / 6;
+            h = 2 / (1 / (2 * a - 1) + 1 / (2 * b - 1));
+            w = x * Math2.sqrt(al + h) / h - (1 / (2 * b - 1) - 1 / (2 * a - 1)) * (al + 5 / 6 - 2 / (3 * h));
+            x = a / (a + b * Math2.exp(2 * w));
+          } else {
+            lna = Math2.log(a / (a + b));
+            lnb = Math2.log(b / (a + b));
+            t = Math2.exp(a * lna) / a;
+            u = Math2.exp(b * lnb) / b;
+            w = t + u;
+            if (p < t / w)
+              x = Math2.pow(a * w * p, 1 / a);
+            else
+              x = 1 - Math2.pow(b * w * (1 - p), 1 / b);
+          }
+          afac = -jStat3.gammaln(a) - jStat3.gammaln(b) + jStat3.gammaln(a + b);
+          for (; j < 10; j++) {
+            if (x === 0 || x === 1)
+              return x;
+            err = jStat3.ibeta(x, a, b) - p;
+            t = Math2.exp(a1 * Math2.log(x) + b1 * Math2.log(1 - x) + afac);
+            u = err / t;
+            x -= t = u / (1 - 0.5 * Math2.min(1, u * (a1 / x - b1 / (1 - x))));
+            if (x <= 0)
+              x = 0.5 * (x + t);
+            if (x >= 1)
+              x = 0.5 * (x + t + 1);
+            if (Math2.abs(t) < EPS * x && j > 0)
+              break;
+          }
+          return x;
+        };
+        jStat3.ibeta = function ibeta(x, a, b) {
+          var bt = x === 0 || x === 1 ? 0 : Math2.exp(jStat3.gammaln(a + b) - jStat3.gammaln(a) - jStat3.gammaln(b) + a * Math2.log(x) + b * Math2.log(1 - x));
+          if (x < 0 || x > 1)
+            return false;
+          if (x < (a + 1) / (a + b + 2))
+            return bt * jStat3.betacf(x, a, b) / a;
+          return 1 - bt * jStat3.betacf(1 - x, b, a) / b;
+        };
+        jStat3.randn = function randn(n, m) {
+          var u, v, x, y, q;
+          if (!m)
+            m = n;
+          if (n)
+            return jStat3.create(n, m, function() {
+              return jStat3.randn();
+            });
+          do {
+            u = jStat3._random_fn();
+            v = 1.7156 * (jStat3._random_fn() - 0.5);
+            x = u - 0.449871;
+            y = Math2.abs(v) + 0.386595;
+            q = x * x + y * (0.196 * y - 0.25472 * x);
+          } while (q > 0.27597 && (q > 0.27846 || v * v > -4 * Math2.log(u) * u * u));
+          return v / u;
+        };
+        jStat3.randg = function randg(shape, n, m) {
+          var oalph = shape;
+          var a1, a2, u, v, x, mat;
+          if (!m)
+            m = n;
+          if (!shape)
+            shape = 1;
+          if (n) {
+            mat = jStat3.zeros(n, m);
+            mat.alter(function() {
+              return jStat3.randg(shape);
+            });
+            return mat;
+          }
+          if (shape < 1)
+            shape += 1;
+          a1 = shape - 1 / 3;
+          a2 = 1 / Math2.sqrt(9 * a1);
+          do {
+            do {
+              x = jStat3.randn();
+              v = 1 + a2 * x;
+            } while (v <= 0);
+            v = v * v * v;
+            u = jStat3._random_fn();
+          } while (u > 1 - 0.331 * Math2.pow(x, 4) && Math2.log(u) > 0.5 * x * x + a1 * (1 - v + Math2.log(v)));
+          if (shape == oalph)
+            return a1 * v;
+          do {
+            u = jStat3._random_fn();
+          } while (u === 0);
+          return Math2.pow(u, 1 / oalph) * a1 * v;
+        };
+        (function(funcs) {
+          for (var i = 0; i < funcs.length; i++) (function(passfunc) {
+            jStat3.fn[passfunc] = function() {
+              return jStat3(
+                jStat3.map(this, function(value) {
+                  return jStat3[passfunc](value);
+                })
+              );
+            };
+          })(funcs[i]);
+        })("gammaln gammafn factorial factorialln".split(" "));
+        (function(funcs) {
+          for (var i = 0; i < funcs.length; i++) (function(passfunc) {
+            jStat3.fn[passfunc] = function() {
+              return jStat3(jStat3[passfunc].apply(null, arguments));
+            };
+          })(funcs[i]);
+        })("randn".split(" "));
+      })(jStat2, Math);
+      (function(jStat3, Math2) {
+        (function(list) {
+          for (var i = 0; i < list.length; i++) (function(func) {
+            jStat3[func] = function f(a, b, c) {
+              if (!(this instanceof f))
+                return new f(a, b, c);
+              this._a = a;
+              this._b = b;
+              this._c = c;
+              return this;
+            };
+            jStat3.fn[func] = function(a, b, c) {
+              var newthis = jStat3[func](a, b, c);
+              newthis.data = this;
+              return newthis;
+            };
+            jStat3[func].prototype.sample = function(arr) {
+              var a = this._a;
+              var b = this._b;
+              var c = this._c;
+              if (arr)
+                return jStat3.alter(arr, function() {
+                  return jStat3[func].sample(a, b, c);
+                });
+              else
+                return jStat3[func].sample(a, b, c);
+            };
+            (function(vals) {
+              for (var i2 = 0; i2 < vals.length; i2++) (function(fnfunc) {
+                jStat3[func].prototype[fnfunc] = function(x) {
+                  var a = this._a;
+                  var b = this._b;
+                  var c = this._c;
+                  if (!x && x !== 0)
+                    x = this.data;
+                  if (typeof x !== "number") {
+                    return jStat3.fn.map.call(x, function(x2) {
+                      return jStat3[func][fnfunc](x2, a, b, c);
+                    });
+                  }
+                  return jStat3[func][fnfunc](x, a, b, c);
+                };
+              })(vals[i2]);
+            })("pdf cdf inv".split(" "));
+            (function(vals) {
+              for (var i2 = 0; i2 < vals.length; i2++) (function(fnfunc) {
+                jStat3[func].prototype[fnfunc] = function() {
+                  return jStat3[func][fnfunc](this._a, this._b, this._c);
+                };
+              })(vals[i2]);
+            })("mean median mode variance".split(" "));
+          })(list[i]);
+        })("beta centralF cauchy chisquare exponential gamma invgamma kumaraswamy laplace lognormal noncentralt normal pareto studentt weibull uniform binomial negbin hypgeom poisson triangular tukey arcsine".split(" "));
+        jStat3.extend(jStat3.beta, {
+          pdf: function pdf(x, alpha, beta) {
+            if (x > 1 || x < 0)
+              return 0;
+            if (alpha == 1 && beta == 1)
+              return 1;
+            if (alpha < 512 && beta < 512) {
+              return Math2.pow(x, alpha - 1) * Math2.pow(1 - x, beta - 1) / jStat3.betafn(alpha, beta);
+            } else {
+              return Math2.exp((alpha - 1) * Math2.log(x) + (beta - 1) * Math2.log(1 - x) - jStat3.betaln(alpha, beta));
+            }
+          },
+          cdf: function cdf(x, alpha, beta) {
+            return x > 1 || x < 0 ? (x > 1) * 1 : jStat3.ibeta(x, alpha, beta);
+          },
+          inv: function inv(x, alpha, beta) {
+            return jStat3.ibetainv(x, alpha, beta);
+          },
+          mean: function mean(alpha, beta) {
+            return alpha / (alpha + beta);
+          },
+          median: function median(alpha, beta) {
+            return jStat3.ibetainv(0.5, alpha, beta);
+          },
+          mode: function mode(alpha, beta) {
+            return (alpha - 1) / (alpha + beta - 2);
+          },
+          // return a random sample
+          sample: function sample(alpha, beta) {
+            var u = jStat3.randg(alpha);
+            return u / (u + jStat3.randg(beta));
+          },
+          variance: function variance(alpha, beta) {
+            return alpha * beta / (Math2.pow(alpha + beta, 2) * (alpha + beta + 1));
+          }
+        });
+        jStat3.extend(jStat3.centralF, {
+          // This implementation of the pdf function avoids float overflow
+          // See the way that R calculates this value:
+          // https://svn.r-project.org/R/trunk/src/nmath/df.c
+          pdf: function pdf(x, df1, df2) {
+            var p, q, f;
+            if (x < 0)
+              return 0;
+            if (df1 <= 2) {
+              if (x === 0 && df1 < 2) {
+                return Infinity;
+              }
+              if (x === 0 && df1 === 2) {
+                return 1;
+              }
+              return 1 / jStat3.betafn(df1 / 2, df2 / 2) * Math2.pow(df1 / df2, df1 / 2) * Math2.pow(x, df1 / 2 - 1) * Math2.pow(1 + df1 / df2 * x, -(df1 + df2) / 2);
+            }
+            p = df1 * x / (df2 + x * df1);
+            q = df2 / (df2 + x * df1);
+            f = df1 * q / 2;
+            return f * jStat3.binomial.pdf((df1 - 2) / 2, (df1 + df2 - 2) / 2, p);
+          },
+          cdf: function cdf(x, df1, df2) {
+            if (x < 0)
+              return 0;
+            return jStat3.ibeta(df1 * x / (df1 * x + df2), df1 / 2, df2 / 2);
+          },
+          inv: function inv(x, df1, df2) {
+            return df2 / (df1 * (1 / jStat3.ibetainv(x, df1 / 2, df2 / 2) - 1));
+          },
+          mean: function mean(df1, df2) {
+            return df2 > 2 ? df2 / (df2 - 2) : void 0;
+          },
+          mode: function mode(df1, df2) {
+            return df1 > 2 ? df2 * (df1 - 2) / (df1 * (df2 + 2)) : void 0;
+          },
+          // return a random sample
+          sample: function sample(df1, df2) {
+            var x1 = jStat3.randg(df1 / 2) * 2;
+            var x2 = jStat3.randg(df2 / 2) * 2;
+            return x1 / df1 / (x2 / df2);
+          },
+          variance: function variance(df1, df2) {
+            if (df2 <= 4)
+              return void 0;
+            return 2 * df2 * df2 * (df1 + df2 - 2) / (df1 * (df2 - 2) * (df2 - 2) * (df2 - 4));
+          }
+        });
+        jStat3.extend(jStat3.cauchy, {
+          pdf: function pdf(x, local, scale) {
+            if (scale < 0) {
+              return 0;
+            }
+            return scale / (Math2.pow(x - local, 2) + Math2.pow(scale, 2)) / Math2.PI;
+          },
+          cdf: function cdf(x, local, scale) {
+            return Math2.atan((x - local) / scale) / Math2.PI + 0.5;
+          },
+          inv: function(p, local, scale) {
+            return local + scale * Math2.tan(Math2.PI * (p - 0.5));
+          },
+          median: function median(local) {
+            return local;
+          },
+          mode: function mode(local) {
+            return local;
+          },
+          sample: function sample(local, scale) {
+            return jStat3.randn() * Math2.sqrt(1 / (2 * jStat3.randg(0.5))) * scale + local;
+          }
+        });
+        jStat3.extend(jStat3.chisquare, {
+          pdf: function pdf(x, dof) {
+            if (x < 0)
+              return 0;
+            return x === 0 && dof === 2 ? 0.5 : Math2.exp((dof / 2 - 1) * Math2.log(x) - x / 2 - dof / 2 * Math2.log(2) - jStat3.gammaln(dof / 2));
+          },
+          cdf: function cdf(x, dof) {
+            if (x < 0)
+              return 0;
+            return jStat3.lowRegGamma(dof / 2, x / 2);
+          },
+          inv: function(p, dof) {
+            return 2 * jStat3.gammapinv(p, 0.5 * dof);
+          },
+          mean: function(dof) {
+            return dof;
+          },
+          // TODO: this is an approximation (is there a better way?)
+          median: function median(dof) {
+            return dof * Math2.pow(1 - 2 / (9 * dof), 3);
+          },
+          mode: function mode(dof) {
+            return dof - 2 > 0 ? dof - 2 : 0;
+          },
+          sample: function sample(dof) {
+            return jStat3.randg(dof / 2) * 2;
+          },
+          variance: function variance(dof) {
+            return 2 * dof;
+          }
+        });
+        jStat3.extend(jStat3.exponential, {
+          pdf: function pdf(x, rate) {
+            return x < 0 ? 0 : rate * Math2.exp(-rate * x);
+          },
+          cdf: function cdf(x, rate) {
+            return x < 0 ? 0 : 1 - Math2.exp(-rate * x);
+          },
+          inv: function(p, rate) {
+            return -Math2.log(1 - p) / rate;
+          },
+          mean: function(rate) {
+            return 1 / rate;
+          },
+          median: function(rate) {
+            return 1 / rate * Math2.log(2);
+          },
+          mode: function mode() {
+            return 0;
+          },
+          sample: function sample(rate) {
+            return -1 / rate * Math2.log(jStat3._random_fn());
+          },
+          variance: function(rate) {
+            return Math2.pow(rate, -2);
+          }
+        });
+        jStat3.extend(jStat3.gamma, {
+          pdf: function pdf(x, shape, scale) {
+            if (x < 0)
+              return 0;
+            return x === 0 && shape === 1 ? 1 / scale : Math2.exp((shape - 1) * Math2.log(x) - x / scale - jStat3.gammaln(shape) - shape * Math2.log(scale));
+          },
+          cdf: function cdf(x, shape, scale) {
+            if (x < 0)
+              return 0;
+            return jStat3.lowRegGamma(shape, x / scale);
+          },
+          inv: function(p, shape, scale) {
+            return jStat3.gammapinv(p, shape) * scale;
+          },
+          mean: function(shape, scale) {
+            return shape * scale;
+          },
+          mode: function mode(shape, scale) {
+            if (shape > 1) return (shape - 1) * scale;
+            return void 0;
+          },
+          sample: function sample(shape, scale) {
+            return jStat3.randg(shape) * scale;
+          },
+          variance: function variance(shape, scale) {
+            return shape * scale * scale;
+          }
+        });
+        jStat3.extend(jStat3.invgamma, {
+          pdf: function pdf(x, shape, scale) {
+            if (x <= 0)
+              return 0;
+            return Math2.exp(-(shape + 1) * Math2.log(x) - scale / x - jStat3.gammaln(shape) + shape * Math2.log(scale));
+          },
+          cdf: function cdf(x, shape, scale) {
+            if (x <= 0)
+              return 0;
+            return 1 - jStat3.lowRegGamma(shape, scale / x);
+          },
+          inv: function(p, shape, scale) {
+            return scale / jStat3.gammapinv(1 - p, shape);
+          },
+          mean: function(shape, scale) {
+            return shape > 1 ? scale / (shape - 1) : void 0;
+          },
+          mode: function mode(shape, scale) {
+            return scale / (shape + 1);
+          },
+          sample: function sample(shape, scale) {
+            return scale / jStat3.randg(shape);
+          },
+          variance: function variance(shape, scale) {
+            if (shape <= 2)
+              return void 0;
+            return scale * scale / ((shape - 1) * (shape - 1) * (shape - 2));
+          }
+        });
+        jStat3.extend(jStat3.kumaraswamy, {
+          pdf: function pdf(x, alpha, beta) {
+            if (x === 0 && alpha === 1)
+              return beta;
+            else if (x === 1 && beta === 1)
+              return alpha;
+            return Math2.exp(Math2.log(alpha) + Math2.log(beta) + (alpha - 1) * Math2.log(x) + (beta - 1) * Math2.log(1 - Math2.pow(x, alpha)));
+          },
+          cdf: function cdf(x, alpha, beta) {
+            if (x < 0)
+              return 0;
+            else if (x > 1)
+              return 1;
+            return 1 - Math2.pow(1 - Math2.pow(x, alpha), beta);
+          },
+          inv: function inv(p, alpha, beta) {
+            return Math2.pow(1 - Math2.pow(1 - p, 1 / beta), 1 / alpha);
+          },
+          mean: function(alpha, beta) {
+            return beta * jStat3.gammafn(1 + 1 / alpha) * jStat3.gammafn(beta) / jStat3.gammafn(1 + 1 / alpha + beta);
+          },
+          median: function median(alpha, beta) {
+            return Math2.pow(1 - Math2.pow(2, -1 / beta), 1 / alpha);
+          },
+          mode: function mode(alpha, beta) {
+            if (!(alpha >= 1 && beta >= 1 && (alpha !== 1 && beta !== 1)))
+              return void 0;
+            return Math2.pow((alpha - 1) / (alpha * beta - 1), 1 / alpha);
+          },
+          variance: function variance() {
+            throw new Error("variance not yet implemented");
+          }
+        });
+        jStat3.extend(jStat3.lognormal, {
+          pdf: function pdf(x, mu, sigma) {
+            if (x <= 0)
+              return 0;
+            return Math2.exp(-Math2.log(x) - 0.5 * Math2.log(2 * Math2.PI) - Math2.log(sigma) - Math2.pow(Math2.log(x) - mu, 2) / (2 * sigma * sigma));
+          },
+          cdf: function cdf(x, mu, sigma) {
+            if (x < 0)
+              return 0;
+            return 0.5 + 0.5 * jStat3.erf((Math2.log(x) - mu) / Math2.sqrt(2 * sigma * sigma));
+          },
+          inv: function(p, mu, sigma) {
+            return Math2.exp(-1.4142135623730951 * sigma * jStat3.erfcinv(2 * p) + mu);
+          },
+          mean: function mean(mu, sigma) {
+            return Math2.exp(mu + sigma * sigma / 2);
+          },
+          median: function median(mu) {
+            return Math2.exp(mu);
+          },
+          mode: function mode(mu, sigma) {
+            return Math2.exp(mu - sigma * sigma);
+          },
+          sample: function sample(mu, sigma) {
+            return Math2.exp(jStat3.randn() * sigma + mu);
+          },
+          variance: function variance(mu, sigma) {
+            return (Math2.exp(sigma * sigma) - 1) * Math2.exp(2 * mu + sigma * sigma);
+          }
+        });
+        jStat3.extend(jStat3.noncentralt, {
+          pdf: function pdf(x, dof, ncp) {
+            var tol = 1e-14;
+            if (Math2.abs(ncp) < tol)
+              return jStat3.studentt.pdf(x, dof);
+            if (Math2.abs(x) < tol) {
+              return Math2.exp(jStat3.gammaln((dof + 1) / 2) - ncp * ncp / 2 - 0.5 * Math2.log(Math2.PI * dof) - jStat3.gammaln(dof / 2));
+            }
+            return dof / x * (jStat3.noncentralt.cdf(x * Math2.sqrt(1 + 2 / dof), dof + 2, ncp) - jStat3.noncentralt.cdf(x, dof, ncp));
+          },
+          cdf: function cdf(x, dof, ncp) {
+            var tol = 1e-14;
+            var min_iterations = 200;
+            if (Math2.abs(ncp) < tol)
+              return jStat3.studentt.cdf(x, dof);
+            var flip = false;
+            if (x < 0) {
+              flip = true;
+              ncp = -ncp;
+            }
+            var prob = jStat3.normal.cdf(-ncp, 0, 1);
+            var value = tol + 1;
+            var lastvalue = value;
+            var y = x * x / (x * x + dof);
+            var j = 0;
+            var p = Math2.exp(-ncp * ncp / 2);
+            var q = Math2.exp(-ncp * ncp / 2 - 0.5 * Math2.log(2) - jStat3.gammaln(3 / 2)) * ncp;
+            while (j < min_iterations || lastvalue > tol || value > tol) {
+              lastvalue = value;
+              if (j > 0) {
+                p *= ncp * ncp / (2 * j);
+                q *= ncp * ncp / (2 * (j + 1 / 2));
+              }
+              value = p * jStat3.beta.cdf(y, j + 0.5, dof / 2) + q * jStat3.beta.cdf(y, j + 1, dof / 2);
+              prob += 0.5 * value;
+              j++;
+            }
+            return flip ? 1 - prob : prob;
+          }
+        });
+        jStat3.extend(jStat3.normal, {
+          pdf: function pdf(x, mean, std) {
+            return Math2.exp(-0.5 * Math2.log(2 * Math2.PI) - Math2.log(std) - Math2.pow(x - mean, 2) / (2 * std * std));
+          },
+          cdf: function cdf(x, mean, std) {
+            return 0.5 * (1 + jStat3.erf((x - mean) / Math2.sqrt(2 * std * std)));
+          },
+          inv: function(p, mean, std) {
+            return -1.4142135623730951 * std * jStat3.erfcinv(2 * p) + mean;
+          },
+          mean: function(mean) {
+            return mean;
+          },
+          median: function median(mean) {
+            return mean;
+          },
+          mode: function(mean) {
+            return mean;
+          },
+          sample: function sample(mean, std) {
+            return jStat3.randn() * std + mean;
+          },
+          variance: function(mean, std) {
+            return std * std;
+          }
+        });
+        jStat3.extend(jStat3.pareto, {
+          pdf: function pdf(x, scale, shape) {
+            if (x < scale)
+              return 0;
+            return shape * Math2.pow(scale, shape) / Math2.pow(x, shape + 1);
+          },
+          cdf: function cdf(x, scale, shape) {
+            if (x < scale)
+              return 0;
+            return 1 - Math2.pow(scale / x, shape);
+          },
+          inv: function inv(p, scale, shape) {
+            return scale / Math2.pow(1 - p, 1 / shape);
+          },
+          mean: function mean(scale, shape) {
+            if (shape <= 1)
+              return void 0;
+            return shape * Math2.pow(scale, shape) / (shape - 1);
+          },
+          median: function median(scale, shape) {
+            return scale * (shape * Math2.SQRT2);
+          },
+          mode: function mode(scale) {
+            return scale;
+          },
+          variance: function(scale, shape) {
+            if (shape <= 2)
+              return void 0;
+            return scale * scale * shape / (Math2.pow(shape - 1, 2) * (shape - 2));
+          }
+        });
+        jStat3.extend(jStat3.studentt, {
+          pdf: function pdf(x, dof) {
+            dof = dof > 1e100 ? 1e100 : dof;
+            return 1 / (Math2.sqrt(dof) * jStat3.betafn(0.5, dof / 2)) * Math2.pow(1 + x * x / dof, -((dof + 1) / 2));
+          },
+          cdf: function cdf(x, dof) {
+            var dof2 = dof / 2;
+            return jStat3.ibeta((x + Math2.sqrt(x * x + dof)) / (2 * Math2.sqrt(x * x + dof)), dof2, dof2);
+          },
+          inv: function(p, dof) {
+            var x = jStat3.ibetainv(2 * Math2.min(p, 1 - p), 0.5 * dof, 0.5);
+            x = Math2.sqrt(dof * (1 - x) / x);
+            return p > 0.5 ? x : -x;
+          },
+          mean: function mean(dof) {
+            return dof > 1 ? 0 : void 0;
+          },
+          median: function median() {
+            return 0;
+          },
+          mode: function mode() {
+            return 0;
+          },
+          sample: function sample(dof) {
+            return jStat3.randn() * Math2.sqrt(dof / (2 * jStat3.randg(dof / 2)));
+          },
+          variance: function variance(dof) {
+            return dof > 2 ? dof / (dof - 2) : dof > 1 ? Infinity : void 0;
+          }
+        });
+        jStat3.extend(jStat3.weibull, {
+          pdf: function pdf(x, scale, shape) {
+            if (x < 0 || scale < 0 || shape < 0)
+              return 0;
+            return shape / scale * Math2.pow(x / scale, shape - 1) * Math2.exp(-Math2.pow(x / scale, shape));
+          },
+          cdf: function cdf(x, scale, shape) {
+            return x < 0 ? 0 : 1 - Math2.exp(-Math2.pow(x / scale, shape));
+          },
+          inv: function(p, scale, shape) {
+            return scale * Math2.pow(-Math2.log(1 - p), 1 / shape);
+          },
+          mean: function(scale, shape) {
+            return scale * jStat3.gammafn(1 + 1 / shape);
+          },
+          median: function median(scale, shape) {
+            return scale * Math2.pow(Math2.log(2), 1 / shape);
+          },
+          mode: function mode(scale, shape) {
+            if (shape <= 1)
+              return 0;
+            return scale * Math2.pow((shape - 1) / shape, 1 / shape);
+          },
+          sample: function sample(scale, shape) {
+            return scale * Math2.pow(-Math2.log(jStat3._random_fn()), 1 / shape);
+          },
+          variance: function variance(scale, shape) {
+            return scale * scale * jStat3.gammafn(1 + 2 / shape) - Math2.pow(jStat3.weibull.mean(scale, shape), 2);
+          }
+        });
+        jStat3.extend(jStat3.uniform, {
+          pdf: function pdf(x, a, b) {
+            return x < a || x > b ? 0 : 1 / (b - a);
+          },
+          cdf: function cdf(x, a, b) {
+            if (x < a)
+              return 0;
+            else if (x < b)
+              return (x - a) / (b - a);
+            return 1;
+          },
+          inv: function(p, a, b) {
+            return a + p * (b - a);
+          },
+          mean: function mean(a, b) {
+            return 0.5 * (a + b);
+          },
+          median: function median(a, b) {
+            return jStat3.mean(a, b);
+          },
+          mode: function mode() {
+            throw new Error("mode is not yet implemented");
+          },
+          sample: function sample(a, b) {
+            return a / 2 + b / 2 + (b / 2 - a / 2) * (2 * jStat3._random_fn() - 1);
+          },
+          variance: function variance(a, b) {
+            return Math2.pow(b - a, 2) / 12;
+          }
+        });
+        function betinc(x, a, b, eps) {
+          var a0 = 0;
+          var b0 = 1;
+          var a1 = 1;
+          var b1 = 1;
+          var m9 = 0;
+          var a2 = 0;
+          var c9;
+          while (Math2.abs((a1 - a2) / a1) > eps) {
+            a2 = a1;
+            c9 = -(a + m9) * (a + b + m9) * x / (a + 2 * m9) / (a + 2 * m9 + 1);
+            a0 = a1 + c9 * a0;
+            b0 = b1 + c9 * b0;
+            m9 = m9 + 1;
+            c9 = m9 * (b - m9) * x / (a + 2 * m9 - 1) / (a + 2 * m9);
+            a1 = a0 + c9 * a1;
+            b1 = b0 + c9 * b1;
+            a0 = a0 / b1;
+            b0 = b0 / b1;
+            a1 = a1 / b1;
+            b1 = 1;
+          }
+          return a1 / a;
+        }
+        jStat3.extend(jStat3.binomial, {
+          pdf: function pdf(k, n, p) {
+            return p === 0 || p === 1 ? n * p === k ? 1 : 0 : jStat3.combination(n, k) * Math2.pow(p, k) * Math2.pow(1 - p, n - k);
+          },
+          cdf: function cdf(x, n, p) {
+            var betacdf;
+            var eps = 1e-10;
+            if (x < 0)
+              return 0;
+            if (x >= n)
+              return 1;
+            if (p < 0 || p > 1 || n <= 0)
+              return NaN;
+            x = Math2.floor(x);
+            var z = p;
+            var a = x + 1;
+            var b = n - x;
+            var s = a + b;
+            var bt = Math2.exp(jStat3.gammaln(s) - jStat3.gammaln(b) - jStat3.gammaln(a) + a * Math2.log(z) + b * Math2.log(1 - z));
+            if (z < (a + 1) / (s + 2))
+              betacdf = bt * betinc(z, a, b, eps);
+            else
+              betacdf = 1 - bt * betinc(1 - z, b, a, eps);
+            return Math2.round((1 - betacdf) * (1 / eps)) / (1 / eps);
+          }
+        });
+        jStat3.extend(jStat3.negbin, {
+          pdf: function pdf(k, r, p) {
+            if (k !== k >>> 0)
+              return false;
+            if (k < 0)
+              return 0;
+            return jStat3.combination(k + r - 1, r - 1) * Math2.pow(1 - p, k) * Math2.pow(p, r);
+          },
+          cdf: function cdf(x, r, p) {
+            var sum = 0, k = 0;
+            if (x < 0) return 0;
+            for (; k <= x; k++) {
+              sum += jStat3.negbin.pdf(k, r, p);
+            }
+            return sum;
+          }
+        });
+        jStat3.extend(jStat3.hypgeom, {
+          pdf: function pdf(k, N, m, n) {
+            if (k !== k | 0) {
+              return false;
+            } else if (k < 0 || k < m - (N - n)) {
+              return 0;
+            } else if (k > n || k > m) {
+              return 0;
+            } else if (m * 2 > N) {
+              if (n * 2 > N) {
+                return jStat3.hypgeom.pdf(N - m - n + k, N, N - m, N - n);
+              } else {
+                return jStat3.hypgeom.pdf(n - k, N, N - m, n);
+              }
+            } else if (n * 2 > N) {
+              return jStat3.hypgeom.pdf(m - k, N, m, N - n);
+            } else if (m < n) {
+              return jStat3.hypgeom.pdf(k, N, n, m);
+            } else {
+              var scaledPDF = 1;
+              var samplesDone = 0;
+              for (var i = 0; i < k; i++) {
+                while (scaledPDF > 1 && samplesDone < n) {
+                  scaledPDF *= 1 - m / (N - samplesDone);
+                  samplesDone++;
+                }
+                scaledPDF *= (n - i) * (m - i) / ((i + 1) * (N - m - n + i + 1));
+              }
+              for (; samplesDone < n; samplesDone++) {
+                scaledPDF *= 1 - m / (N - samplesDone);
+              }
+              return Math2.min(1, Math2.max(0, scaledPDF));
+            }
+          },
+          cdf: function cdf(x, N, m, n) {
+            if (x < 0 || x < m - (N - n)) {
+              return 0;
+            } else if (x >= n || x >= m) {
+              return 1;
+            } else if (m * 2 > N) {
+              if (n * 2 > N) {
+                return jStat3.hypgeom.cdf(N - m - n + x, N, N - m, N - n);
+              } else {
+                return 1 - jStat3.hypgeom.cdf(n - x - 1, N, N - m, n);
+              }
+            } else if (n * 2 > N) {
+              return 1 - jStat3.hypgeom.cdf(m - x - 1, N, m, N - n);
+            } else if (m < n) {
+              return jStat3.hypgeom.cdf(x, N, n, m);
+            } else {
+              var scaledCDF = 1;
+              var scaledPDF = 1;
+              var samplesDone = 0;
+              for (var i = 0; i < x; i++) {
+                while (scaledCDF > 1 && samplesDone < n) {
+                  var factor = 1 - m / (N - samplesDone);
+                  scaledPDF *= factor;
+                  scaledCDF *= factor;
+                  samplesDone++;
+                }
+                scaledPDF *= (n - i) * (m - i) / ((i + 1) * (N - m - n + i + 1));
+                scaledCDF += scaledPDF;
+              }
+              for (; samplesDone < n; samplesDone++) {
+                scaledCDF *= 1 - m / (N - samplesDone);
+              }
+              return Math2.min(1, Math2.max(0, scaledCDF));
+            }
+          }
+        });
+        jStat3.extend(jStat3.poisson, {
+          pdf: function pdf(k, l) {
+            if (l < 0 || k % 1 !== 0 || k < 0) {
+              return 0;
+            }
+            return Math2.pow(l, k) * Math2.exp(-l) / jStat3.factorial(k);
+          },
+          cdf: function cdf(x, l) {
+            var sumarr = [], k = 0;
+            if (x < 0) return 0;
+            for (; k <= x; k++) {
+              sumarr.push(jStat3.poisson.pdf(k, l));
+            }
+            return jStat3.sum(sumarr);
+          },
+          mean: function(l) {
+            return l;
+          },
+          variance: function(l) {
+            return l;
+          },
+          sampleSmall: function sampleSmall(l) {
+            var p = 1, k = 0, L = Math2.exp(-l);
+            do {
+              k++;
+              p *= jStat3._random_fn();
+            } while (p > L);
+            return k - 1;
+          },
+          sampleLarge: function sampleLarge(l) {
+            var lam = l;
+            var k;
+            var U, V, slam, loglam, a, b, invalpha, vr, us;
+            slam = Math2.sqrt(lam);
+            loglam = Math2.log(lam);
+            b = 0.931 + 2.53 * slam;
+            a = -0.059 + 0.02483 * b;
+            invalpha = 1.1239 + 1.1328 / (b - 3.4);
+            vr = 0.9277 - 3.6224 / (b - 2);
+            while (1) {
+              U = Math2.random() - 0.5;
+              V = Math2.random();
+              us = 0.5 - Math2.abs(U);
+              k = Math2.floor((2 * a / us + b) * U + lam + 0.43);
+              if (us >= 0.07 && V <= vr) {
+                return k;
+              }
+              if (k < 0 || us < 0.013 && V > us) {
+                continue;
+              }
+              if (Math2.log(V) + Math2.log(invalpha) - Math2.log(a / (us * us) + b) <= -lam + k * loglam - jStat3.loggam(k + 1)) {
+                return k;
+              }
+            }
+          },
+          sample: function sample(l) {
+            if (l < 10)
+              return this.sampleSmall(l);
+            else
+              return this.sampleLarge(l);
+          }
+        });
+        jStat3.extend(jStat3.triangular, {
+          pdf: function pdf(x, a, b, c) {
+            if (b <= a || c < a || c > b) {
+              return NaN;
+            } else {
+              if (x < a || x > b) {
+                return 0;
+              } else if (x < c) {
+                return 2 * (x - a) / ((b - a) * (c - a));
+              } else if (x === c) {
+                return 2 / (b - a);
+              } else {
+                return 2 * (b - x) / ((b - a) * (b - c));
+              }
+            }
+          },
+          cdf: function cdf(x, a, b, c) {
+            if (b <= a || c < a || c > b)
+              return NaN;
+            if (x <= a)
+              return 0;
+            else if (x >= b)
+              return 1;
+            if (x <= c)
+              return Math2.pow(x - a, 2) / ((b - a) * (c - a));
+            else
+              return 1 - Math2.pow(b - x, 2) / ((b - a) * (b - c));
+          },
+          inv: function inv(p, a, b, c) {
+            if (b <= a || c < a || c > b) {
+              return NaN;
+            } else {
+              if (p <= (c - a) / (b - a)) {
+                return a + (b - a) * Math2.sqrt(p * ((c - a) / (b - a)));
+              } else {
+                return a + (b - a) * (1 - Math2.sqrt((1 - p) * (1 - (c - a) / (b - a))));
+              }
+            }
+          },
+          mean: function mean(a, b, c) {
+            return (a + b + c) / 3;
+          },
+          median: function median(a, b, c) {
+            if (c <= (a + b) / 2) {
+              return b - Math2.sqrt((b - a) * (b - c)) / Math2.sqrt(2);
+            } else if (c > (a + b) / 2) {
+              return a + Math2.sqrt((b - a) * (c - a)) / Math2.sqrt(2);
+            }
+          },
+          mode: function mode(a, b, c) {
+            return c;
+          },
+          sample: function sample(a, b, c) {
+            var u = jStat3._random_fn();
+            if (u < (c - a) / (b - a))
+              return a + Math2.sqrt(u * (b - a) * (c - a));
+            return b - Math2.sqrt((1 - u) * (b - a) * (b - c));
+          },
+          variance: function variance(a, b, c) {
+            return (a * a + b * b + c * c - a * b - a * c - b * c) / 18;
+          }
+        });
+        jStat3.extend(jStat3.arcsine, {
+          pdf: function pdf(x, a, b) {
+            if (b <= a) return NaN;
+            return x <= a || x >= b ? 0 : 2 / Math2.PI * Math2.pow(Math2.pow(b - a, 2) - Math2.pow(2 * x - a - b, 2), -0.5);
+          },
+          cdf: function cdf(x, a, b) {
+            if (x < a)
+              return 0;
+            else if (x < b)
+              return 2 / Math2.PI * Math2.asin(Math2.sqrt((x - a) / (b - a)));
+            return 1;
+          },
+          inv: function(p, a, b) {
+            return a + (0.5 - 0.5 * Math2.cos(Math2.PI * p)) * (b - a);
+          },
+          mean: function mean(a, b) {
+            if (b <= a) return NaN;
+            return (a + b) / 2;
+          },
+          median: function median(a, b) {
+            if (b <= a) return NaN;
+            return (a + b) / 2;
+          },
+          mode: function mode() {
+            throw new Error("mode is not yet implemented");
+          },
+          sample: function sample(a, b) {
+            return (a + b) / 2 + (b - a) / 2 * Math2.sin(2 * Math2.PI * jStat3.uniform.sample(0, 1));
+          },
+          variance: function variance(a, b) {
+            if (b <= a) return NaN;
+            return Math2.pow(b - a, 2) / 8;
+          }
+        });
+        function laplaceSign(x) {
+          return x / Math2.abs(x);
+        }
+        jStat3.extend(jStat3.laplace, {
+          pdf: function pdf(x, mu, b) {
+            return b <= 0 ? 0 : Math2.exp(-Math2.abs(x - mu) / b) / (2 * b);
+          },
+          cdf: function cdf(x, mu, b) {
+            if (b <= 0) {
+              return 0;
+            }
+            if (x < mu) {
+              return 0.5 * Math2.exp((x - mu) / b);
+            } else {
+              return 1 - 0.5 * Math2.exp(-(x - mu) / b);
+            }
+          },
+          mean: function(mu) {
+            return mu;
+          },
+          median: function(mu) {
+            return mu;
+          },
+          mode: function(mu) {
+            return mu;
+          },
+          variance: function(mu, b) {
+            return 2 * b * b;
+          },
+          sample: function sample(mu, b) {
+            var u = jStat3._random_fn() - 0.5;
+            return mu - b * laplaceSign(u) * Math2.log(1 - 2 * Math2.abs(u));
+          }
+        });
+        function tukeyWprob(w, rr, cc) {
+          var nleg = 12;
+          var ihalf = 6;
+          var C1 = -30;
+          var C2 = -50;
+          var C3 = 60;
+          var bb = 8;
+          var wlar = 3;
+          var wincr1 = 2;
+          var wincr2 = 3;
+          var xleg = [
+            0.9815606342467192,
+            0.9041172563704749,
+            0.7699026741943047,
+            0.5873179542866175,
+            0.3678314989981802,
+            0.1252334085114689
+          ];
+          var aleg = [
+            0.04717533638651183,
+            0.10693932599531843,
+            0.16007832854334622,
+            0.20316742672306592,
+            0.2334925365383548,
+            0.24914704581340277
+          ];
+          var qsqz = w * 0.5;
+          if (qsqz >= bb)
+            return 1;
+          var pr_w = 2 * jStat3.normal.cdf(qsqz, 0, 1, 1, 0) - 1;
+          if (pr_w >= Math2.exp(C2 / cc))
+            pr_w = Math2.pow(pr_w, cc);
+          else
+            pr_w = 0;
+          var wincr;
+          if (w > wlar)
+            wincr = wincr1;
+          else
+            wincr = wincr2;
+          var blb = qsqz;
+          var binc = (bb - qsqz) / wincr;
+          var bub = blb + binc;
+          var einsum = 0;
+          var cc1 = cc - 1;
+          for (var wi = 1; wi <= wincr; wi++) {
+            var elsum = 0;
+            var a = 0.5 * (bub + blb);
+            var b = 0.5 * (bub - blb);
+            for (var jj = 1; jj <= nleg; jj++) {
+              var j, xx;
+              if (ihalf < jj) {
+                j = nleg - jj + 1;
+                xx = xleg[j - 1];
+              } else {
+                j = jj;
+                xx = -xleg[j - 1];
+              }
+              var c = b * xx;
+              var ac = a + c;
+              var qexpo = ac * ac;
+              if (qexpo > C3)
+                break;
+              var pplus = 2 * jStat3.normal.cdf(ac, 0, 1, 1, 0);
+              var pminus = 2 * jStat3.normal.cdf(ac, w, 1, 1, 0);
+              var rinsum = pplus * 0.5 - pminus * 0.5;
+              if (rinsum >= Math2.exp(C1 / cc1)) {
+                rinsum = aleg[j - 1] * Math2.exp(-(0.5 * qexpo)) * Math2.pow(rinsum, cc1);
+                elsum += rinsum;
+              }
+            }
+            elsum *= 2 * b * cc / Math2.sqrt(2 * Math2.PI);
+            einsum += elsum;
+            blb = bub;
+            bub += binc;
+          }
+          pr_w += einsum;
+          if (pr_w <= Math2.exp(C1 / rr))
+            return 0;
+          pr_w = Math2.pow(pr_w, rr);
+          if (pr_w >= 1)
+            return 1;
+          return pr_w;
+        }
+        function tukeyQinv(p, c, v) {
+          var p0 = 0.322232421088;
+          var q0 = 0.099348462606;
+          var p1 = -1;
+          var q1 = 0.588581570495;
+          var p2 = -0.342242088547;
+          var q2 = 0.531103462366;
+          var p3 = -0.204231210125;
+          var q3 = 0.10353775285;
+          var p4 = -453642210148e-16;
+          var q4 = 0.0038560700634;
+          var c1 = 0.8832;
+          var c2 = 0.2368;
+          var c3 = 1.214;
+          var c4 = 1.208;
+          var c5 = 1.4142;
+          var vmax = 120;
+          var ps = 0.5 - 0.5 * p;
+          var yi = Math2.sqrt(Math2.log(1 / (ps * ps)));
+          var t = yi + ((((yi * p4 + p3) * yi + p2) * yi + p1) * yi + p0) / ((((yi * q4 + q3) * yi + q2) * yi + q1) * yi + q0);
+          if (v < vmax) t += (t * t * t + t) / v / 4;
+          var q = c1 - c2 * t;
+          if (v < vmax) q += -c3 / v + c4 * t / v;
+          return t * (q * Math2.log(c - 1) + c5);
+        }
+        jStat3.extend(jStat3.tukey, {
+          cdf: function cdf(q, nmeans, df) {
+            var rr = 1;
+            var cc = nmeans;
+            var nlegq = 16;
+            var ihalfq = 8;
+            var eps1 = -30;
+            var eps2 = 1e-14;
+            var dhaf = 100;
+            var dquar = 800;
+            var deigh = 5e3;
+            var dlarg = 25e3;
+            var ulen1 = 1;
+            var ulen2 = 0.5;
+            var ulen3 = 0.25;
+            var ulen4 = 0.125;
+            var xlegq = [
+              0.9894009349916499,
+              0.9445750230732326,
+              0.8656312023878318,
+              0.755404408355003,
+              0.6178762444026438,
+              0.45801677765722737,
+              0.2816035507792589,
+              0.09501250983763744
+            ];
+            var alegq = [
+              0.027152459411754096,
+              0.062253523938647894,
+              0.09515851168249279,
+              0.12462897125553388,
+              0.14959598881657674,
+              0.16915651939500254,
+              0.18260341504492358,
+              0.1894506104550685
+            ];
+            if (q <= 0)
+              return 0;
+            if (df < 2 || rr < 1 || cc < 2) return NaN;
+            if (!Number.isFinite(q))
+              return 1;
+            if (df > dlarg)
+              return tukeyWprob(q, rr, cc);
+            var f2 = df * 0.5;
+            var f2lf = f2 * Math2.log(df) - df * Math2.log(2) - jStat3.gammaln(f2);
+            var f21 = f2 - 1;
+            var ff4 = df * 0.25;
+            var ulen;
+            if (df <= dhaf) ulen = ulen1;
+            else if (df <= dquar) ulen = ulen2;
+            else if (df <= deigh) ulen = ulen3;
+            else ulen = ulen4;
+            f2lf += Math2.log(ulen);
+            var ans = 0;
+            for (var i = 1; i <= 50; i++) {
+              var otsum = 0;
+              var twa1 = (2 * i - 1) * ulen;
+              for (var jj = 1; jj <= nlegq; jj++) {
+                var j, t1;
+                if (ihalfq < jj) {
+                  j = jj - ihalfq - 1;
+                  t1 = f2lf + f21 * Math2.log(twa1 + xlegq[j] * ulen) - (xlegq[j] * ulen + twa1) * ff4;
+                } else {
+                  j = jj - 1;
+                  t1 = f2lf + f21 * Math2.log(twa1 - xlegq[j] * ulen) + (xlegq[j] * ulen - twa1) * ff4;
+                }
+                var qsqz;
+                if (t1 >= eps1) {
+                  if (ihalfq < jj) {
+                    qsqz = q * Math2.sqrt((xlegq[j] * ulen + twa1) * 0.5);
+                  } else {
+                    qsqz = q * Math2.sqrt((-(xlegq[j] * ulen) + twa1) * 0.5);
+                  }
+                  var wprb = tukeyWprob(qsqz, rr, cc);
+                  var rotsum = wprb * alegq[j] * Math2.exp(t1);
+                  otsum += rotsum;
+                }
+              }
+              if (i * ulen >= 1 && otsum <= eps2)
+                break;
+              ans += otsum;
+            }
+            if (otsum > eps2) {
+              throw new Error("tukey.cdf failed to converge");
+            }
+            if (ans > 1)
+              ans = 1;
+            return ans;
+          },
+          inv: function(p, nmeans, df) {
+            var rr = 1;
+            var cc = nmeans;
+            var eps = 1e-4;
+            var maxiter = 50;
+            if (df < 2 || rr < 1 || cc < 2) return NaN;
+            if (p < 0 || p > 1) return NaN;
+            if (p === 0) return 0;
+            if (p === 1) return Infinity;
+            var x0 = tukeyQinv(p, cc, df);
+            var valx0 = jStat3.tukey.cdf(x0, nmeans, df) - p;
+            var x1;
+            if (valx0 > 0)
+              x1 = Math2.max(0, x0 - 1);
+            else
+              x1 = x0 + 1;
+            var valx1 = jStat3.tukey.cdf(x1, nmeans, df) - p;
+            var ans;
+            for (var iter = 1; iter < maxiter; iter++) {
+              ans = x1 - valx1 * (x1 - x0) / (valx1 - valx0);
+              valx0 = valx1;
+              x0 = x1;
+              if (ans < 0) {
+                ans = 0;
+                valx1 = -p;
+              }
+              valx1 = jStat3.tukey.cdf(ans, nmeans, df) - p;
+              x1 = ans;
+              var xabs = Math2.abs(x1 - x0);
+              if (xabs < eps)
+                return ans;
+            }
+            throw new Error("tukey.inv failed to converge");
+          }
+        });
+      })(jStat2, Math);
+      (function(jStat3, Math2) {
+        var push = Array.prototype.push;
+        var isArray = jStat3.utils.isArray;
+        function isUsable(arg) {
+          return isArray(arg) || arg instanceof jStat3;
+        }
+        jStat3.extend({
+          // add a vector/matrix to a vector/matrix or scalar
+          add: function add(arr, arg) {
+            if (isUsable(arg)) {
+              if (!isUsable(arg[0])) arg = [arg];
+              return jStat3.map(arr, function(value, row, col) {
+                return value + arg[row][col];
+              });
+            }
+            return jStat3.map(arr, function(value) {
+              return value + arg;
+            });
+          },
+          // subtract a vector or scalar from the vector
+          subtract: function subtract(arr, arg) {
+            if (isUsable(arg)) {
+              if (!isUsable(arg[0])) arg = [arg];
+              return jStat3.map(arr, function(value, row, col) {
+                return value - arg[row][col] || 0;
+              });
+            }
+            return jStat3.map(arr, function(value) {
+              return value - arg;
+            });
+          },
+          // matrix division
+          divide: function divide(arr, arg) {
+            if (isUsable(arg)) {
+              if (!isUsable(arg[0])) arg = [arg];
+              return jStat3.multiply(arr, jStat3.inv(arg));
+            }
+            return jStat3.map(arr, function(value) {
+              return value / arg;
+            });
+          },
+          // matrix multiplication
+          multiply: function multiply(arr, arg) {
+            var row, col, nrescols, sum, nrow, ncol, res, rescols;
+            if (arr.length === void 0 && arg.length === void 0) {
+              return arr * arg;
+            }
+            nrow = arr.length, ncol = arr[0].length, res = jStat3.zeros(nrow, nrescols = isUsable(arg) ? arg[0].length : ncol), rescols = 0;
+            if (isUsable(arg)) {
+              for (; rescols < nrescols; rescols++) {
+                for (row = 0; row < nrow; row++) {
+                  sum = 0;
+                  for (col = 0; col < ncol; col++)
+                    sum += arr[row][col] * arg[col][rescols];
+                  res[row][rescols] = sum;
+                }
+              }
+              return nrow === 1 && rescols === 1 ? res[0][0] : res;
+            }
+            return jStat3.map(arr, function(value) {
+              return value * arg;
+            });
+          },
+          // outer([1,2,3],[4,5,6])
+          // ===
+          // [[1],[2],[3]] times [[4,5,6]]
+          // ->
+          // [[4,5,6],[8,10,12],[12,15,18]]
+          outer: function outer(A, B) {
+            return jStat3.multiply(A.map(function(t) {
+              return [t];
+            }), [B]);
+          },
+          // Returns the dot product of two matricies
+          dot: function dot(arr, arg) {
+            if (!isUsable(arr[0])) arr = [arr];
+            if (!isUsable(arg[0])) arg = [arg];
+            var left = arr[0].length === 1 && arr.length !== 1 ? jStat3.transpose(arr) : arr, right = arg[0].length === 1 && arg.length !== 1 ? jStat3.transpose(arg) : arg, res = [], row = 0, nrow = left.length, ncol = left[0].length, sum, col;
+            for (; row < nrow; row++) {
+              res[row] = [];
+              sum = 0;
+              for (col = 0; col < ncol; col++)
+                sum += left[row][col] * right[row][col];
+              res[row] = sum;
+            }
+            return res.length === 1 ? res[0] : res;
+          },
+          // raise every element by a scalar
+          pow: function pow(arr, arg) {
+            return jStat3.map(arr, function(value) {
+              return Math2.pow(value, arg);
+            });
+          },
+          // exponentiate every element
+          exp: function exp(arr) {
+            return jStat3.map(arr, function(value) {
+              return Math2.exp(value);
+            });
+          },
+          // generate the natural log of every element
+          log: function exp(arr) {
+            return jStat3.map(arr, function(value) {
+              return Math2.log(value);
+            });
+          },
+          // generate the absolute values of the vector
+          abs: function abs(arr) {
+            return jStat3.map(arr, function(value) {
+              return Math2.abs(value);
+            });
+          },
+          // computes the p-norm of the vector
+          // In the case that a matrix is passed, uses the first row as the vector
+          norm: function norm(arr, p) {
+            var nnorm = 0, i = 0;
+            if (isNaN(p)) p = 2;
+            if (isUsable(arr[0])) arr = arr[0];
+            for (; i < arr.length; i++) {
+              nnorm += Math2.pow(Math2.abs(arr[i]), p);
+            }
+            return Math2.pow(nnorm, 1 / p);
+          },
+          // computes the angle between two vectors in rads
+          // In case a matrix is passed, this uses the first row as the vector
+          angle: function angle(arr, arg) {
+            return Math2.acos(jStat3.dot(arr, arg) / (jStat3.norm(arr) * jStat3.norm(arg)));
+          },
+          // augment one matrix by another
+          // Note: this function returns a matrix, not a jStat object
+          aug: function aug(a, b) {
+            var newarr = [];
+            var i;
+            for (i = 0; i < a.length; i++) {
+              newarr.push(a[i].slice());
+            }
+            for (i = 0; i < newarr.length; i++) {
+              push.apply(newarr[i], b[i]);
+            }
+            return newarr;
+          },
+          // The inv() function calculates the inverse of a matrix
+          // Create the inverse by augmenting the matrix by the identity matrix of the
+          // appropriate size, and then use G-J elimination on the augmented matrix.
+          inv: function inv(a) {
+            var rows = a.length;
+            var cols = a[0].length;
+            var b = jStat3.identity(rows, cols);
+            var c = jStat3.gauss_jordan(a, b);
+            var result = [];
+            var i = 0;
+            var j;
+            for (; i < rows; i++) {
+              result[i] = [];
+              for (j = cols; j < c[0].length; j++)
+                result[i][j - cols] = c[i][j];
+            }
+            return result;
+          },
+          // calculate the determinant of a matrix
+          det: function det(a) {
+            if (a.length === 2) {
+              return a[0][0] * a[1][1] - a[0][1] * a[1][0];
+            }
+            var determinant = 0;
+            for (var i = 0; i < a.length; i++) {
+              var submatrix = [];
+              for (var row = 1; row < a.length; row++) {
+                submatrix[row - 1] = [];
+                for (var col = 0; col < a.length; col++) {
+                  if (col < i) {
+                    submatrix[row - 1][col] = a[row][col];
+                  } else if (col > i) {
+                    submatrix[row - 1][col - 1] = a[row][col];
+                  }
+                }
+              }
+              var sign = i % 2 ? -1 : 1;
+              determinant += det(submatrix) * a[0][i] * sign;
+            }
+            return determinant;
+          },
+          gauss_elimination: function gauss_elimination(a, b) {
+            var i = 0, j = 0, n = a.length, m = a[0].length, factor = 1, sum = 0, x = [], maug, pivot, temp, k;
+            a = jStat3.aug(a, b);
+            maug = a[0].length;
+            for (i = 0; i < n; i++) {
+              pivot = a[i][i];
+              j = i;
+              for (k = i + 1; k < m; k++) {
+                if (pivot < Math2.abs(a[k][i])) {
+                  pivot = a[k][i];
+                  j = k;
+                }
+              }
+              if (j != i) {
+                for (k = 0; k < maug; k++) {
+                  temp = a[i][k];
+                  a[i][k] = a[j][k];
+                  a[j][k] = temp;
+                }
+              }
+              for (j = i + 1; j < n; j++) {
+                factor = a[j][i] / a[i][i];
+                for (k = i; k < maug; k++) {
+                  a[j][k] = a[j][k] - factor * a[i][k];
+                }
+              }
+            }
+            for (i = n - 1; i >= 0; i--) {
+              sum = 0;
+              for (j = i + 1; j <= n - 1; j++) {
+                sum = sum + x[j] * a[i][j];
+              }
+              x[i] = (a[i][maug - 1] - sum) / a[i][i];
+            }
+            return x;
+          },
+          gauss_jordan: function gauss_jordan(a, b) {
+            var m = jStat3.aug(a, b);
+            var h = m.length;
+            var w = m[0].length;
+            var c = 0;
+            var x, y, y2;
+            for (y = 0; y < h; y++) {
+              var maxrow = y;
+              for (y2 = y + 1; y2 < h; y2++) {
+                if (Math2.abs(m[y2][y]) > Math2.abs(m[maxrow][y]))
+                  maxrow = y2;
+              }
+              var tmp = m[y];
+              m[y] = m[maxrow];
+              m[maxrow] = tmp;
+              for (y2 = y + 1; y2 < h; y2++) {
+                c = m[y2][y] / m[y][y];
+                for (x = y; x < w; x++) {
+                  m[y2][x] -= m[y][x] * c;
+                }
+              }
+            }
+            for (y = h - 1; y >= 0; y--) {
+              c = m[y][y];
+              for (y2 = 0; y2 < y; y2++) {
+                for (x = w - 1; x > y - 1; x--) {
+                  m[y2][x] -= m[y][x] * m[y2][y] / c;
+                }
+              }
+              m[y][y] /= c;
+              for (x = h; x < w; x++) {
+                m[y][x] /= c;
+              }
+            }
+            return m;
+          },
+          // solve equation
+          // Ax=b
+          // A is upper triangular matrix
+          // A=[[1,2,3],[0,4,5],[0,6,7]]
+          // b=[1,2,3]
+          // triaUpSolve(A,b) // -> [2.666,0.1666,1.666]
+          // if you use matrix style
+          // A=[[1,2,3],[0,4,5],[0,6,7]]
+          // b=[[1],[2],[3]]
+          // will return [[2.666],[0.1666],[1.666]]
+          triaUpSolve: function triaUpSolve(A, b) {
+            var size = A[0].length;
+            var x = jStat3.zeros(1, size)[0];
+            var parts;
+            var matrix_mode = false;
+            if (b[0].length != void 0) {
+              b = b.map(function(i) {
+                return i[0];
+              });
+              matrix_mode = true;
+            }
+            jStat3.arange(size - 1, -1, -1).forEach(function(i) {
+              parts = jStat3.arange(i + 1, size).map(function(j) {
+                return x[j] * A[i][j];
+              });
+              x[i] = (b[i] - jStat3.sum(parts)) / A[i][i];
+            });
+            if (matrix_mode)
+              return x.map(function(i) {
+                return [i];
+              });
+            return x;
+          },
+          triaLowSolve: function triaLowSolve(A, b) {
+            var size = A[0].length;
+            var x = jStat3.zeros(1, size)[0];
+            var parts;
+            var matrix_mode = false;
+            if (b[0].length != void 0) {
+              b = b.map(function(i) {
+                return i[0];
+              });
+              matrix_mode = true;
+            }
+            jStat3.arange(size).forEach(function(i) {
+              parts = jStat3.arange(i).map(function(j) {
+                return A[i][j] * x[j];
+              });
+              x[i] = (b[i] - jStat3.sum(parts)) / A[i][i];
+            });
+            if (matrix_mode)
+              return x.map(function(i) {
+                return [i];
+              });
+            return x;
+          },
+          // A -> [L,U]
+          // A=LU
+          // L is lower triangular matrix
+          // U is upper triangular matrix
+          lu: function lu(A) {
+            var size = A.length;
+            var L = jStat3.identity(size);
+            var R = jStat3.zeros(A.length, A[0].length);
+            var parts;
+            jStat3.arange(size).forEach(function(t) {
+              R[0][t] = A[0][t];
+            });
+            jStat3.arange(1, size).forEach(function(l) {
+              jStat3.arange(l).forEach(function(i) {
+                parts = jStat3.arange(i).map(function(jj) {
+                  return L[l][jj] * R[jj][i];
+                });
+                L[l][i] = (A[l][i] - jStat3.sum(parts)) / R[i][i];
+              });
+              jStat3.arange(l, size).forEach(function(j) {
+                parts = jStat3.arange(l).map(function(jj) {
+                  return L[l][jj] * R[jj][j];
+                });
+                R[l][j] = A[parts.length][j] - jStat3.sum(parts);
+              });
+            });
+            return [L, R];
+          },
+          // A -> T
+          // A=TT'
+          // T is lower triangular matrix
+          cholesky: function cholesky(A) {
+            var size = A.length;
+            var T = jStat3.zeros(A.length, A[0].length);
+            var parts;
+            jStat3.arange(size).forEach(function(i) {
+              parts = jStat3.arange(i).map(function(t) {
+                return Math2.pow(T[i][t], 2);
+              });
+              T[i][i] = Math2.sqrt(A[i][i] - jStat3.sum(parts));
+              jStat3.arange(i + 1, size).forEach(function(j) {
+                parts = jStat3.arange(i).map(function(t) {
+                  return T[i][t] * T[j][t];
+                });
+                T[j][i] = (A[i][j] - jStat3.sum(parts)) / T[i][i];
+              });
+            });
+            return T;
+          },
+          gauss_jacobi: function gauss_jacobi(a, b, x, r) {
+            var i = 0;
+            var j = 0;
+            var n = a.length;
+            var l = [];
+            var u = [];
+            var d = [];
+            var xv, c, h, xk;
+            for (; i < n; i++) {
+              l[i] = [];
+              u[i] = [];
+              d[i] = [];
+              for (j = 0; j < n; j++) {
+                if (i > j) {
+                  l[i][j] = a[i][j];
+                  u[i][j] = d[i][j] = 0;
+                } else if (i < j) {
+                  u[i][j] = a[i][j];
+                  l[i][j] = d[i][j] = 0;
+                } else {
+                  d[i][j] = a[i][j];
+                  l[i][j] = u[i][j] = 0;
+                }
+              }
+            }
+            h = jStat3.multiply(jStat3.multiply(jStat3.inv(d), jStat3.add(l, u)), -1);
+            c = jStat3.multiply(jStat3.inv(d), b);
+            xv = x;
+            xk = jStat3.add(jStat3.multiply(h, x), c);
+            i = 2;
+            while (Math2.abs(jStat3.norm(jStat3.subtract(xk, xv))) > r) {
+              xv = xk;
+              xk = jStat3.add(jStat3.multiply(h, xv), c);
+              i++;
+            }
+            return xk;
+          },
+          gauss_seidel: function gauss_seidel(a, b, x, r) {
+            var i = 0;
+            var n = a.length;
+            var l = [];
+            var u = [];
+            var d = [];
+            var j, xv, c, h, xk;
+            for (; i < n; i++) {
+              l[i] = [];
+              u[i] = [];
+              d[i] = [];
+              for (j = 0; j < n; j++) {
+                if (i > j) {
+                  l[i][j] = a[i][j];
+                  u[i][j] = d[i][j] = 0;
+                } else if (i < j) {
+                  u[i][j] = a[i][j];
+                  l[i][j] = d[i][j] = 0;
+                } else {
+                  d[i][j] = a[i][j];
+                  l[i][j] = u[i][j] = 0;
+                }
+              }
+            }
+            h = jStat3.multiply(jStat3.multiply(jStat3.inv(jStat3.add(d, l)), u), -1);
+            c = jStat3.multiply(jStat3.inv(jStat3.add(d, l)), b);
+            xv = x;
+            xk = jStat3.add(jStat3.multiply(h, x), c);
+            i = 2;
+            while (Math2.abs(jStat3.norm(jStat3.subtract(xk, xv))) > r) {
+              xv = xk;
+              xk = jStat3.add(jStat3.multiply(h, xv), c);
+              i = i + 1;
+            }
+            return xk;
+          },
+          SOR: function SOR(a, b, x, r, w) {
+            var i = 0;
+            var n = a.length;
+            var l = [];
+            var u = [];
+            var d = [];
+            var j, xv, c, h, xk;
+            for (; i < n; i++) {
+              l[i] = [];
+              u[i] = [];
+              d[i] = [];
+              for (j = 0; j < n; j++) {
+                if (i > j) {
+                  l[i][j] = a[i][j];
+                  u[i][j] = d[i][j] = 0;
+                } else if (i < j) {
+                  u[i][j] = a[i][j];
+                  l[i][j] = d[i][j] = 0;
+                } else {
+                  d[i][j] = a[i][j];
+                  l[i][j] = u[i][j] = 0;
+                }
+              }
+            }
+            h = jStat3.multiply(
+              jStat3.inv(jStat3.add(d, jStat3.multiply(l, w))),
+              jStat3.subtract(
+                jStat3.multiply(d, 1 - w),
+                jStat3.multiply(u, w)
+              )
+            );
+            c = jStat3.multiply(jStat3.multiply(jStat3.inv(jStat3.add(
+              d,
+              jStat3.multiply(l, w)
+            )), b), w);
+            xv = x;
+            xk = jStat3.add(jStat3.multiply(h, x), c);
+            i = 2;
+            while (Math2.abs(jStat3.norm(jStat3.subtract(xk, xv))) > r) {
+              xv = xk;
+              xk = jStat3.add(jStat3.multiply(h, xv), c);
+              i++;
+            }
+            return xk;
+          },
+          householder: function householder(a) {
+            var m = a.length;
+            var n = a[0].length;
+            var i = 0;
+            var w = [];
+            var p = [];
+            var alpha, r, k, j, factor;
+            for (; i < m - 1; i++) {
+              alpha = 0;
+              for (j = i + 1; j < n; j++)
+                alpha += a[j][i] * a[j][i];
+              factor = a[i + 1][i] > 0 ? -1 : 1;
+              alpha = factor * Math2.sqrt(alpha);
+              r = Math2.sqrt((alpha * alpha - a[i + 1][i] * alpha) / 2);
+              w = jStat3.zeros(m, 1);
+              w[i + 1][0] = (a[i + 1][i] - alpha) / (2 * r);
+              for (k = i + 2; k < m; k++) w[k][0] = a[k][i] / (2 * r);
+              p = jStat3.subtract(
+                jStat3.identity(m, n),
+                jStat3.multiply(jStat3.multiply(w, jStat3.transpose(w)), 2)
+              );
+              a = jStat3.multiply(p, jStat3.multiply(a, p));
+            }
+            return a;
+          },
+          // A -> [Q,R]
+          // Q is orthogonal matrix
+          // R is upper triangular
+          QR: (function() {
+            var sum = jStat3.sum;
+            var range = jStat3.arange;
+            function qr2(x) {
+              var n = x.length;
+              var p = x[0].length;
+              var r = jStat3.zeros(p, p);
+              x = jStat3.copy(x);
+              var i, j, k;
+              for (j = 0; j < p; j++) {
+                r[j][j] = Math2.sqrt(sum(range(n).map(function(i2) {
+                  return x[i2][j] * x[i2][j];
+                })));
+                for (i = 0; i < n; i++) {
+                  x[i][j] = x[i][j] / r[j][j];
+                }
+                for (k = j + 1; k < p; k++) {
+                  r[j][k] = sum(range(n).map(function(i2) {
+                    return x[i2][j] * x[i2][k];
+                  }));
+                  for (i = 0; i < n; i++) {
+                    x[i][k] = x[i][k] - x[i][j] * r[j][k];
+                  }
+                }
+              }
+              return [x, r];
+            }
+            return qr2;
+          })(),
+          lstsq: /* @__PURE__ */ (function() {
+            function R_I(A) {
+              A = jStat3.copy(A);
+              var size = A.length;
+              var I = jStat3.identity(size);
+              jStat3.arange(size - 1, -1, -1).forEach(function(i) {
+                jStat3.sliceAssign(
+                  I,
+                  { row: i },
+                  jStat3.divide(jStat3.slice(I, { row: i }), A[i][i])
+                );
+                jStat3.sliceAssign(
+                  A,
+                  { row: i },
+                  jStat3.divide(jStat3.slice(A, { row: i }), A[i][i])
+                );
+                jStat3.arange(i).forEach(function(j) {
+                  var c = jStat3.multiply(A[j][i], -1);
+                  var Aj = jStat3.slice(A, { row: j });
+                  var cAi = jStat3.multiply(jStat3.slice(A, { row: i }), c);
+                  jStat3.sliceAssign(A, { row: j }, jStat3.add(Aj, cAi));
+                  var Ij = jStat3.slice(I, { row: j });
+                  var cIi = jStat3.multiply(jStat3.slice(I, { row: i }), c);
+                  jStat3.sliceAssign(I, { row: j }, jStat3.add(Ij, cIi));
+                });
+              });
+              return I;
+            }
+            function qr_solve(A, b) {
+              var array_mode = false;
+              if (b[0].length === void 0) {
+                b = b.map(function(x2) {
+                  return [x2];
+                });
+                array_mode = true;
+              }
+              var QR = jStat3.QR(A);
+              var Q = QR[0];
+              var R = QR[1];
+              var attrs = A[0].length;
+              var Q1 = jStat3.slice(Q, { col: { end: attrs } });
+              var R1 = jStat3.slice(R, { row: { end: attrs } });
+              var RI = R_I(R1);
+              var Q2 = jStat3.transpose(Q1);
+              if (Q2[0].length === void 0) {
+                Q2 = [Q2];
+              }
+              var x = jStat3.multiply(jStat3.multiply(RI, Q2), b);
+              if (x.length === void 0) {
+                x = [[x]];
+              }
+              if (array_mode)
+                return x.map(function(i) {
+                  return i[0];
+                });
+              return x;
+            }
+            return qr_solve;
+          })(),
+          jacobi: function jacobi(a) {
+            var condition = 1;
+            var n = a.length;
+            var e = jStat3.identity(n, n);
+            var ev = [];
+            var b, i, j, p, q, maxim, theta, s;
+            while (condition === 1) {
+              maxim = a[0][1];
+              p = 0;
+              q = 1;
+              for (i = 0; i < n; i++) {
+                for (j = 0; j < n; j++) {
+                  if (i != j) {
+                    if (maxim < Math2.abs(a[i][j])) {
+                      maxim = Math2.abs(a[i][j]);
+                      p = i;
+                      q = j;
+                    }
+                  }
+                }
+              }
+              if (a[p][p] === a[q][q])
+                theta = a[p][q] > 0 ? Math2.PI / 4 : -Math2.PI / 4;
+              else
+                theta = Math2.atan(2 * a[p][q] / (a[p][p] - a[q][q])) / 2;
+              s = jStat3.identity(n, n);
+              s[p][p] = Math2.cos(theta);
+              s[p][q] = -Math2.sin(theta);
+              s[q][p] = Math2.sin(theta);
+              s[q][q] = Math2.cos(theta);
+              e = jStat3.multiply(e, s);
+              b = jStat3.multiply(jStat3.multiply(jStat3.inv(s), a), s);
+              a = b;
+              condition = 0;
+              for (i = 1; i < n; i++) {
+                for (j = 1; j < n; j++) {
+                  if (i != j && Math2.abs(a[i][j]) > 1e-3) {
+                    condition = 1;
+                  }
+                }
+              }
+            }
+            for (i = 0; i < n; i++) ev.push(a[i][i]);
+            return [e, ev];
+          },
+          rungekutta: function rungekutta(f, h, p, t_j, u_j, order) {
+            var k1, k2, u_j1, k3, k4;
+            if (order === 2) {
+              while (t_j <= p) {
+                k1 = h * f(t_j, u_j);
+                k2 = h * f(t_j + h, u_j + k1);
+                u_j1 = u_j + (k1 + k2) / 2;
+                u_j = u_j1;
+                t_j = t_j + h;
+              }
+            }
+            if (order === 4) {
+              while (t_j <= p) {
+                k1 = h * f(t_j, u_j);
+                k2 = h * f(t_j + h / 2, u_j + k1 / 2);
+                k3 = h * f(t_j + h / 2, u_j + k2 / 2);
+                k4 = h * f(t_j + h, u_j + k3);
+                u_j1 = u_j + (k1 + 2 * k2 + 2 * k3 + k4) / 6;
+                u_j = u_j1;
+                t_j = t_j + h;
+              }
+            }
+            return u_j;
+          },
+          romberg: function romberg(f, a, b, order) {
+            var i = 0;
+            var h = (b - a) / 2;
+            var x = [];
+            var h1 = [];
+            var g = [];
+            var m, a1, j, k, I;
+            while (i < order / 2) {
+              I = f(a);
+              for (j = a, k = 0; j <= b; j = j + h, k++) x[k] = j;
+              m = x.length;
+              for (j = 1; j < m - 1; j++) {
+                I += (j % 2 !== 0 ? 4 : 2) * f(x[j]);
+              }
+              I = h / 3 * (I + f(b));
+              g[i] = I;
+              h /= 2;
+              i++;
+            }
+            a1 = g.length;
+            m = 1;
+            while (a1 !== 1) {
+              for (j = 0; j < a1 - 1; j++)
+                h1[j] = (Math2.pow(4, m) * g[j + 1] - g[j]) / (Math2.pow(4, m) - 1);
+              a1 = h1.length;
+              g = h1;
+              h1 = [];
+              m++;
+            }
+            return g;
+          },
+          richardson: function richardson(X, f, x, h) {
+            function pos(X2, x2) {
+              var i2 = 0;
+              var n = X2.length;
+              var p;
+              for (; i2 < n; i2++)
+                if (X2[i2] === x2) p = i2;
+              return p;
+            }
+            var h_min = Math2.abs(x - X[pos(X, x) + 1]);
+            var i = 0;
+            var g = [];
+            var h1 = [];
+            var y1, y2, m, a, j;
+            while (h >= h_min) {
+              y1 = pos(X, x + h);
+              y2 = pos(X, x);
+              g[i] = (f[y1] - 2 * f[y2] + f[2 * y2 - y1]) / (h * h);
+              h /= 2;
+              i++;
+            }
+            a = g.length;
+            m = 1;
+            while (a != 1) {
+              for (j = 0; j < a - 1; j++)
+                h1[j] = (Math2.pow(4, m) * g[j + 1] - g[j]) / (Math2.pow(4, m) - 1);
+              a = h1.length;
+              g = h1;
+              h1 = [];
+              m++;
+            }
+            return g;
+          },
+          simpson: function simpson(f, a, b, n) {
+            var h = (b - a) / n;
+            var I = f(a);
+            var x = [];
+            var j = a;
+            var k = 0;
+            var i = 1;
+            var m;
+            for (; j <= b; j = j + h, k++)
+              x[k] = j;
+            m = x.length;
+            for (; i < m - 1; i++) {
+              I += (i % 2 !== 0 ? 4 : 2) * f(x[i]);
+            }
+            return h / 3 * (I + f(b));
+          },
+          hermite: function hermite(X, F2, dF, value) {
+            var n = X.length;
+            var p = 0;
+            var i = 0;
+            var l = [];
+            var dl = [];
+            var A = [];
+            var B = [];
+            var j;
+            for (; i < n; i++) {
+              l[i] = 1;
+              for (j = 0; j < n; j++) {
+                if (i != j) l[i] *= (value - X[j]) / (X[i] - X[j]);
+              }
+              dl[i] = 0;
+              for (j = 0; j < n; j++) {
+                if (i != j) dl[i] += 1 / (X[i] - X[j]);
+              }
+              A[i] = (1 - 2 * (value - X[i]) * dl[i]) * (l[i] * l[i]);
+              B[i] = (value - X[i]) * (l[i] * l[i]);
+              p += A[i] * F2[i] + B[i] * dF[i];
+            }
+            return p;
+          },
+          lagrange: function lagrange(X, F2, value) {
+            var p = 0;
+            var i = 0;
+            var j, l;
+            var n = X.length;
+            for (; i < n; i++) {
+              l = F2[i];
+              for (j = 0; j < n; j++) {
+                if (i != j) l *= (value - X[j]) / (X[i] - X[j]);
+              }
+              p += l;
+            }
+            return p;
+          },
+          cubic_spline: function cubic_spline(X, F2, value) {
+            var n = X.length;
+            var i = 0, j;
+            var A = [];
+            var B = [];
+            var alpha = [];
+            var c = [];
+            var h = [];
+            var b = [];
+            var d = [];
+            for (; i < n - 1; i++)
+              h[i] = X[i + 1] - X[i];
+            alpha[0] = 0;
+            for (i = 1; i < n - 1; i++) {
+              alpha[i] = 3 / h[i] * (F2[i + 1] - F2[i]) - 3 / h[i - 1] * (F2[i] - F2[i - 1]);
+            }
+            for (i = 1; i < n - 1; i++) {
+              A[i] = [];
+              B[i] = [];
+              A[i][i - 1] = h[i - 1];
+              A[i][i] = 2 * (h[i - 1] + h[i]);
+              A[i][i + 1] = h[i];
+              B[i][0] = alpha[i];
+            }
+            c = jStat3.multiply(jStat3.inv(A), B);
+            for (j = 0; j < n - 1; j++) {
+              b[j] = (F2[j + 1] - F2[j]) / h[j] - h[j] * (c[j + 1][0] + 2 * c[j][0]) / 3;
+              d[j] = (c[j + 1][0] - c[j][0]) / (3 * h[j]);
+            }
+            for (j = 0; j < n; j++) {
+              if (X[j] > value) break;
+            }
+            j -= 1;
+            return F2[j] + (value - X[j]) * b[j] + jStat3.sq(value - X[j]) * c[j] + (value - X[j]) * jStat3.sq(value - X[j]) * d[j];
+          },
+          gauss_quadrature: function gauss_quadrature() {
+            throw new Error("gauss_quadrature not yet implemented");
+          },
+          PCA: function PCA(X) {
+            var m = X.length;
+            var n = X[0].length;
+            var i = 0;
+            var j, temp1;
+            var u = [];
+            var D = [];
+            var result = [];
+            var temp2 = [];
+            var Y = [];
+            var Bt = [];
+            var B = [];
+            var C = [];
+            var V = [];
+            var Vt = [];
+            for (i = 0; i < m; i++) {
+              u[i] = jStat3.sum(X[i]) / n;
+            }
+            for (i = 0; i < n; i++) {
+              B[i] = [];
+              for (j = 0; j < m; j++) {
+                B[i][j] = X[j][i] - u[j];
+              }
+            }
+            B = jStat3.transpose(B);
+            for (i = 0; i < m; i++) {
+              C[i] = [];
+              for (j = 0; j < m; j++) {
+                C[i][j] = jStat3.dot([B[i]], [B[j]]) / (n - 1);
+              }
+            }
+            result = jStat3.jacobi(C);
+            V = result[0];
+            D = result[1];
+            Vt = jStat3.transpose(V);
+            for (i = 0; i < D.length; i++) {
+              for (j = i; j < D.length; j++) {
+                if (D[i] < D[j]) {
+                  temp1 = D[i];
+                  D[i] = D[j];
+                  D[j] = temp1;
+                  temp2 = Vt[i];
+                  Vt[i] = Vt[j];
+                  Vt[j] = temp2;
+                }
+              }
+            }
+            Bt = jStat3.transpose(B);
+            for (i = 0; i < m; i++) {
+              Y[i] = [];
+              for (j = 0; j < Bt.length; j++) {
+                Y[i][j] = jStat3.dot([Vt[i]], [Bt[j]]);
+              }
+            }
+            return [X, D, Vt, Y];
+          }
+        });
+        (function(funcs) {
+          for (var i = 0; i < funcs.length; i++) (function(passfunc) {
+            jStat3.fn[passfunc] = function(arg, func) {
+              var tmpthis = this;
+              if (func) {
+                setTimeout(function() {
+                  func.call(tmpthis, jStat3.fn[passfunc].call(tmpthis, arg));
+                }, 15);
+                return this;
+              }
+              if (typeof jStat3[passfunc](this, arg) === "number")
+                return jStat3[passfunc](this, arg);
+              else
+                return jStat3(jStat3[passfunc](this, arg));
+            };
+          })(funcs[i]);
+        })("add divide multiply subtract dot pow exp log abs norm angle".split(" "));
+      })(jStat2, Math);
+      (function(jStat3, Math2) {
+        var slice = [].slice;
+        var isNumber = jStat3.utils.isNumber;
+        var isArray = jStat3.utils.isArray;
+        jStat3.extend({
+          // 2 different parameter lists:
+          // (value, mean, sd)
+          // (value, array, flag)
+          zscore: function zscore() {
+            var args = slice.call(arguments);
+            if (isNumber(args[1])) {
+              return (args[0] - args[1]) / args[2];
+            }
+            return (args[0] - jStat3.mean(args[1])) / jStat3.stdev(args[1], args[2]);
+          },
+          // 3 different paramter lists:
+          // (value, mean, sd, sides)
+          // (zscore, sides)
+          // (value, array, sides, flag)
+          ztest: function ztest() {
+            var args = slice.call(arguments);
+            var z;
+            if (isArray(args[1])) {
+              z = jStat3.zscore(args[0], args[1], args[3]);
+              return args[2] === 1 ? jStat3.normal.cdf(-Math2.abs(z), 0, 1) : jStat3.normal.cdf(-Math2.abs(z), 0, 1) * 2;
+            } else {
+              if (args.length > 2) {
+                z = jStat3.zscore(args[0], args[1], args[2]);
+                return args[3] === 1 ? jStat3.normal.cdf(-Math2.abs(z), 0, 1) : jStat3.normal.cdf(-Math2.abs(z), 0, 1) * 2;
+              } else {
+                z = args[0];
+                return args[1] === 1 ? jStat3.normal.cdf(-Math2.abs(z), 0, 1) : jStat3.normal.cdf(-Math2.abs(z), 0, 1) * 2;
+              }
+            }
+          }
+        });
+        jStat3.extend(jStat3.fn, {
+          zscore: function zscore(value, flag) {
+            return (value - this.mean()) / this.stdev(flag);
+          },
+          ztest: function ztest(value, sides, flag) {
+            var zscore = Math2.abs(this.zscore(value, flag));
+            return sides === 1 ? jStat3.normal.cdf(-zscore, 0, 1) : jStat3.normal.cdf(-zscore, 0, 1) * 2;
+          }
+        });
+        jStat3.extend({
+          // 2 parameter lists
+          // (value, mean, sd, n)
+          // (value, array)
+          tscore: function tscore() {
+            var args = slice.call(arguments);
+            return args.length === 4 ? (args[0] - args[1]) / (args[2] / Math2.sqrt(args[3])) : (args[0] - jStat3.mean(args[1])) / (jStat3.stdev(args[1], true) / Math2.sqrt(args[1].length));
+          },
+          // 3 different paramter lists:
+          // (value, mean, sd, n, sides)
+          // (tscore, n, sides)
+          // (value, array, sides)
+          ttest: function ttest() {
+            var args = slice.call(arguments);
+            var tscore;
+            if (args.length === 5) {
+              tscore = Math2.abs(jStat3.tscore(args[0], args[1], args[2], args[3]));
+              return args[4] === 1 ? jStat3.studentt.cdf(-tscore, args[3] - 1) : jStat3.studentt.cdf(-tscore, args[3] - 1) * 2;
+            }
+            if (isNumber(args[1])) {
+              tscore = Math2.abs(args[0]);
+              return args[2] == 1 ? jStat3.studentt.cdf(-tscore, args[1] - 1) : jStat3.studentt.cdf(-tscore, args[1] - 1) * 2;
+            }
+            tscore = Math2.abs(jStat3.tscore(args[0], args[1]));
+            return args[2] == 1 ? jStat3.studentt.cdf(-tscore, args[1].length - 1) : jStat3.studentt.cdf(-tscore, args[1].length - 1) * 2;
+          }
+        });
+        jStat3.extend(jStat3.fn, {
+          tscore: function tscore(value) {
+            return (value - this.mean()) / (this.stdev(true) / Math2.sqrt(this.cols()));
+          },
+          ttest: function ttest(value, sides) {
+            return sides === 1 ? 1 - jStat3.studentt.cdf(Math2.abs(this.tscore(value)), this.cols() - 1) : jStat3.studentt.cdf(-Math2.abs(this.tscore(value)), this.cols() - 1) * 2;
+          }
+        });
+        jStat3.extend({
+          // Paramter list is as follows:
+          // (array1, array2, array3, ...)
+          // or it is an array of arrays
+          // array of arrays conversion
+          anovafscore: function anovafscore() {
+            var args = slice.call(arguments), expVar, sample, sampMean, sampSampMean, tmpargs, unexpVar, i, j;
+            if (args.length === 1) {
+              tmpargs = new Array(args[0].length);
+              for (i = 0; i < args[0].length; i++) {
+                tmpargs[i] = args[0][i];
+              }
+              args = tmpargs;
+            }
+            sample = new Array();
+            for (i = 0; i < args.length; i++) {
+              sample = sample.concat(args[i]);
+            }
+            sampMean = jStat3.mean(sample);
+            expVar = 0;
+            for (i = 0; i < args.length; i++) {
+              expVar = expVar + args[i].length * Math2.pow(jStat3.mean(args[i]) - sampMean, 2);
+            }
+            expVar /= args.length - 1;
+            unexpVar = 0;
+            for (i = 0; i < args.length; i++) {
+              sampSampMean = jStat3.mean(args[i]);
+              for (j = 0; j < args[i].length; j++) {
+                unexpVar += Math2.pow(args[i][j] - sampSampMean, 2);
+              }
+            }
+            unexpVar /= sample.length - args.length;
+            return expVar / unexpVar;
+          },
+          // 2 different paramter setups
+          // (array1, array2, array3, ...)
+          // (anovafscore, df1, df2)
+          anovaftest: function anovaftest() {
+            var args = slice.call(arguments), df1, df2, n, i;
+            if (isNumber(args[0])) {
+              return 1 - jStat3.centralF.cdf(args[0], args[1], args[2]);
+            }
+            var anovafscore = jStat3.anovafscore(args);
+            df1 = args.length - 1;
+            n = 0;
+            for (i = 0; i < args.length; i++) {
+              n = n + args[i].length;
+            }
+            df2 = n - df1 - 1;
+            return 1 - jStat3.centralF.cdf(anovafscore, df1, df2);
+          },
+          ftest: function ftest(fscore, df1, df2) {
+            return 1 - jStat3.centralF.cdf(fscore, df1, df2);
+          }
+        });
+        jStat3.extend(jStat3.fn, {
+          anovafscore: function anovafscore() {
+            return jStat3.anovafscore(this.toArray());
+          },
+          anovaftes: function anovaftes() {
+            var n = 0;
+            var i;
+            for (i = 0; i < this.length; i++) {
+              n = n + this[i].length;
+            }
+            return jStat3.ftest(this.anovafscore(), this.length - 1, n - this.length);
+          }
+        });
+        jStat3.extend({
+          // 2 parameter lists
+          // (mean1, mean2, n1, n2, sd)
+          // (array1, array2, sd)
+          qscore: function qscore() {
+            var args = slice.call(arguments);
+            var mean1, mean2, n1, n2, sd;
+            if (isNumber(args[0])) {
+              mean1 = args[0];
+              mean2 = args[1];
+              n1 = args[2];
+              n2 = args[3];
+              sd = args[4];
+            } else {
+              mean1 = jStat3.mean(args[0]);
+              mean2 = jStat3.mean(args[1]);
+              n1 = args[0].length;
+              n2 = args[1].length;
+              sd = args[2];
+            }
+            return Math2.abs(mean1 - mean2) / (sd * Math2.sqrt((1 / n1 + 1 / n2) / 2));
+          },
+          // 3 different parameter lists:
+          // (qscore, n, k)
+          // (mean1, mean2, n1, n2, sd, n, k)
+          // (array1, array2, sd, n, k)
+          qtest: function qtest() {
+            var args = slice.call(arguments);
+            var qscore;
+            if (args.length === 3) {
+              qscore = args[0];
+              args = args.slice(1);
+            } else if (args.length === 7) {
+              qscore = jStat3.qscore(args[0], args[1], args[2], args[3], args[4]);
+              args = args.slice(5);
+            } else {
+              qscore = jStat3.qscore(args[0], args[1], args[2]);
+              args = args.slice(3);
+            }
+            var n = args[0];
+            var k = args[1];
+            return 1 - jStat3.tukey.cdf(qscore, k, n - k);
+          },
+          tukeyhsd: function tukeyhsd(arrays) {
+            var sd = jStat3.pooledstdev(arrays);
+            var means = arrays.map(function(arr) {
+              return jStat3.mean(arr);
+            });
+            var n = arrays.reduce(function(n2, arr) {
+              return n2 + arr.length;
+            }, 0);
+            var results = [];
+            for (var i = 0; i < arrays.length; ++i) {
+              for (var j = i + 1; j < arrays.length; ++j) {
+                var p = jStat3.qtest(means[i], means[j], arrays[i].length, arrays[j].length, sd, n, arrays.length);
+                results.push([[i, j], p]);
+              }
+            }
+            return results;
+          }
+        });
+        jStat3.extend({
+          // 2 different parameter setups
+          // (value, alpha, sd, n)
+          // (value, alpha, array)
+          normalci: function normalci() {
+            var args = slice.call(arguments), ans = new Array(2), change;
+            if (args.length === 4) {
+              change = Math2.abs(jStat3.normal.inv(args[1] / 2, 0, 1) * args[2] / Math2.sqrt(args[3]));
+            } else {
+              change = Math2.abs(jStat3.normal.inv(args[1] / 2, 0, 1) * jStat3.stdev(args[2]) / Math2.sqrt(args[2].length));
+            }
+            ans[0] = args[0] - change;
+            ans[1] = args[0] + change;
+            return ans;
+          },
+          // 2 different parameter setups
+          // (value, alpha, sd, n)
+          // (value, alpha, array)
+          tci: function tci() {
+            var args = slice.call(arguments), ans = new Array(2), change;
+            if (args.length === 4) {
+              change = Math2.abs(jStat3.studentt.inv(args[1] / 2, args[3] - 1) * args[2] / Math2.sqrt(args[3]));
+            } else {
+              change = Math2.abs(jStat3.studentt.inv(args[1] / 2, args[2].length - 1) * jStat3.stdev(args[2], true) / Math2.sqrt(args[2].length));
+            }
+            ans[0] = args[0] - change;
+            ans[1] = args[0] + change;
+            return ans;
+          },
+          significant: function significant(pvalue, alpha) {
+            return pvalue < alpha;
+          }
+        });
+        jStat3.extend(jStat3.fn, {
+          normalci: function normalci(value, alpha) {
+            return jStat3.normalci(value, alpha, this.toArray());
+          },
+          tci: function tci(value, alpha) {
+            return jStat3.tci(value, alpha, this.toArray());
+          }
+        });
+        function differenceOfProportions(p1, n1, p2, n2) {
+          if (p1 > 1 || p2 > 1 || p1 <= 0 || p2 <= 0) {
+            throw new Error("Proportions should be greater than 0 and less than 1");
+          }
+          var pooled = (p1 * n1 + p2 * n2) / (n1 + n2);
+          var se = Math2.sqrt(pooled * (1 - pooled) * (1 / n1 + 1 / n2));
+          return (p1 - p2) / se;
+        }
+        jStat3.extend(jStat3.fn, {
+          oneSidedDifferenceOfProportions: function oneSidedDifferenceOfProportions(p1, n1, p2, n2) {
+            var z = differenceOfProportions(p1, n1, p2, n2);
+            return jStat3.ztest(z, 1);
+          },
+          twoSidedDifferenceOfProportions: function twoSidedDifferenceOfProportions(p1, n1, p2, n2) {
+            var z = differenceOfProportions(p1, n1, p2, n2);
+            return jStat3.ztest(z, 2);
+          }
+        });
+      })(jStat2, Math);
+      jStat2.models = /* @__PURE__ */ (function() {
+        function sub_regress(exog) {
+          var var_count = exog[0].length;
+          var modelList = jStat2.arange(var_count).map(function(endog_index) {
+            var exog_index = jStat2.arange(var_count).filter(function(i) {
+              return i !== endog_index;
+            });
+            return ols(
+              jStat2.col(exog, endog_index).map(function(x) {
+                return x[0];
+              }),
+              jStat2.col(exog, exog_index)
+            );
+          });
+          return modelList;
+        }
+        function ols(endog, exog) {
+          var nobs = endog.length;
+          var df_model = exog[0].length - 1;
+          var df_resid = nobs - df_model - 1;
+          var coef = jStat2.lstsq(exog, endog);
+          var predict = jStat2.multiply(exog, coef.map(function(x) {
+            return [x];
+          })).map(function(p) {
+            return p[0];
+          });
+          var resid = jStat2.subtract(endog, predict);
+          var ybar = jStat2.mean(endog);
+          var SSE = jStat2.sum(predict.map(function(f) {
+            return Math.pow(f - ybar, 2);
+          }));
+          var SSR = jStat2.sum(endog.map(function(y, i) {
+            return Math.pow(y - predict[i], 2);
+          }));
+          var SST = SSE + SSR;
+          var R2 = SSE / SST;
+          return {
+            exog,
+            endog,
+            nobs,
+            df_model,
+            df_resid,
+            coef,
+            predict,
+            resid,
+            ybar,
+            SST,
+            SSE,
+            SSR,
+            R2
+          };
+        }
+        function t_test(model) {
+          var subModelList = sub_regress(model.exog);
+          var sigmaHat = Math.sqrt(model.SSR / model.df_resid);
+          var seBetaHat = subModelList.map(function(mod) {
+            var SST = mod.SST;
+            var R2 = mod.R2;
+            return sigmaHat / Math.sqrt(SST * (1 - R2));
+          });
+          var tStatistic = model.coef.map(function(coef, i) {
+            return (coef - 0) / seBetaHat[i];
+          });
+          var pValue = tStatistic.map(function(t) {
+            var leftppf = jStat2.studentt.cdf(t, model.df_resid);
+            return (leftppf > 0.5 ? 1 - leftppf : leftppf) * 2;
+          });
+          var c = jStat2.studentt.inv(0.975, model.df_resid);
+          var interval95 = model.coef.map(function(coef, i) {
+            var d = c * seBetaHat[i];
+            return [coef - d, coef + d];
+          });
+          return {
+            se: seBetaHat,
+            t: tStatistic,
+            p: pValue,
+            sigmaHat,
+            interval95
+          };
+        }
+        function F_test(model) {
+          var F_statistic = model.R2 / model.df_model / ((1 - model.R2) / model.df_resid);
+          var fcdf = function(x, n1, n2) {
+            return jStat2.beta.cdf(x / (n2 / n1 + x), n1 / 2, n2 / 2);
+          };
+          var pvalue = 1 - fcdf(F_statistic, model.df_model, model.df_resid);
+          return { F_statistic, pvalue };
+        }
+        function ols_wrap(endog, exog) {
+          var model = ols(endog, exog);
+          var ttest = t_test(model);
+          var ftest = F_test(model);
+          var adjust_R2 = 1 - (1 - model.R2) * ((model.nobs - 1) / model.df_resid);
+          model.t = ttest;
+          model.f = ftest;
+          model.adjust_R2 = adjust_R2;
+          return model;
+        }
+        return { ols: ols_wrap };
+      })();
+      jStat2.extend({
+        buildxmatrix: function buildxmatrix() {
+          var matrixRows = new Array(arguments.length);
+          for (var i = 0; i < arguments.length; i++) {
+            var array = [1];
+            matrixRows[i] = array.concat(arguments[i]);
+          }
+          return jStat2(matrixRows);
+        },
+        builddxmatrix: function builddxmatrix() {
+          var matrixRows = new Array(arguments[0].length);
+          for (var i = 0; i < arguments[0].length; i++) {
+            var array = [1];
+            matrixRows[i] = array.concat(arguments[0][i]);
+          }
+          return jStat2(matrixRows);
+        },
+        buildjxmatrix: function buildjxmatrix(jMat) {
+          var pass = new Array(jMat.length);
+          for (var i = 0; i < jMat.length; i++) {
+            pass[i] = jMat[i];
+          }
+          return jStat2.builddxmatrix(pass);
+        },
+        buildymatrix: function buildymatrix(array) {
+          return jStat2(array).transpose();
+        },
+        buildjymatrix: function buildjymatrix(jMat) {
+          return jMat.transpose();
+        },
+        matrixmult: function matrixmult(A, B) {
+          var i, j, k, result, sum;
+          if (A.cols() == B.rows()) {
+            if (B.rows() > 1) {
+              result = [];
+              for (i = 0; i < A.rows(); i++) {
+                result[i] = [];
+                for (j = 0; j < B.cols(); j++) {
+                  sum = 0;
+                  for (k = 0; k < A.cols(); k++) {
+                    sum += A.toArray()[i][k] * B.toArray()[k][j];
+                  }
+                  result[i][j] = sum;
+                }
+              }
+              return jStat2(result);
+            }
+            result = [];
+            for (i = 0; i < A.rows(); i++) {
+              result[i] = [];
+              for (j = 0; j < B.cols(); j++) {
+                sum = 0;
+                for (k = 0; k < A.cols(); k++) {
+                  sum += A.toArray()[i][k] * B.toArray()[j];
+                }
+                result[i][j] = sum;
+              }
+            }
+            return jStat2(result);
+          }
+        },
+        //regress and regresst to be fixed
+        regress: function regress(jMatX, jMatY) {
+          var innerinv = jStat2.xtranspxinv(jMatX);
+          var xtransp = jMatX.transpose();
+          var next = jStat2.matrixmult(jStat2(innerinv), xtransp);
+          return jStat2.matrixmult(next, jMatY);
+        },
+        regresst: function regresst(jMatX, jMatY, sides) {
+          var beta = jStat2.regress(jMatX, jMatY);
+          var compile = {};
+          compile.anova = {};
+          var jMatYBar = jStat2.jMatYBar(jMatX, beta);
+          compile.yBar = jMatYBar;
+          var yAverage = jMatY.mean();
+          compile.anova.residuals = jStat2.residuals(jMatY, jMatYBar);
+          compile.anova.ssr = jStat2.ssr(jMatYBar, yAverage);
+          compile.anova.msr = compile.anova.ssr / (jMatX[0].length - 1);
+          compile.anova.sse = jStat2.sse(jMatY, jMatYBar);
+          compile.anova.mse = compile.anova.sse / (jMatY.length - (jMatX[0].length - 1) - 1);
+          compile.anova.sst = jStat2.sst(jMatY, yAverage);
+          compile.anova.mst = compile.anova.sst / (jMatY.length - 1);
+          compile.anova.r2 = 1 - compile.anova.sse / compile.anova.sst;
+          if (compile.anova.r2 < 0) compile.anova.r2 = 0;
+          compile.anova.fratio = compile.anova.msr / compile.anova.mse;
+          compile.anova.pvalue = jStat2.anovaftest(
+            compile.anova.fratio,
+            jMatX[0].length - 1,
+            jMatY.length - (jMatX[0].length - 1) - 1
+          );
+          compile.anova.rmse = Math.sqrt(compile.anova.mse);
+          compile.anova.r2adj = 1 - compile.anova.mse / compile.anova.mst;
+          if (compile.anova.r2adj < 0) compile.anova.r2adj = 0;
+          compile.stats = new Array(jMatX[0].length);
+          var covar = jStat2.xtranspxinv(jMatX);
+          var sds, ts, ps;
+          for (var i = 0; i < beta.length; i++) {
+            sds = Math.sqrt(compile.anova.mse * Math.abs(covar[i][i]));
+            ts = Math.abs(beta[i] / sds);
+            ps = jStat2.ttest(ts, jMatY.length - jMatX[0].length - 1, sides);
+            compile.stats[i] = [beta[i], sds, ts, ps];
+          }
+          compile.regress = beta;
+          return compile;
+        },
+        xtranspx: function xtranspx(jMatX) {
+          return jStat2.matrixmult(jMatX.transpose(), jMatX);
+        },
+        xtranspxinv: function xtranspxinv(jMatX) {
+          var inner = jStat2.matrixmult(jMatX.transpose(), jMatX);
+          var innerinv = jStat2.inv(inner);
+          return innerinv;
+        },
+        jMatYBar: function jMatYBar(jMatX, beta) {
+          var yBar = jStat2.matrixmult(jMatX, beta);
+          return new jStat2(yBar);
+        },
+        residuals: function residuals(jMatY, jMatYBar) {
+          return jStat2.matrixsubtract(jMatY, jMatYBar);
+        },
+        ssr: function ssr(jMatYBar, yAverage) {
+          var ssr2 = 0;
+          for (var i = 0; i < jMatYBar.length; i++) {
+            ssr2 += Math.pow(jMatYBar[i] - yAverage, 2);
+          }
+          return ssr2;
+        },
+        sse: function sse(jMatY, jMatYBar) {
+          var sse2 = 0;
+          for (var i = 0; i < jMatY.length; i++) {
+            sse2 += Math.pow(jMatY[i] - jMatYBar[i], 2);
+          }
+          return sse2;
+        },
+        sst: function sst(jMatY, yAverage) {
+          var sst2 = 0;
+          for (var i = 0; i < jMatY.length; i++) {
+            sst2 += Math.pow(jMatY[i] - yAverage, 2);
+          }
+          return sst2;
+        },
+        matrixsubtract: function matrixsubtract(A, B) {
+          var ans = new Array(A.length);
+          for (var i = 0; i < A.length; i++) {
+            ans[i] = new Array(A[i].length);
+            for (var j = 0; j < A[i].length; j++) {
+              ans[i][j] = A[i][j] - B[i][j];
+            }
+          }
+          return jStat2(ans);
+        }
+      });
+      jStat2.jStat = jStat2;
+      return jStat2;
+    });
+  }
 });
-var J = rr(B());
-var er = J.default ?? J;
+
+// js/studentt.js
+var import_jstat = __toESM(require_jstat(), 1);
 
 // js/base.js
 var W = 660;
@@ -1609,7 +3963,7 @@ function fmt(x, dp) {
     maximumFractionDigits: dp
   });
 }
-function createWidget(F3, opts) {
+function createWidget(F2, opts) {
   const {
     pins = "none",
     // "none" | "left" | "both"
@@ -1649,7 +4003,7 @@ function createWidget(F3, opts) {
       tip.className = "mtip";
       root.appendChild(tip);
       el.appendChild(root);
-      const traitNames = Object.keys(F3.defaults);
+      const traitNames = Object.keys(F2.defaults);
       const getParams = () => {
         const p = {};
         for (const k of traitNames) p[k] = model.get(k);
@@ -1663,7 +4017,7 @@ function createWidget(F3, opts) {
       };
       let view = null;
       function support(p) {
-        const s = F3.support(p);
+        const s = F2.support(p);
         return [s[0] === null ? -Infinity : s[0], s[1] === null ? Infinity : s[1]];
       }
       function clampDomain(lo, hi) {
@@ -1679,11 +4033,11 @@ function createWidget(F3, opts) {
         view = c;
       }
       function ensureFit(p) {
-        setDomain(F3.bounds(p)[0], F3.bounds(p)[1]);
+        setDomain(F2.bounds(p)[0], F2.bounds(p)[1]);
       }
       function fitTargetAfterDrag(p) {
         const cur = currentDomain();
-        const b = F3.bounds(p);
+        const b = F2.bounds(p);
         if (b[0] < cur[0] || b[1] > cur[1]) {
           return [Math.min(cur[0], b[0]), Math.max(cur[1], b[1])];
         }
@@ -1721,7 +4075,7 @@ function createWidget(F3, opts) {
         for (let i = 0; i <= n; i++) {
           const x = d[0] + i / n * (d[1] - d[0]);
           xs.push(x);
-          ys.push(F3.pdf(p, x));
+          ys.push(F2.pdf(p, x));
         }
         let peak = 0;
         for (let i = 1; i < n; i++) peak = Math.max(peak, ys[i]);
@@ -1805,7 +4159,7 @@ function createWidget(F3, opts) {
         const moved = Math.hypot(e.clientX - downAt.px, e.clientY - downAt.py);
         downAt = null;
         if (moved > 4) return;
-        const center = F3.handles.find((h) => h.kind === "center");
+        const center = F2.handles.find((h) => h.kind === "center");
         if (!center) return;
         const rect = svg.getBoundingClientRect();
         const px = (e.clientX - rect.left) / rect.width * W;
@@ -1899,8 +4253,8 @@ function createWidget(F3, opts) {
         const panTip = elNS("text", svg, { class: "mpantip", x: M_L + 5, y: base - 9 });
         panTip.textContent = "\u2194 drag axis to pan";
         const { xs, ys, peak } = mesh(p, dd);
-        const [il, ih] = F3.integ(p);
-        const norm = integrate(il, ih, (x) => F3.pdf(p, x));
+        const [il, ih] = F2.integ(p);
+        const norm = integrate(il, ih, (x) => F2.pdf(p, x));
         const pts = xs.map((x, i) => [xt(x, dd), yt(clamp(ys[i], 0, peak), peak)]);
         const area = elNS("path", svg, { class: "marea" });
         area.setAttribute("fill", `url(#${gradId})`);
@@ -1920,14 +4274,14 @@ function createWidget(F3, opts) {
         };
         const hitLayer = elNS("g", svg, { class: "mhitlayer" });
         const isY = (i) => {
-          const a = F3.handles[i].axes;
+          const a = F2.handles[i].axes;
           return a && a.length === 1 && a[0] === "y";
         };
-        const hxOf = F3.handles.map(
+        const hxOf = F2.handles.map(
           (h, i) => isY(i) ? null : clamp(xt(h.at(p), dd), M_L, W - M_R)
         );
-        const zones = new Array(F3.handles.length);
-        const idx = [...F3.handles.keys()].filter((i) => hxOf[i] != null).sort((a, b) => hxOf[a] - hxOf[b] || a - b);
+        const zones = new Array(F2.handles.length);
+        const idx = [...F2.handles.keys()].filter((i) => hxOf[i] != null).sort((a, b) => hxOf[a] - hxOf[b] || a - b);
         let zi = 0;
         while (zi < idx.length) {
           let zj = zi + 1;
@@ -1949,9 +4303,9 @@ function createWidget(F3, opts) {
           zi = zj;
         }
         const chipW = [];
-        const overlap = new Array(F3.handles.length).fill(false);
-        for (let i = 0; i < F3.handles.length; i++) {
-          const h = F3.handles[i];
+        const overlap = new Array(F2.handles.length).fill(false);
+        for (let i = 0; i < F2.handles.length; i++) {
+          const h = F2.handles[i];
           if (isY(i)) {
             const yf = clamp(h.yOf ? h.yOf(p) : 0.5, 0, 1);
             const yPx = DIAL_TOP + yf * (DIAL_BOT - DIAL_TOP);
@@ -1983,7 +4337,7 @@ function createWidget(F3, opts) {
             continue;
           }
           const hx = hxOf[i];
-          const hy = yt(clamp(F3.pdf(p, h.at(p)), 0, peak), peak);
+          const hy = yt(clamp(F2.pdf(p, h.at(p)), 0, peak), peak);
           const g = elNS("g", svg, { class: `mhandle ${h.icon}` });
           markerEls[i] = g;
           if (h.icon === "dot") {
@@ -2017,22 +4371,22 @@ function createWidget(F3, opts) {
           });
           attachDrag(hr, h);
         }
-        for (let i = 0; i < F3.handles.length; i++) {
-          for (let j2 = i + 1; j2 < F3.handles.length; j2++) {
-            if (hxOf[i] == null || hxOf[j2] == null) continue;
-            if (Math.abs(hxOf[i] - hxOf[j2]) < chipW[i] + chipW[j2]) {
-              overlap[i] = overlap[j2] = true;
+        for (let i = 0; i < F2.handles.length; i++) {
+          for (let j = i + 1; j < F2.handles.length; j++) {
+            if (hxOf[i] == null || hxOf[j] == null) continue;
+            if (Math.abs(hxOf[i] - hxOf[j]) < chipW[i] + chipW[j]) {
+              overlap[i] = overlap[j] = true;
             }
           }
         }
         function applyHandleState() {
-          for (let i = 0; i < F3.handles.length; i++) {
-            const h = F3.handles[i];
+          for (let i = 0; i < F2.handles.length; i++) {
+            const h = F2.handles[i];
             const active = drag && drag.handle === h;
             chipEls[i].classList.toggle("mchip-dim", overlap[i] && hoverIdx !== i && !active);
           }
           if (drag) {
-            const di = F3.handles.indexOf(drag.handle);
+            const di = F2.handles.indexOf(drag.handle);
             if (di >= 0) raiseMarker(di);
           } else if (hoverIdx != null && hoverIdx >= 0) {
             raiseMarker(hoverIdx);
@@ -2065,7 +4419,7 @@ function createWidget(F3, opts) {
         zbtn("+", 27, 1 / 1.4);
         const reset = () => {
           const d2 = {};
-          for (const k of traitNames) d2[k] = F3.defaults[k];
+          for (const k of traitNames) d2[k] = F2.defaults[k];
           setParams(d2, "reset");
         };
         const rbtn = elNS("g", svg, { class: "mreset", cursor: "pointer" });
@@ -2077,7 +4431,7 @@ function createWidget(F3, opts) {
         elNS("rect", rbtn, { x: rcx - 12, y: M_T + 4, width: 24, height: 24, rx: 6, class: "mresetbtn" });
         const rt = elNS("text", rbtn, { class: "mresetxt", x: rcx, y: M_T + 16, "text-anchor": "middle", "dominant-baseline": "central" });
         rt.textContent = "\u21BA";
-        const fitView = () => animateView(F3.bounds(getParams()));
+        const fitView = () => animateView(F2.bounds(getParams()));
         const fbtn = elNS("g", svg, { class: "mfit", cursor: "pointer" });
         const fcx = rcx - 30;
         fbtn.addEventListener("click", (e) => {
@@ -2087,7 +4441,7 @@ function createWidget(F3, opts) {
         elNS("rect", fbtn, { x: fcx - 12, y: M_T + 4, width: 24, height: 24, rx: 6, class: "mfitbtn" });
         const ft = elNS("text", fbtn, { class: "mfitxt", x: fcx, y: M_T + 16, "text-anchor": "middle", "dominant-baseline": "central" });
         ft.textContent = "\u26F6";
-        tip.textContent = F3.tip(p, { norm, peak });
+        tip.textContent = F2.tip(p, { norm, peak });
         root.appendChild(tip);
       }
       for (const k of traitNames) model.on(`change:${k}`, () => redraw("param"));
@@ -2106,13 +4460,13 @@ var NU_MIN = 2.01;
 var NU_MAX = 50;
 var NU_COLOR = "#8b5cf6";
 function t75(nu) {
-  return er.studentt.inv(0.75, nu);
+  return import_jstat.default.studentt.inv(0.75, nu);
 }
 var TAIL_FACTOR = 5.2 / 1.96;
 function tBounds(p) {
-  return TAIL_FACTOR * p.sigma * er.studentt.inv(0.975, p.nu);
+  return TAIL_FACTOR * p.sigma * import_jstat.default.studentt.inv(0.975, p.nu);
 }
-var F2 = {
+var F = {
   name: "studentt",
   label: "StudentT",
   defaults: { mu: 0, sigma: 1, nu: 5 },
@@ -2129,7 +4483,7 @@ var F2 = {
   },
   pdf(p, x) {
     const z = (x - p.mu) / p.sigma;
-    return er.studentt.pdf(z, p.nu) / p.sigma;
+    return import_jstat.default.studentt.pdf(z, p.nu) / p.sigma;
   },
   handles: [
     {
@@ -2184,10 +4538,10 @@ var F2 = {
     }
   ],
   tip(p) {
-    return `${F2.label} \u2022 drag mean \u25CF to shift \u2022 drag \u25A0 left/right to spread \u2022 drag the tails dial up for fatter, down for thinner \u2022 mu=${fmt(p.mu)} sigma=${fmt(p.sigma)} nu=${fmt(p.nu)}`;
+    return `${F.label} \u2022 drag mean \u25CF to shift \u2022 drag \u25A0 left/right to spread \u2022 drag the tails dial up for fatter, down for thinner \u2022 mu=${fmt(p.mu)} sigma=${fmt(p.sigma)} nu=${fmt(p.nu)}`;
   }
 };
-var studentt_default = createWidget(F2, { pins: "none" });
+var studentt_default = createWidget(F, { pins: "none" });
 export {
   studentt_default as default
 };

@@ -5,7 +5,7 @@
 // variance seen while mid-flight is a timing artifact, not a regression).
 import { chromium } from "playwright";
 import { readFileSync } from "node:fs";
-import J from "../../js/vendor/jstat.esm.js";
+import J from "jstat";
 import { REPO, STATIC, pageHtml } from "./_helpers.mjs";
 
 const jStat = J.default ?? J;

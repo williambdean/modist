@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>modist — draggable distribution widgets for the browser</title>
+<meta name="description" content="Drag a density curve to shape a distribution. A single-file client-side bundle for JS-only projects — no Python, no notebook required.">
+<style>
+  :root {
+    --acc: #0891b2;
+    --mut: #6b7280;
+    --card: #ffffff;
+    --border: #e2e8f0;
+    --bg: #f8fafc;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: ui-sans-serif, system-ui, sans-serif;
+    background: var(--bg);
+    color: #1f2937;
+    line-height: 1.5;
+  }
+  header { padding: 48px 24px 16px; text-align: center; }
+  header h1 { margin: 0; font-size: 2rem; letter-spacing: -0.02em; }
+  header p { color: var(--mut); max-width: 640px; margin: 12px auto 0; }
+  main { max-width: 720px; margin: 0 auto; padding: 16px 24px 64px; }
+  .grid { display: grid; gap: 16px; }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+  }
+  .card h2 { margin: 0 0 4px; font-size: 1rem; color: var(--mut); font-weight: 600; }
+  .card code.params {
+    display: inline-block;
+    font-size: 0.85rem;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 2px 8px;
+    color: #0f766e;
+  }
+  .stage { width: 100%; }
+  pre {
+    background: #0b1220;
+    color: #e2e8f0;
+    padding: 14px 16px;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    overflow-x: auto;
+  }
+  pre code .k { color: #7dd3fc; }
+  pre code .s { color: #fbcfe8; }
+  .snippet { position: relative; }
+  .snippet button.copy {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font: inherit;
+    font-size: 0.75rem;
+    background: #1e293b;
+    color: #cbd5e1;
+    border: 1px solid #334155;
+    border-radius: 6px;
+    padding: 4px 10px;
+    cursor: pointer;
+  }
+  .snippet button.copy:hover { background: #334155; color: #fff; }
+  .section { margin-top: 40px; }
+  .section h2 { font-size: 1.15rem; }
+  .section h2 small { color: var(--mut); font-weight: 400; font-size: 0.85rem; }
+  .hint { font-size: 0.85rem; color: var(--mut); }
+  footer { text-align: center; color: var(--mut); font-size: 0.85rem; padding: 24px; }
+  footer a { color: var(--acc); }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>modist</h1>
+  <p>Drag a density curve to shape a distribution, then feed the params straight
+  into a distribution constructor. These widgets run <strong>right here in the
+  browser</strong> — no Python, no notebook.</p>
+</header>
+
+<main>
+  <section class="grid">
+    <div class="card">
+      <h2>Normal <code class="params" id="normal-params"></code></h2>
+      <div class="stage" id="normal-mount"></div>
+    </div>
+    <div class="card">
+      <h2>Beta <code class="params" id="beta-params"></code></h2>
+      <div class="stage" id="beta-mount"></div>
+    </div>
+    <div class="card">
+      <h2>Gamma <code class="params" id="gamma-params"></code></h2>
+      <div class="stage" id="gamma-mount"></div>
+    </div>
+    <div class="card">
+      <h2>StudentT <code class="params" id="studentt-params"></code></h2>
+      <div class="stage" id="studentt-mount"></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Use it in your own project <small>— one file, no build step</small></h2>
+    <div class="snippet">
+      <button class="copy" data-copy="snippet-latest">Copy</button>
+      <pre><code id="snippet-latest"><span class="s">&lt;script type="module"&gt;</span>
+<span class="k">import</span> { beta } <span class="k">from</span> <span class="s">"https://williambdean.github.io/modist/latest/modist.js"</span>;
+
+<span class="k">const</span> w = beta(document.<span class="k">getElementById</span>(<span class="s">"prior"</span>), { alpha: <span class="k">1</span>, beta: <span class="k">3</span> });
+w.onChange(<span class="k">p</span> =&gt; <span class="k">console</span>.log(p));   <span class="k">// every drag</span>
+<span class="s">&lt;/script&gt;</span></code></pre>
+    </div>
+    <p class="hint">Pin a release for reproducible, cache-stable URLs (the bundle is
+    immutable for a year):</p>
+    <div class="snippet">
+      <button class="copy" data-copy="snippet-pinned">Copy</button>
+      <pre><code id="snippet-pinned"><span class="s">&lt;script type="module"&gt;</span>
+<span class="k">import</span> { gamma, studentT } <span class="k">from</span>
+  <span class="s">"https://cdn.jsdelivr.net/gh/williambdean/modist@vVERSION/dist/modist.js"</span>;
+<span class="s">&lt;/script&gt;</span></code></pre>
+    </div>
+    <p class="hint">Python users: <code>uv add modist</code>, then
+    <code>w = mo.ui.anywidget(md.Normal())</code> in marimo or Jupyter.</p>
+  </section>
+</main>
+
+<footer>
+  MIT &middot; <a href="https://github.com/williambdean/modist">github.com/williambdean/modist</a>
+</footer>
+
+<script type="module">
+  import { normal, beta, gamma, studentT } from "./latest/modist.js";
+
+  const cards = [
+    { name: "normal", fn: normal, params: { mu: 0, sigma: 1 } },
+    { name: "beta", fn: beta, params: { alpha: 2, beta: 5 } },
+    { name: "gamma", fn: gamma, params: { alpha: 2, beta: 2 } },
+    { name: "studentt", fn: studentT, params: { mu: 0, sigma: 1, nu: 5 } },
+  ];
+
+  for (const { name, fn, params } of cards) {
+    const mount = document.getElementById(`${name}-mount`);
+    const readout = document.getElementById(`${name}-params`);
+    const w = fn(mount, params);
+    readout.textContent = JSON.stringify(w.params);
+    w.onChange((p) => {
+      readout.textContent = JSON.stringify(p);
+    });
+  }
+
+  document.querySelectorAll("button.copy").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const text = document.getElementById(btn.dataset.copy).innerText;
+      try {
+        await navigator.clipboard.writeText(text);
+        btn.textContent = "Copied!";
+      } catch {
+        btn.textContent = "Copy blocked";
+      }
+      setTimeout(() => (btn.textContent = "Copy"), 1500);
+    });
+  });
+</script>
+
+</body>
+</html>

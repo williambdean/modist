@@ -10,10 +10,9 @@ __pycache__/
 .Python
 build/
 develop-eggs/
-dist/
 downloads/
 eggs/
-.eggs/
+.egg-info/
 lib/
 lib64/
 parts/
@@ -25,6 +24,13 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+
+# Bundled JS output. /dist/* keeps root dist/ ignored (the standalone bundle is
+# produced there) while js/dist/ (its source) stays trackable. dist/modist.js is
+# an exception: jsDelivr GH tags serve it straight from the repo, so it must be
+# committed in sync with js/ (like the src/modist/static/* bundles).
+/dist/*
+!/dist/modist.js
 
 # PyInstaller
 #   Usually these files are written by a python script from a template
@@ -165,7 +171,7 @@ venv.bak/
 .ropeproject
 
 # mkdocs documentation
-/site
+# (site/ is our static showcase — kept trackable)
 
 # mypy
 .mypy_cache/

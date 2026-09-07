@@ -4,7 +4,7 @@
 // anchored to the curve, so dragging it never slides anything sideways. The
 // view is based on the 97.5% tail quantile, so heavy tails (low nu) widen the
 // plot only modestly and the bulk of the distribution stays visible.
-import jStat from "./vendor/jstat.esm.js";
+import jStat from "jstat";
 import { createWidget, fmt } from "./base.js";
 
 const NU_MIN = 2.01;

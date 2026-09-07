@@ -12,7 +12,6 @@ export const REPO = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 
 export const STATIC = (family) => join(REPO, "src", "modist", "static", `${family}.js`);
 export const BASE_JS = join(REPO, "js", "base.js");
-export const JSTAT = join(REPO, "js", "vendor", "jstat.esm.js");
 
 export const readStatic = (family) => readFileSync(STATIC(family), "utf8");
 export const readBase = () => readFileSync(BASE_JS, "utf8");
