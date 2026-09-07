@@ -125,8 +125,32 @@ w.onChange(<span class="k">p</span> =&gt; <span class="k">console</span>.log(p))
   <span class="s">"https://cdn.jsdelivr.net/gh/williambdean/modist@vVERSION/dist/modist.js"</span>;
 <span class="s">&lt;/script&gt;</span></code></pre>
     </div>
-    <p class="hint">Python users: <code>uv add modist</code>, then
-    <code>w = mo.ui.anywidget(md.Normal())</code> in marimo or Jupyter.</p>
+  </section>
+
+  <section class="section">
+    <h2>Use it in Python <small>— marimo or Jupyter</small></h2>
+    <p>Same widgets, from a notebook — drag the curve to reshape the prior, then
+    splat the live params straight into your distribution constructor.</p>
+    <div class="snippet">
+      <button class="copy" data-copy="snippet-python">Copy</button>
+      <pre><code id="snippet-python"><span class="k">import</span> marimo <span class="k">as</span> mo
+<span class="k">import</span> modist <span class="k">as</span> md
+
+w = mo.ui.anywidget(md.Normal())   <span class="k"># or Beta() / Gamma() / StudentT()</span>
+w                                  <span class="k"># drag the density curve</span>
+</code></pre>
+    </div>
+    <div class="snippet">
+      <button class="copy" data-copy="snippet-python-params">Copy</button>
+      <pre><code id="snippet-python-params"><span class="k">import</span> pymc <span class="k">as</span> pm
+dist = pm.Normal.dist(**w.value)   <span class="k"># {'mu': ..., 'sigma': ...} live params</span>
+</code></pre>
+    </div>
+    <div class="snippet">
+      <button class="copy" data-copy="snippet-python-install">Copy</button>
+      <pre><code id="snippet-python-install"><span class="k">uv</span> add modist            <span class="k"># then share the param dict with anyone</span>
+</code></pre>
+    </div>
   </section>
 </main>
 
