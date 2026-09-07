@@ -14,13 +14,19 @@ const DIST = "dist";
 mkdirSync(OUT, { recursive: true });
 mkdirSync(DIST, { recursive: true });
 
+// Pin every bundle to the release version so a vendored copy stays traceable
+// back to its release tag (banner text is kept even under minification).
+const pyproject = readFileSync("pyproject.toml", "utf8");
+const version = /^version\s*=\s*"([^"]+)"/m.exec(pyproject)?.[1];
+if (!version) throw new Error("could not parse version from pyproject.toml");
+
 // MIT requires the copyright notice travel with "all copies or substantial
 // portions"; jStat's math is inlined into every bundle, so the notice is
 // carried in a banner (kept even under future minification via the `!`).
-const BANNER_STATIC = `/*! modist - MIT (c) 2026 Will Dean - https://github.com/williambdean/modist */`;
-const BANNER_DIST = `/*! modist - MIT (c) 2026 Will Dean - https://github.com/williambdean/modist
+const BANNER_STATIC = `/*! modist v${version} - MIT (c) 2026 Will Dean - https://github.com/williambdean/modist
  * Bundled: jstat v1.9.6 (MIT) - Copyright (c) 2013 jStat
  * https://github.com/jstat/jstat - https://opensource.org/licenses/MIT */`;
+const BANNER_DIST = BANNER_STATIC;
 
 // Standalone bundles inline styles.css as a JS-string virtual module so the
 // wrapper can inject it once per page (no separate CSS file to fetch).
@@ -96,8 +102,5 @@ const spliced = `${page.slice(0, iStart + START.length)}\n${iifeText}\n${page.sl
 
 // Keep the showcase's pinned-import snippet honest: swap the @vVERSION
 // placeholder for the current release tag so the copy-able URL really works.
-const pyproject = readFileSync("pyproject.toml", "utf8");
-const version = /^version\s*=\s*"([^"]+)"/m.exec(pyproject)?.[1];
-if (!version) throw new Error("could not parse version from pyproject.toml");
 writeFileSync(SITE, spliced.replaceAll("@vVERSION", `@v${version}`));
 console.log(`inlined standalone bundle into ${SITE} (pin @v${version})`);

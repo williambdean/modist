@@ -179,7 +179,9 @@ dev extras).
 
 The widgets aren't tied to a notebook. There's a standalone, single-file ESM
 bundle (`dist/modist.js`) that renders them on any page with an element and a
-script tag — the same view used inside marimo/Jupyter. A taste:
+script tag — the same view used inside marimo/Jupyter. See it live at
+[https://williambdean.github.io/modist/](https://williambdean.github.io/modist/).
+A taste:
 
 ```html
 <script type="module">
@@ -194,6 +196,20 @@ Each factory takes `(element, params?)` and returns a handle:
 (returns an unsubscribe), and `w.destroy()`. The four families export as
 `normal`, `beta`, `gamma`, `studentT`; styles are injected once, and the bundle
 uses CSS `var()` fallbacks so it doesn't need your theme.
+
+**Not on npm.** The package is available through Python (PyPI) and as this
+plain ESM file — there's nothing to `npm install`. Import it by URL (below), or
+vendor it: `dist/modist.js` is self-contained (jStat inlined), so you can
+download it, commit it, and import it relatively — it even works offline. No
+TypeScript types are shipped.
+
+When you vendor it, keep the banner intact — it carries the **MIT notice** (the
+license requires it) and your **traceability**: version, license, and source
+repo, so the `vX.Y.Z` in the file tells you exactly which bytes you shipped
+against a pinned release tag. For byte-reproducible use, record the file's
+checksum next to your vendored copy (`shasum -a 256 dist/modist.js`). Note that
+SRI/integrity attributes don't apply to ES-module imports like these, so a
+vendored, checksum-recorded file is the integrity mechanism.
 
 For anything that ships to others, pin a release tag instead of `latest/` —
 jsDelivr serves the git tag copy with a year-long immutable cache, while
