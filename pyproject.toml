@@ -31,6 +31,7 @@ dependencies = ["anywidget>=0.11.0"]
 Homepage = "https://github.com/williambdean/modist"
 Repository = "https://github.com/williambdean/modist"
 Documentation = "https://github.com/williambdean/modist#readme"
+Showcase = "https://williambdean.github.io/modist/"
 
 [project.optional-dependencies]
 scipy = ["scipy>=1.12"]
