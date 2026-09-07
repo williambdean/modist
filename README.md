@@ -197,7 +197,8 @@ uses CSS `var()` fallbacks so it doesn't need your theme.
 
 For anything that ships to others, pin a release tag instead of `latest/` —
 jsDelivr serves the git tag copy with a year-long immutable cache, while
-`latest/` re-deploys with each release:
+`latest/` re-deploys with each release (the standalone bundle ships in release
+tags from v0.6.0; earlier tags only contain the anywidget bundles):
 
 ```html
 <script type="module">

@@ -93,5 +93,11 @@ if (iStart < 0 || iEnd < 0 || iEnd <= iStart) {
   throw new Error(`missing ${START}/${END} markers in ${SITE}`);
 }
 const spliced = `${page.slice(0, iStart + START.length)}\n${iifeText}\n${page.slice(iEnd)}`;
-writeFileSync(SITE, spliced);
-console.log(`inlined standalone bundle into ${SITE}`);
+
+// Keep the showcase's pinned-import snippet honest: swap the @vVERSION
+// placeholder for the current release tag so the copy-able URL really works.
+const pyproject = readFileSync("pyproject.toml", "utf8");
+const version = /^version\s*=\s*"([^"]+)"/m.exec(pyproject)?.[1];
+if (!version) throw new Error("could not parse version from pyproject.toml");
+writeFileSync(SITE, spliced.replaceAll("@vVERSION", `@v${version}`));
+console.log(`inlined standalone bundle into ${SITE} (pin @v${version})`);
