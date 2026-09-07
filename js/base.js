@@ -466,7 +466,7 @@ export function createWidget(F, opts) {
         const area = elNS("path", svg, { class: "marea" });
         area.setAttribute("fill", `url(#${gradId})`);
         let ad = `M ${xt(dd[0], dd)},${base}`;
-        ad += pts.map((pt, i) => (i === 0 ? ` M ${pt[0]},${pt[1]}` : ` L ${pt[0]},${pt[1]}`)).join("");
+        ad += pts.map((pt) => ` L ${pt[0]},${pt[1]}`).join("");
         ad += ` L ${xt(dd[1], dd)},${base} Z`;
         area.setAttribute("d", ad);
         const line = elNS("path", svg, { class: "mline" });
