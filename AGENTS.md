@@ -17,7 +17,9 @@ Layout:
   **committed** (jsDelivr serves it from the tag tree), so rebuild it with
   `npm run build:js` and include it in the release commit, like the
   `src/modist/static/*` bundles. Covered by `tests/js/standalone.test.mjs`; the
-  showcase lives in `site/`.
+  showcase is `site/index.html`, which `build.js` rewrites to **inline** the
+  bundle (so it runs from `file://` with no server) — rebuild after touching
+  `js/` or `site/`.
 - `src/modist/` — Python (`_base.py`, `normal.py`, ..., `ui.py`, `pymc.py`, `styles.css`)
 - `tests/` — Python (`tests/test_*.py`) and JS Playwright probes (`tests/js/*.test.mjs`)
 - `demos/` — marimo notebooks

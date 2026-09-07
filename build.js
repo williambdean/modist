@@ -7,7 +7,7 @@
 // standalone single-file API for JS-only consumers (GitHub Pages `latest/`
 // and pinned jsDelivr GH tags).
 import { build } from "esbuild";
-import { mkdirSync, readFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 
 const OUT = "src/modist/static";
 const DIST = "dist";
@@ -65,3 +65,33 @@ await build({
   outfile: `${DIST}/modist.js`,
 });
 console.log(`bundled js/dist/index.js -> ${DIST}/modist.js`);
+
+// The showcase page (site/index.html) embeds the standalone bundle as an inline
+// classic script (it cannot run from file:// as a module import). Build the same
+// entry to an IIFE bound to `window.modist` and splice it between the markers in
+// the committed page, keeping the page self-contained and self-healing.
+const iife = await build({
+  ...esbuildOpts,
+  entryPoints: ["js/dist/index.js"],
+  plugins: [inlineCssPlugin],
+  banner: { js: BANNER_DIST },
+  format: "iife",
+  globalName: "modist",
+  write: false,
+});
+const iifeText = iife.outputFiles[0].text;
+if (/<\/script|<!--/.test(iifeText)) {
+  throw new Error("inline bundle would break HTML parsing of the <script> tag");
+}
+const SITE = "site/index.html";
+const page = readFileSync(SITE, "utf8");
+const START = "//__MODIST_INLINE_START__";
+const END = "//__MODIST_INLINE_END__";
+const iStart = page.indexOf(START);
+const iEnd = page.indexOf(END);
+if (iStart < 0 || iEnd < 0 || iEnd <= iStart) {
+  throw new Error(`missing ${START}/${END} markers in ${SITE}`);
+}
+const spliced = `${page.slice(0, iStart + START.length)}\n${iifeText}\n${page.slice(iEnd)}`;
+writeFileSync(SITE, spliced);
+console.log(`inlined standalone bundle into ${SITE}`);

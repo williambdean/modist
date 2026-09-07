@@ -232,7 +232,9 @@ make js-watch     # rebuild on every edit (for anywidget hot-reload dev)
 
 `src/modist/static/*.js` and `dist/modist.js` are committed (jsDelivr and
 anywidget serve them straight from the repo), so rebuild them whenever `js/`
-changes and include the diff in the commit.
+changes and include the diff in the commit. `site/index.html` (the showcase)
+embeds the same bundle inline via `build.js`, so it opens from `file://` with no
+server — rebuild after touching `js/` or `site/`.
 
 ## Development
 
