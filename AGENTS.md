@@ -39,10 +39,12 @@ Layout:
 4. Create the tag and release: `gh release create vX.Y.Z --target HEAD --notes-file notes.md`
    (push the branch first; `--target HEAD` resolves oddly if main isn't pushed).
    Pushing the `v*.*.*` tag triggers the `.github/workflows/workflow.yml` publish
-   to PyPI via trusted publishing AND `.github/workflows/pages.yml`, which
-   rebuilds `dist/modist.js` and deploys it as `/latest/modist.js` on GitHub
-   Pages. jsDelivr pins resolve the same tag path
-   (`@vX.Y.Z/dist/modist.js`) straight from the repo, so no extra step is needed.
+   to PyPI via trusted publishing. GitHub Pages (`/latest/modist.js` + showcase)
+   deploys from **pushes to main** via `.github/workflows/pages.yml` and is
+   already live by then, since the tag points at a main commit. jsDelivr pins
+   resolve the same tag path (`@vX.Y.Z/dist/modist.js`) straight from the repo,
+   so no extra step is needed. (Pages deployments from tags are rejected by
+   GitHub, so pages.yml must stay branch-triggered.)
 5. Verify: the "Python package" action succeeds and PyPI shows the new version.
 
 Note: `gh release create` needs the tag to exist on the remote — it may fail
