@@ -1,4 +1,4 @@
-/*! modist v0.6.0 - MIT (c) 2026 Will Dean - https://github.com/williambdean/modist
+/*! modist v0.7.0 - MIT (c) 2026 Will Dean - https://github.com/williambdean/modist
  * Bundled: jstat v1.9.6 (MIT) - Copyright (c) 2013 jStat
  * https://github.com/jstat/jstat - https://opensource.org/licenses/MIT */
 var __create = Object.create;
