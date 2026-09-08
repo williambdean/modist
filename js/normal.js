@@ -2,8 +2,6 @@
 import jStat from "jstat";
 import { createWidget, fmt } from "./base.js";
 
-const TAU = 2 * Math.PI;
-
 const F = {
   name: "normal",
   label: "Normal",
@@ -18,8 +16,7 @@ const F = {
     return [p.mu - 6 * p.sigma, p.mu + 6 * p.sigma];
   },
   pdf(p, x) {
-    const z = (x - p.mu) / p.sigma;
-    return Math.exp(-0.5 * z * z) / (p.sigma * Math.sqrt(TAU));
+    return jStat.normal.pdf(x, p.mu, p.sigma);
   },
   handles: [
     {

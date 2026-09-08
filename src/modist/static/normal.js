@@ -4458,7 +4458,6 @@ function createWidget(F2, opts) {
 }
 
 // js/normal.js
-var TAU = 2 * Math.PI;
 var F = {
   name: "normal",
   label: "Normal",
@@ -4473,8 +4472,7 @@ var F = {
     return [p.mu - 6 * p.sigma, p.mu + 6 * p.sigma];
   },
   pdf(p, x) {
-    const z = (x - p.mu) / p.sigma;
-    return Math.exp(-0.5 * z * z) / (p.sigma * Math.sqrt(TAU));
+    return import_jstat.default.normal.pdf(x, p.mu, p.sigma);
   },
   handles: [
     {
