@@ -19,6 +19,17 @@ import modist as md
         (md.Beta, {"alpha": 2.0, "beta": 5.0}, {"alpha": 2.0, "beta": 5.0}),
         (md.Gamma, {"alpha": 3.0, "beta": 4.0}, {"alpha": 3.0, "beta": 4.0}),
         (md.StudentT, {"mu": 1.0, "sigma": 2.0, "nu": 5.0}, {"mu": 1.0, "sigma": 2.0, "nu": 5.0}),
+        (md.Exponential, {"lam": 2.0}, {"lam": 2.0}),
+        (md.HalfNormal, {"sigma": 2.0}, {"sigma": 2.0}),
+        (md.LogNormal, {"mu": 1.0, "sigma": 2.0}, {"mu": 1.0, "sigma": 2.0}),
+        (md.Cauchy, {"alpha": 1.0, "beta": 2.0}, {"alpha": 1.0, "beta": 2.0}),
+        (md.Laplace, {"mu": 1.0, "b": 2.0}, {"mu": 1.0, "b": 2.0}),
+        (md.Logistic, {"mu": 1.0, "s": 2.0}, {"mu": 1.0, "s": 2.0}),
+        (md.Weibull, {"alpha": 2.0, "beta": 3.0}, {"alpha": 2.0, "beta": 3.0}),
+        (md.HalfStudentT, {"nu": 5.0, "sigma": 2.0}, {"nu": 5.0, "sigma": 2.0}),
+        (md.ChiSquared, {"nu": 3.0}, {"nu": 3.0}),
+        (md.InverseGamma, {"alpha": 3.0, "beta": 1.0}, {"alpha": 3.0, "beta": 1.0}),
+        (md.Kumaraswamy, {"a": 2.0, "b": 3.0}, {"a": 2.0, "b": 3.0}),
     ],
 )
 def test_synced_params(cls, kwargs, expect):
@@ -61,9 +72,123 @@ def test_studentt_scipy_matches_params():
     assert s.kwds["df"] == pytest.approx(5.0)
 
 
+def test_exponential_scipy_rate_semantics():
+    # modist lam is the RATE; scipy expon is (scale = 1/rate)
+    w = md.Exponential(lam=2.0)
+    s = w.scipy
+    assert s.mean() == pytest.approx(1.0 / 2.0)
+    assert s.kwds["scale"] == pytest.approx(1.0 / 2.0)
+
+
+def test_halfnormal_scipy_matches_params():
+    from math import pi, sqrt
+
+    w = md.HalfNormal(sigma=2.0)
+    s = w.scipy
+    assert s.mean() == pytest.approx(2.0 * sqrt(2.0 / pi))
+    assert s.kwds["scale"] == pytest.approx(2.0)
+
+
+def test_lognormal_scipy_matches_params():
+    from math import exp
+
+    w = md.LogNormal(mu=1.0, sigma=2.0)
+    s = w.scipy
+    assert s.kwds["s"] == pytest.approx(2.0)
+    assert s.kwds["scale"] == pytest.approx(exp(1.0))
+    assert s.mean() == pytest.approx(exp(1.0 + 2.0 ** 2 / 2))
+
+
+def test_cauchy_scipy_matches_params():
+    w = md.Cauchy(alpha=1.0, beta=2.0)
+    s = w.scipy
+    assert s.median() == pytest.approx(1.0)
+    assert s.kwds["loc"] == pytest.approx(1.0)
+    assert s.kwds["scale"] == pytest.approx(2.0)
+
+
+def test_laplace_scipy_matches_params():
+    w = md.Laplace(mu=1.0, b=2.0)
+    s = w.scipy
+    assert s.mean() == pytest.approx(1.0)
+    assert s.kwds["loc"] == pytest.approx(1.0)
+    assert s.kwds["scale"] == pytest.approx(2.0)
+
+
+def test_logistic_scipy_matches_params():
+    w = md.Logistic(mu=1.0, s=2.0)
+    s = w.scipy
+    assert s.mean() == pytest.approx(1.0)
+    assert s.kwds["loc"] == pytest.approx(1.0)
+    assert s.kwds["scale"] == pytest.approx(2.0)
+
+
+def test_weibull_scipy_matches_params():
+    from math import log
+
+    w = md.Weibull(alpha=2.0, beta=3.0)
+    s = w.scipy
+    assert s.kwds["c"] == pytest.approx(2.0)
+    assert s.kwds["scale"] == pytest.approx(3.0)
+    assert s.median() == pytest.approx(3.0 * log(2) ** (1 / 2.0))
+
+
+def test_halfstudentt_scipy_folded_semantics():
+    from scipy import stats
+
+    w = md.HalfStudentT(nu=5.0, sigma=2.0)
+    s = w.scipy
+    # folded median = sigma * t.ppf(0.75, nu); folded pdf at 0 = 2 * t.pdf(0)/sigma
+    assert s.median() == pytest.approx(2.0 * stats.t.ppf(0.75, 5.0))
+    assert s.pdf(0) == pytest.approx(2.0 * stats.t.pdf(0, df=5.0) / 2.0)
+    assert s.pdf(-1) == pytest.approx(0.0)
+    assert s.support() == (0, 1)
+    assert s.mean() > 0
+    assert s.std() > 0
+
+
+def test_chisquared_scipy_matches_params():
+    w = md.ChiSquared(nu=3.0)
+    s = w.scipy
+    assert s.mean() == pytest.approx(3.0)
+    assert s.kwds["df"] == pytest.approx(3.0)
+
+
+def test_inversegamma_scipy_matches_params():
+    # modist beta is the SCALE (pymc convention), unlike Gamma where it is the rate
+    w = md.InverseGamma(alpha=3.0, beta=1.0)
+    s = w.scipy
+    assert s.mean() == pytest.approx(1.0 / 2.0)
+    assert s.kwds["a"] == pytest.approx(3.0)
+    assert s.kwds["scale"] == pytest.approx(1.0)
+
+
+def test_kumaraswamy_scipy_unavailable():
+    # scipy has no kumaraswamy distribution; the adapter raises a clear error
+    w = md.Kumaraswamy(a=2.0, b=2.0)
+    with pytest.raises(NotImplementedError, match="scipy"):
+        w.scipy
+
+
 def test_value_splats_into_pymc():
     pm = pytest.importorskip("pymc")
-    for cls, name in ((md.Normal, "Normal"), (md.Beta, "Beta"), (md.Gamma, "Gamma"), (md.StudentT, "StudentT")):
+    for cls, name in (
+        (md.Normal, "Normal"),
+        (md.Beta, "Beta"),
+        (md.Gamma, "Gamma"),
+        (md.StudentT, "StudentT"),
+        (md.Exponential, "Exponential"),
+        (md.HalfNormal, "HalfNormal"),
+        (md.LogNormal, "Lognormal"),
+        (md.Cauchy, "Cauchy"),
+        (md.Laplace, "Laplace"),
+        (md.Logistic, "Logistic"),
+        (md.Weibull, "Weibull"),
+        (md.HalfStudentT, "HalfStudentT"),
+        (md.ChiSquared, "ChiSquared"),
+        (md.InverseGamma, "InverseGamma"),
+        (md.Kumaraswamy, "Kumaraswamy"),
+    ):
         w = cls()
         dist = getattr(pm, name).dist(**w.params)
         assert dist is not None
@@ -82,6 +207,17 @@ def test_pymc_property_lazy():
         (md.Beta, ["foo_alpha", "foo_beta"]),
         (md.Gamma, ["foo_alpha", "foo_beta"]),
         (md.StudentT, ["foo_mu", "foo_sigma", "foo_nu"]),
+        (md.Exponential, ["foo_lam"]),
+        (md.HalfNormal, ["foo_sigma"]),
+        (md.LogNormal, ["foo_mu", "foo_sigma"]),
+        (md.Cauchy, ["foo_alpha", "foo_beta"]),
+        (md.Laplace, ["foo_mu", "foo_b"]),
+        (md.Logistic, ["foo_mu", "foo_s"]),
+        (md.Weibull, ["foo_alpha", "foo_beta"]),
+        (md.HalfStudentT, ["foo_nu", "foo_sigma"]),
+        (md.ChiSquared, ["foo_nu"]),
+        (md.InverseGamma, ["foo_alpha", "foo_beta"]),
+        (md.Kumaraswamy, ["foo_a", "foo_b"]),
     ],
 )
 def test_create_variable_symbolic_inputs(cls, expect_scalars):
@@ -119,7 +255,23 @@ def test_prior_property():
 
 def test_esm_pointing_at_self_contained_bundle():
     # anywidget resolves a Path _esm into a FileContents; str() returns the JS.
-    for cls in (md.Normal, md.Beta, md.Gamma, md.StudentT):
+    for cls in (
+        md.Normal,
+        md.Beta,
+        md.Gamma,
+        md.StudentT,
+        md.Exponential,
+        md.HalfNormal,
+        md.LogNormal,
+        md.Cauchy,
+        md.Laplace,
+        md.Logistic,
+        md.Weibull,
+        md.HalfStudentT,
+        md.ChiSquared,
+        md.InverseGamma,
+        md.Kumaraswamy,
+    ):
         src = str(cls._esm)
         assert len(src) > 10_000, "jStat should be inlined into the bundle"
         # anywidget serves _esm as a Blob URL: no relative imports allowed

@@ -6,19 +6,60 @@ distribution constructor, e.g. ``pm.Normal.dist(**w.value)``.
 
 Families
 --------
-- :class:`Normal`      -- ``mu`` / ``sigma``
-- :class:`Beta`        -- ``alpha`` / ``beta`` (fixed [0, 1])
-- :class:`Gamma`       -- ``alpha`` / ``beta`` (shape / rate, edge at 0)
-- :class:`StudentT`    -- ``mu`` / ``sigma`` / ``nu`` (unbounded, heavier tails)
+- :class:`Normal`       -- ``mu`` / ``sigma``
+- :class:`Beta`         -- ``alpha`` / ``beta`` (fixed [0, 1])
+- :class:`Gamma`        -- ``alpha`` / ``beta`` (shape / rate, edge at 0)
+- :class:`StudentT`     -- ``mu`` / ``sigma`` / ``nu`` (unbounded, heavier tails)
+- :class:`Exponential`  -- ``lam`` (edge at 0)
+- :class:`HalfNormal`   -- ``sigma`` (edge at 0)
+- :class:`LogNormal`    -- ``mu`` / ``sigma`` (edge at 0)
+- :class:`Cauchy`       -- ``alpha`` / ``beta`` (unbounded)
+- :class:`Laplace`      -- ``mu`` / ``b`` (unbounded)
+- :class:`Logistic`     -- ``mu`` / ``s`` (unbounded)
+- :class:`Weibull`      -- ``alpha`` / ``beta`` (shape / scale, edge at 0)
+- :class:`HalfStudentT` -- ``nu`` / ``sigma`` (edge at 0)
+- :class:`ChiSquared`   -- ``nu`` (edge at 0)
+- :class:`InverseGamma` -- ``alpha`` / ``beta`` (shape / scale, edge at 0)
+- :class:`Kumaraswamy`  -- ``a`` / ``b`` (fixed [0, 1])
 """
 
 from ._base import DistMixin
 from .beta import Beta
+from .cauchy import Cauchy
+from .chisquared import ChiSquared
+from .exponential import Exponential
 from .gamma import Gamma
+from .halfnormal import HalfNormal
+from .halfstudentt import HalfStudentT
+from .inversegamma import InverseGamma
+from .kumaraswamy import Kumaraswamy
+from .laplace import Laplace
+from .lognormal import LogNormal
+from .logistic import Logistic
 from .normal import Normal
 from .studentt import StudentT
+from .weibull import Weibull
 
-__all__ = ["Normal", "Beta", "Gamma", "StudentT", "DistMixin", "ui", "pymc"]
+__all__ = [
+    "Normal",
+    "Beta",
+    "Gamma",
+    "StudentT",
+    "Exponential",
+    "HalfNormal",
+    "LogNormal",
+    "Cauchy",
+    "Laplace",
+    "Logistic",
+    "Weibull",
+    "HalfStudentT",
+    "ChiSquared",
+    "InverseGamma",
+    "Kumaraswamy",
+    "DistMixin",
+    "ui",
+    "pymc",
+]
 
 __version__ = "0.6.0"
 

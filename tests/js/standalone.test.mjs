@@ -12,7 +12,7 @@ const DIST = join(REPO, "dist", "modist.js");
 const ESM = readFileSync(DIST, "utf8");
 
 const HARNESS = `<!doctype html><html><body>
-<div id="root"></div><div id="root2"></div>
+<div id="root"></div><div id="root2"></div><div id="root3"></div>
 <script type="module">
 const mod = await import('data:text/javascript;charset=utf-8,' + encodeURIComponent(${JSON.stringify(ESM)}));
 window.mod = mod;
@@ -39,7 +39,12 @@ const check = (cond, msg) => {
 try {
   console.log("[standalone] named exports");
   const names = await page.evaluate(() =>
-    ["normal", "beta", "gamma", "studentT"].map((n) => typeof window.mod[n])
+    [
+      "normal", "beta", "gamma", "studentT",
+      "exponential", "halfNormal", "logNormal", "cauchy", "laplace", "logistic",
+      "weibull", "halfStudentT", "chiSquared",
+      "inverseGamma", "kumaraswamy",
+    ].map((n) => typeof window.mod[n])
   );
   check(names.every((t) => t === "function"), `exports are functions: ${names.join(",")}`);
 
@@ -51,6 +56,11 @@ try {
     return w2.params;
   });
   check(g.alpha === 2 && g.beta === 2, `gamma(el) uses defaults -> ${JSON.stringify(g)}`);
+  const lgn = await page.evaluate(() => {
+    const w3 = window.mod.logNormal(document.getElementById("root3"));
+    return w3.params;
+  });
+  check(lgn.mu === 0 && lgn.sigma === 1, `logNormal(el) uses defaults -> ${JSON.stringify(lgn)}`);
 
   console.log("[standalone] drag the mean -> updates params + onChange fires");
   const before = await page.evaluate(() => window.hits.length);

@@ -94,7 +94,10 @@ def _build_elements(
     if leaf_invalid:
         raise TypeError(
             "every prior leaf must be a modist distribution "
-            f"(Normal/Beta/Gamma/StudentT); got non-DistMixin: {leaf_invalid}"
+            "(Normal/Beta/Gamma/StudentT/Exponential/HalfNormal/LogNormal/"
+            "Cauchy/Laplace/Logistic/Weibull/HalfStudentT/ChiSquared/"
+            "InverseGamma/Kumaraswamy); "
+            f"got non-DistMixin: {leaf_invalid}"
         )
     return elements
 

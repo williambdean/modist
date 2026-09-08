@@ -1,5 +1,5 @@
 // js/dist/index.js - standalone client-side entry for JS-only consumers.
-// Wraps the four anywidget front-end modules with a tiny reactive model so they
+// Wraps the anywidget front-end modules with a tiny reactive model so they
 // render outside anywidget/marimo hosts, and injects the shared styles once.
 // Bundled to dist/modist.js (built by build.js); exported as named factories:
 //
@@ -18,12 +18,34 @@ import normalWidget from "../normal.js";
 import betaWidget from "../beta.js";
 import gammaWidget from "../gamma.js";
 import studenttWidget from "../studentt.js";
+import exponentialWidget from "../exponential.js";
+import halfnormalWidget from "../halfnormal.js";
+import lognormalWidget from "../lognormal.js";
+import cauchyWidget from "../cauchy.js";
+import laplaceWidget from "../laplace.js";
+import logisticWidget from "../logistic.js";
+import weibullWidget from "../weibull.js";
+import halfstudenttWidget from "../halfstudentt.js";
+import chisquaredWidget from "../chisquared.js";
+import inversegammaWidget from "../inversegamma.js";
+import kumaraswamyWidget from "../kumaraswamy.js";
 
 const FAMILIES = {
   normal: { widget: normalWidget, defaults: { mu: 0, sigma: 1 } },
   beta: { widget: betaWidget, defaults: { alpha: 2, beta: 2 } },
   gamma: { widget: gammaWidget, defaults: { alpha: 2, beta: 2 } },
   studentt: { widget: studenttWidget, defaults: { mu: 0, sigma: 1, nu: 5 } },
+  exponential: { widget: exponentialWidget, defaults: { lam: 1 } },
+  halfnormal: { widget: halfnormalWidget, defaults: { sigma: 1 } },
+  lognormal: { widget: lognormalWidget, defaults: { mu: 0, sigma: 1 } },
+  cauchy: { widget: cauchyWidget, defaults: { alpha: 0, beta: 1 } },
+  laplace: { widget: laplaceWidget, defaults: { mu: 0, b: 1 } },
+  logistic: { widget: logisticWidget, defaults: { mu: 0, s: 1 } },
+  weibull: { widget: weibullWidget, defaults: { alpha: 2, beta: 1 } },
+  halfstudentt: { widget: halfstudenttWidget, defaults: { nu: 5, sigma: 1 } },
+  chisquared: { widget: chisquaredWidget, defaults: { nu: 3 } },
+  inversegamma: { widget: inversegammaWidget, defaults: { alpha: 3, beta: 1 } },
+  kumaraswamy: { widget: kumaraswamyWidget, defaults: { a: 2, b: 2 } },
 };
 
 let stylesInjected = false;
@@ -120,4 +142,37 @@ export function gamma(el, params) {
 }
 export function studentT(el, params) {
   return instantiate("studentt", el, params, "studentT");
+}
+export function exponential(el, params) {
+  return instantiate("exponential", el, params, "exponential");
+}
+export function halfNormal(el, params) {
+  return instantiate("halfnormal", el, params, "halfNormal");
+}
+export function logNormal(el, params) {
+  return instantiate("lognormal", el, params, "logNormal");
+}
+export function cauchy(el, params) {
+  return instantiate("cauchy", el, params, "cauchy");
+}
+export function laplace(el, params) {
+  return instantiate("laplace", el, params, "laplace");
+}
+export function logistic(el, params) {
+  return instantiate("logistic", el, params, "logistic");
+}
+export function weibull(el, params) {
+  return instantiate("weibull", el, params, "weibull");
+}
+export function halfStudentT(el, params) {
+  return instantiate("halfstudentt", el, params, "halfStudentT");
+}
+export function chiSquared(el, params) {
+  return instantiate("chisquared", el, params, "chiSquared");
+}
+export function inverseGamma(el, params) {
+  return instantiate("inversegamma", el, params, "inverseGamma");
+}
+export function kumaraswamy(el, params) {
+  return instantiate("kumaraswamy", el, params, "kumaraswamy");
 }

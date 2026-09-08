@@ -43,7 +43,7 @@ var require_jstat = __commonJS({
         window.jStat = factory();
       }
     })(exports, function() {
-      var jStat15 = (function(Math2, undefined2) {
+      var jStat2 = (function(Math2, undefined2) {
         var concat = Array.prototype.concat;
         var slice = Array.prototype.slice;
         var toString = Object.prototype.toString;
@@ -66,53 +66,53 @@ var require_jstat = __commonJS({
         function toVector(arr) {
           return concat.apply([], arr);
         }
-        function jStat16() {
-          return new jStat16._init(arguments);
+        function jStat3() {
+          return new jStat3._init(arguments);
         }
-        jStat16.fn = jStat16.prototype;
-        jStat16._init = function _init(args) {
+        jStat3.fn = jStat3.prototype;
+        jStat3._init = function _init(args) {
           if (isArray(args[0])) {
             if (isArray(args[0][0])) {
               if (isFunction(args[1]))
-                args[0] = jStat16.map(args[0], args[1]);
+                args[0] = jStat3.map(args[0], args[1]);
               for (var i = 0; i < args[0].length; i++)
                 this[i] = args[0][i];
               this.length = args[0].length;
             } else {
-              this[0] = isFunction(args[1]) ? jStat16.map(args[0], args[1]) : args[0];
+              this[0] = isFunction(args[1]) ? jStat3.map(args[0], args[1]) : args[0];
               this.length = 1;
             }
           } else if (isNumber(args[0])) {
-            this[0] = jStat16.seq.apply(null, args);
+            this[0] = jStat3.seq.apply(null, args);
             this.length = 1;
-          } else if (args[0] instanceof jStat16) {
-            return jStat16(args[0].toArray());
+          } else if (args[0] instanceof jStat3) {
+            return jStat3(args[0].toArray());
           } else {
             this[0] = [];
             this.length = 1;
           }
           return this;
         };
-        jStat16._init.prototype = jStat16.prototype;
-        jStat16._init.constructor = jStat16;
-        jStat16.utils = {
+        jStat3._init.prototype = jStat3.prototype;
+        jStat3._init.constructor = jStat3;
+        jStat3.utils = {
           calcRdx,
           isArray,
           isFunction,
           isNumber,
           toVector
         };
-        jStat16._random_fn = Math2.random;
-        jStat16.setRandom = function setRandom(fn) {
+        jStat3._random_fn = Math2.random;
+        jStat3.setRandom = function setRandom(fn) {
           if (typeof fn !== "function")
             throw new TypeError("fn is not a function");
-          jStat16._random_fn = fn;
+          jStat3._random_fn = fn;
         };
-        jStat16.extend = function extend(obj) {
+        jStat3.extend = function extend(obj) {
           var i, j;
           if (arguments.length === 1) {
             for (j in obj)
-              jStat16[j] = obj[j];
+              jStat3[j] = obj[j];
             return this;
           }
           for (i = 1; i < arguments.length; i++) {
@@ -121,36 +121,36 @@ var require_jstat = __commonJS({
           }
           return obj;
         };
-        jStat16.rows = function rows(arr) {
+        jStat3.rows = function rows(arr) {
           return arr.length || 1;
         };
-        jStat16.cols = function cols(arr) {
+        jStat3.cols = function cols(arr) {
           return arr[0].length || 1;
         };
-        jStat16.dimensions = function dimensions(arr) {
+        jStat3.dimensions = function dimensions(arr) {
           return {
-            rows: jStat16.rows(arr),
-            cols: jStat16.cols(arr)
+            rows: jStat3.rows(arr),
+            cols: jStat3.cols(arr)
           };
         };
-        jStat16.row = function row(arr, index) {
+        jStat3.row = function row(arr, index) {
           if (isArray(index)) {
             return index.map(function(i) {
-              return jStat16.row(arr, i);
+              return jStat3.row(arr, i);
             });
           }
           return arr[index];
         };
-        jStat16.rowa = function rowa(arr, i) {
-          return jStat16.row(arr, i);
+        jStat3.rowa = function rowa(arr, i) {
+          return jStat3.row(arr, i);
         };
-        jStat16.col = function col(arr, index) {
+        jStat3.col = function col(arr, index) {
           if (isArray(index)) {
-            var submat = jStat16.arange(arr.length).map(function() {
+            var submat = jStat3.arange(arr.length).map(function() {
               return new Array(index.length);
             });
             index.forEach(function(ind, i2) {
-              jStat16.arange(arr.length).forEach(function(j) {
+              jStat3.arange(arr.length).forEach(function(j) {
                 submat[j][i2] = arr[j][ind];
               });
             });
@@ -161,26 +161,26 @@ var require_jstat = __commonJS({
             column[i] = [arr[i][index]];
           return column;
         };
-        jStat16.cola = function cola(arr, i) {
-          return jStat16.col(arr, i).map(function(a) {
+        jStat3.cola = function cola(arr, i) {
+          return jStat3.col(arr, i).map(function(a) {
             return a[0];
           });
         };
-        jStat16.diag = function diag(arr) {
-          var nrow = jStat16.rows(arr);
+        jStat3.diag = function diag(arr) {
+          var nrow = jStat3.rows(arr);
           var res = new Array(nrow);
           for (var row = 0; row < nrow; row++)
             res[row] = [arr[row][row]];
           return res;
         };
-        jStat16.antidiag = function antidiag(arr) {
-          var nrow = jStat16.rows(arr) - 1;
+        jStat3.antidiag = function antidiag(arr) {
+          var nrow = jStat3.rows(arr) - 1;
           var res = new Array(nrow);
           for (var i = 0; nrow >= 0; nrow--, i++)
             res[i] = [arr[i][nrow]];
           return res;
         };
-        jStat16.transpose = function transpose(arr) {
+        jStat3.transpose = function transpose(arr) {
           var obj = [];
           var objArr, rows, cols, j, i;
           if (!isArray(arr[0]))
@@ -195,7 +195,7 @@ var require_jstat = __commonJS({
           }
           return obj.length === 1 ? obj[0] : obj;
         };
-        jStat16.map = function map(arr, func, toAlter) {
+        jStat3.map = function map(arr, func, toAlter) {
           var row, nrow, ncol, res, col;
           if (!isArray(arr[0]))
             arr = [arr];
@@ -210,7 +210,7 @@ var require_jstat = __commonJS({
           }
           return res.length === 1 ? res[0] : res;
         };
-        jStat16.cumreduce = function cumreduce(arr, func, toAlter) {
+        jStat3.cumreduce = function cumreduce(arr, func, toAlter) {
           var row, nrow, ncol, res, col;
           if (!isArray(arr[0]))
             arr = [arr];
@@ -227,10 +227,10 @@ var require_jstat = __commonJS({
           }
           return res.length === 1 ? res[0] : res;
         };
-        jStat16.alter = function alter(arr, func) {
-          return jStat16.map(arr, func, true);
+        jStat3.alter = function alter(arr, func) {
+          return jStat3.map(arr, func, true);
         };
-        jStat16.create = function create(rows, cols, func) {
+        jStat3.create = function create(rows, cols, func) {
           var res = new Array(rows);
           var i, j;
           if (isFunction(cols)) {
@@ -247,33 +247,33 @@ var require_jstat = __commonJS({
         function retZero() {
           return 0;
         }
-        jStat16.zeros = function zeros(rows, cols) {
+        jStat3.zeros = function zeros(rows, cols) {
           if (!isNumber(cols))
             cols = rows;
-          return jStat16.create(rows, cols, retZero);
+          return jStat3.create(rows, cols, retZero);
         };
         function retOne() {
           return 1;
         }
-        jStat16.ones = function ones(rows, cols) {
+        jStat3.ones = function ones(rows, cols) {
           if (!isNumber(cols))
             cols = rows;
-          return jStat16.create(rows, cols, retOne);
+          return jStat3.create(rows, cols, retOne);
         };
-        jStat16.rand = function rand(rows, cols) {
+        jStat3.rand = function rand(rows, cols) {
           if (!isNumber(cols))
             cols = rows;
-          return jStat16.create(rows, cols, jStat16._random_fn);
+          return jStat3.create(rows, cols, jStat3._random_fn);
         };
         function retIdent(i, j) {
           return i === j ? 1 : 0;
         }
-        jStat16.identity = function identity(rows, cols) {
+        jStat3.identity = function identity(rows, cols) {
           if (!isNumber(cols))
             cols = rows;
-          return jStat16.create(rows, cols, retIdent);
+          return jStat3.create(rows, cols, retIdent);
         };
-        jStat16.symmetric = function symmetric(arr) {
+        jStat3.symmetric = function symmetric(arr) {
           var size = arr.length;
           var row, col;
           if (arr.length !== arr[0].length)
@@ -285,10 +285,10 @@ var require_jstat = __commonJS({
           }
           return true;
         };
-        jStat16.clear = function clear(arr) {
-          return jStat16.alter(arr, retZero);
+        jStat3.clear = function clear(arr) {
+          return jStat3.alter(arr, retZero);
         };
-        jStat16.seq = function seq(min, max, length, func) {
+        jStat3.seq = function seq(min, max, length, func) {
           if (!isFunction(func))
             func = false;
           var arr = [];
@@ -301,7 +301,7 @@ var require_jstat = __commonJS({
           }
           return arr;
         };
-        jStat16.arange = function arange(start, end, step) {
+        jStat3.arange = function arange(start, end, step) {
           var rl = [];
           var i;
           step = step || 1;
@@ -329,13 +329,13 @@ var require_jstat = __commonJS({
           }
           return rl;
         };
-        jStat16.slice = /* @__PURE__ */ (function() {
+        jStat3.slice = /* @__PURE__ */ (function() {
           function _slice(list, start, end, step) {
             var i;
             var rl = [];
             var length = list.length;
             if (start === undefined2 && end === undefined2 && step === undefined2) {
-              return jStat16.copy(list);
+              return jStat3.copy(list);
             }
             start = start || 0;
             end = end || list.length;
@@ -368,12 +368,12 @@ var require_jstat = __commonJS({
             if (isNumber(rcSlice.row)) {
               if (isNumber(rcSlice.col))
                 return list[rcSlice.row][rcSlice.col];
-              var row = jStat16.rowa(list, rcSlice.row);
+              var row = jStat3.rowa(list, rcSlice.row);
               colSlice = rcSlice.col || {};
               return _slice(row, colSlice.start, colSlice.end, colSlice.step);
             }
             if (isNumber(rcSlice.col)) {
-              var col = jStat16.cola(list, rcSlice.col);
+              var col = jStat3.cola(list, rcSlice.col);
               rowSlice = rcSlice.row || {};
               return _slice(col, rowSlice.start, rowSlice.end, rowSlice.step);
             }
@@ -386,7 +386,7 @@ var require_jstat = __commonJS({
           }
           return slice2;
         })();
-        jStat16.sliceAssign = function sliceAssign(A, rcSlice, B) {
+        jStat3.sliceAssign = function sliceAssign(A, rcSlice, B) {
           var nl, ml;
           if (isNumber(rcSlice.row)) {
             if (isNumber(rcSlice.col))
@@ -395,7 +395,7 @@ var require_jstat = __commonJS({
             rcSlice.col.start = rcSlice.col.start || 0;
             rcSlice.col.end = rcSlice.col.end || A[0].length;
             rcSlice.col.step = rcSlice.col.step || 1;
-            nl = jStat16.arange(
+            nl = jStat3.arange(
               rcSlice.col.start,
               Math2.min(A.length, rcSlice.col.end),
               rcSlice.col.step
@@ -411,7 +411,7 @@ var require_jstat = __commonJS({
             rcSlice.row.start = rcSlice.row.start || 0;
             rcSlice.row.end = rcSlice.row.end || A.length;
             rcSlice.row.step = rcSlice.row.step || 1;
-            ml = jStat16.arange(
+            ml = jStat3.arange(
               rcSlice.row.start,
               Math2.min(A[0].length, rcSlice.row.end),
               rcSlice.row.step
@@ -431,12 +431,12 @@ var require_jstat = __commonJS({
           rcSlice.col.start = rcSlice.col.start || 0;
           rcSlice.col.end = rcSlice.col.end || A[0].length;
           rcSlice.col.step = rcSlice.col.step || 1;
-          ml = jStat16.arange(
+          ml = jStat3.arange(
             rcSlice.row.start,
             Math2.min(A.length, rcSlice.row.end),
             rcSlice.row.step
           );
-          nl = jStat16.arange(
+          nl = jStat3.arange(
             rcSlice.col.start,
             Math2.min(A[0].length, rcSlice.col.end),
             rcSlice.col.step
@@ -448,14 +448,14 @@ var require_jstat = __commonJS({
           });
           return A;
         };
-        jStat16.diagonal = function diagonal(diagArray) {
-          var mat = jStat16.zeros(diagArray.length, diagArray.length);
+        jStat3.diagonal = function diagonal(diagArray) {
+          var mat = jStat3.zeros(diagArray.length, diagArray.length);
           diagArray.forEach(function(t, i) {
             mat[i][i] = t;
           });
           return mat;
         };
-        jStat16.copy = function copy(A) {
+        jStat3.copy = function copy(A) {
           return A.map(function(row) {
             if (isNumber(row))
               return row;
@@ -464,7 +464,7 @@ var require_jstat = __commonJS({
             });
           });
         };
-        var jProto = jStat16.prototype;
+        var jProto = jStat3.prototype;
         jProto.length = 0;
         jProto.push = Array.prototype.push;
         jProto.sort = Array.prototype.sort;
@@ -474,13 +474,13 @@ var require_jstat = __commonJS({
           return this.length > 1 ? slice.call(this) : slice.call(this)[0];
         };
         jProto.map = function map(func, toAlter) {
-          return jStat16(jStat16.map(this, func, toAlter));
+          return jStat3(jStat3.map(this, func, toAlter));
         };
         jProto.cumreduce = function cumreduce(func, toAlter) {
-          return jStat16(jStat16.cumreduce(this, func, toAlter));
+          return jStat3(jStat3.cumreduce(this, func, toAlter));
         };
         jProto.alter = function alter(func) {
-          jStat16.alter(this, func);
+          jStat3.alter(this, func);
           return this;
         };
         (function(funcs) {
@@ -493,8 +493,8 @@ var require_jstat = __commonJS({
                 });
                 return this;
               }
-              results = jStat16[passfunc](this);
-              return isArray(results) ? jStat16(results) : results;
+              results = jStat3[passfunc](this);
+              return isArray(results) ? jStat3(results) : results;
             };
           })(funcs[i]);
         })("transpose clear symmetric rows cols dimensions diag antidiag".split(" "));
@@ -508,67 +508,67 @@ var require_jstat = __commonJS({
                 });
                 return this;
               }
-              return jStat16(jStat16[passfunc](this, index));
+              return jStat3(jStat3[passfunc](this, index));
             };
           })(funcs[i]);
         })("row col".split(" "));
         (function(funcs) {
           for (var i = 0; i < funcs.length; i++) (function(passfunc) {
             jProto[passfunc] = function() {
-              return jStat16(jStat16[passfunc].apply(null, arguments));
+              return jStat3(jStat3[passfunc].apply(null, arguments));
             };
           })(funcs[i]);
         })("create zeros ones rand identity".split(" "));
-        return jStat16;
+        return jStat3;
       })(Math);
-      (function(jStat16, Math2) {
-        var isFunction = jStat16.utils.isFunction;
+      (function(jStat3, Math2) {
+        var isFunction = jStat3.utils.isFunction;
         function ascNum(a, b) {
           return a - b;
         }
         function clip(arg, min, max) {
           return Math2.max(min, Math2.min(arg, max));
         }
-        jStat16.sum = function sum(arr) {
+        jStat3.sum = function sum(arr) {
           var sum2 = 0;
           var i = arr.length;
           while (--i >= 0)
             sum2 += arr[i];
           return sum2;
         };
-        jStat16.sumsqrd = function sumsqrd(arr) {
+        jStat3.sumsqrd = function sumsqrd(arr) {
           var sum = 0;
           var i = arr.length;
           while (--i >= 0)
             sum += arr[i] * arr[i];
           return sum;
         };
-        jStat16.sumsqerr = function sumsqerr(arr) {
-          var mean6 = jStat16.mean(arr);
+        jStat3.sumsqerr = function sumsqerr(arr) {
+          var mean = jStat3.mean(arr);
           var sum = 0;
           var i = arr.length;
           var tmp;
           while (--i >= 0) {
-            tmp = arr[i] - mean6;
+            tmp = arr[i] - mean;
             sum += tmp * tmp;
           }
           return sum;
         };
-        jStat16.sumrow = function sumrow(arr) {
+        jStat3.sumrow = function sumrow(arr) {
           var sum = 0;
           var i = arr.length;
           while (--i >= 0)
             sum += arr[i];
           return sum;
         };
-        jStat16.product = function product(arr) {
+        jStat3.product = function product(arr) {
           var prod = 1;
           var i = arr.length;
           while (--i >= 0)
             prod *= arr[i];
           return prod;
         };
-        jStat16.min = function min(arr) {
+        jStat3.min = function min(arr) {
           var low = arr[0];
           var i = 0;
           while (++i < arr.length)
@@ -576,7 +576,7 @@ var require_jstat = __commonJS({
               low = arr[i];
           return low;
         };
-        jStat16.max = function max(arr) {
+        jStat3.max = function max(arr) {
           var high = arr[0];
           var i = 0;
           while (++i < arr.length)
@@ -584,7 +584,7 @@ var require_jstat = __commonJS({
               high = arr[i];
           return high;
         };
-        jStat16.unique = function unique(arr) {
+        jStat3.unique = function unique(arr) {
           var hash = {}, _arr = [];
           for (var i = 0; i < arr.length; i++) {
             if (!hash[arr[i]]) {
@@ -594,33 +594,33 @@ var require_jstat = __commonJS({
           }
           return _arr;
         };
-        jStat16.mean = function mean6(arr) {
-          return jStat16.sum(arr) / arr.length;
+        jStat3.mean = function mean(arr) {
+          return jStat3.sum(arr) / arr.length;
         };
-        jStat16.meansqerr = function meansqerr(arr) {
-          return jStat16.sumsqerr(arr) / arr.length;
+        jStat3.meansqerr = function meansqerr(arr) {
+          return jStat3.sumsqerr(arr) / arr.length;
         };
-        jStat16.geomean = function geomean(arr) {
+        jStat3.geomean = function geomean(arr) {
           var logs = arr.map(Math2.log);
-          var meanOfLogs = jStat16.mean(logs);
+          var meanOfLogs = jStat3.mean(logs);
           return Math2.exp(meanOfLogs);
         };
-        jStat16.median = function median2(arr) {
+        jStat3.median = function median(arr) {
           var arrlen = arr.length;
           var _arr = arr.slice().sort(ascNum);
           return !(arrlen & 1) ? (_arr[arrlen / 2 - 1] + _arr[arrlen / 2]) / 2 : _arr[arrlen / 2 | 0];
         };
-        jStat16.cumsum = function cumsum(arr) {
-          return jStat16.cumreduce(arr, function(a, b) {
+        jStat3.cumsum = function cumsum(arr) {
+          return jStat3.cumreduce(arr, function(a, b) {
             return a + b;
           });
         };
-        jStat16.cumprod = function cumprod(arr) {
-          return jStat16.cumreduce(arr, function(a, b) {
+        jStat3.cumprod = function cumprod(arr) {
+          return jStat3.cumreduce(arr, function(a, b) {
             return a * b;
           });
         };
-        jStat16.diff = function diff(arr) {
+        jStat3.diff = function diff(arr) {
           var diffs = [];
           var arrLen = arr.length;
           var i;
@@ -628,7 +628,7 @@ var require_jstat = __commonJS({
             diffs.push(arr[i] - arr[i - 1]);
           return diffs;
         };
-        jStat16.rank = function(arr) {
+        jStat3.rank = function(arr) {
           var i;
           var distinctNumbers = [];
           var numberCounts = {};
@@ -657,7 +657,7 @@ var require_jstat = __commonJS({
             return numberRanks[number2];
           });
         };
-        jStat16.mode = function mode(arr) {
+        jStat3.mode = function mode(arr) {
           var arrLen = arr.length;
           var _arr = arr.slice().sort(ascNum);
           var count = 1;
@@ -682,56 +682,56 @@ var require_jstat = __commonJS({
           }
           return numMaxCount === 0 ? mode_arr[0] : mode_arr;
         };
-        jStat16.range = function range(arr) {
-          return jStat16.max(arr) - jStat16.min(arr);
+        jStat3.range = function range(arr) {
+          return jStat3.max(arr) - jStat3.min(arr);
         };
-        jStat16.variance = function variance(arr, flag) {
-          return jStat16.sumsqerr(arr) / (arr.length - (flag ? 1 : 0));
+        jStat3.variance = function variance(arr, flag) {
+          return jStat3.sumsqerr(arr) / (arr.length - (flag ? 1 : 0));
         };
-        jStat16.pooledvariance = function pooledvariance(arr) {
+        jStat3.pooledvariance = function pooledvariance(arr) {
           var sumsqerr = arr.reduce(function(a, samples) {
-            return a + jStat16.sumsqerr(samples);
+            return a + jStat3.sumsqerr(samples);
           }, 0);
           var count = arr.reduce(function(a, samples) {
             return a + samples.length;
           }, 0);
           return sumsqerr / (count - arr.length);
         };
-        jStat16.deviation = function(arr) {
-          var mean6 = jStat16.mean(arr);
+        jStat3.deviation = function(arr) {
+          var mean = jStat3.mean(arr);
           var arrlen = arr.length;
           var dev = new Array(arrlen);
           for (var i = 0; i < arrlen; i++) {
-            dev[i] = arr[i] - mean6;
+            dev[i] = arr[i] - mean;
           }
           return dev;
         };
-        jStat16.stdev = function stdev(arr, flag) {
-          return Math2.sqrt(jStat16.variance(arr, flag));
+        jStat3.stdev = function stdev(arr, flag) {
+          return Math2.sqrt(jStat3.variance(arr, flag));
         };
-        jStat16.pooledstdev = function pooledstdev(arr) {
-          return Math2.sqrt(jStat16.pooledvariance(arr));
+        jStat3.pooledstdev = function pooledstdev(arr) {
+          return Math2.sqrt(jStat3.pooledvariance(arr));
         };
-        jStat16.meandev = function meandev(arr) {
-          var mean6 = jStat16.mean(arr);
+        jStat3.meandev = function meandev(arr) {
+          var mean = jStat3.mean(arr);
           var a = [];
           for (var i = arr.length - 1; i >= 0; i--) {
-            a.push(Math2.abs(arr[i] - mean6));
+            a.push(Math2.abs(arr[i] - mean));
           }
-          return jStat16.mean(a);
+          return jStat3.mean(a);
         };
-        jStat16.meddev = function meddev(arr) {
-          var median2 = jStat16.median(arr);
+        jStat3.meddev = function meddev(arr) {
+          var median = jStat3.median(arr);
           var a = [];
           for (var i = arr.length - 1; i >= 0; i--) {
-            a.push(Math2.abs(arr[i] - median2));
+            a.push(Math2.abs(arr[i] - median));
           }
-          return jStat16.median(a);
+          return jStat3.median(a);
         };
-        jStat16.coeffvar = function coeffvar(arr) {
-          return jStat16.stdev(arr) / jStat16.mean(arr);
+        jStat3.coeffvar = function coeffvar(arr) {
+          return jStat3.stdev(arr) / jStat3.mean(arr);
         };
-        jStat16.quartiles = function quartiles(arr) {
+        jStat3.quartiles = function quartiles(arr) {
           var arrlen = arr.length;
           var _arr = arr.slice().sort(ascNum);
           return [
@@ -740,11 +740,11 @@ var require_jstat = __commonJS({
             _arr[Math2.round(arrlen * 3 / 4) - 1]
           ];
         };
-        jStat16.quantiles = function quantiles(arr, quantilesArray, alphap, betap) {
+        jStat3.quantiles = function quantiles(arr, quantilesArray, alphap, betap) {
           var sortedArray = arr.slice().sort(ascNum);
           var quantileVals = [quantilesArray.length];
           var n = arr.length;
-          var i, p, m, aleph, k, gamma2;
+          var i, p, m, aleph, k, gamma;
           if (typeof alphap === "undefined")
             alphap = 3 / 8;
           if (typeof betap === "undefined")
@@ -754,12 +754,12 @@ var require_jstat = __commonJS({
             m = alphap + p * (1 - alphap - betap);
             aleph = n * p + m;
             k = Math2.floor(clip(aleph, 1, n - 1));
-            gamma2 = clip(aleph - k, 0, 1);
-            quantileVals[i] = (1 - gamma2) * sortedArray[k - 1] + gamma2 * sortedArray[k];
+            gamma = clip(aleph - k, 0, 1);
+            quantileVals[i] = (1 - gamma) * sortedArray[k - 1] + gamma * sortedArray[k];
           }
           return quantileVals;
         };
-        jStat16.percentile = function percentile(arr, k, exclusive) {
+        jStat3.percentile = function percentile(arr, k, exclusive) {
           var _arr = arr.slice().sort(ascNum);
           var realIndex = k * (_arr.length + (exclusive ? 1 : -1)) + (exclusive ? 0 : 1);
           var index = parseInt(realIndex);
@@ -770,7 +770,7 @@ var require_jstat = __commonJS({
             return _arr[index - 1];
           }
         };
-        jStat16.percentileOfScore = function percentileOfScore(arr, score, kind) {
+        jStat3.percentileOfScore = function percentileOfScore(arr, score, kind) {
           var counter = 0;
           var len = arr.length;
           var strict = false;
@@ -785,10 +785,10 @@ var require_jstat = __commonJS({
           }
           return counter / len;
         };
-        jStat16.histogram = function histogram(arr, binCnt) {
+        jStat3.histogram = function histogram(arr, binCnt) {
           binCnt = binCnt || 4;
-          var first = jStat16.min(arr);
-          var binWidth = (jStat16.max(arr) - first) / binCnt;
+          var first = jStat3.min(arr);
+          var binWidth = (jStat3.max(arr) - first) / binCnt;
           var len = arr.length;
           var bins = [];
           var i;
@@ -798,40 +798,40 @@ var require_jstat = __commonJS({
             bins[Math2.min(Math2.floor((arr[i] - first) / binWidth), binCnt - 1)] += 1;
           return bins;
         };
-        jStat16.covariance = function covariance(arr1, arr2) {
-          var u = jStat16.mean(arr1);
-          var v = jStat16.mean(arr2);
+        jStat3.covariance = function covariance(arr1, arr2) {
+          var u = jStat3.mean(arr1);
+          var v = jStat3.mean(arr2);
           var arr1Len = arr1.length;
           var sq_dev = new Array(arr1Len);
           var i;
           for (i = 0; i < arr1Len; i++)
             sq_dev[i] = (arr1[i] - u) * (arr2[i] - v);
-          return jStat16.sum(sq_dev) / (arr1Len - 1);
+          return jStat3.sum(sq_dev) / (arr1Len - 1);
         };
-        jStat16.corrcoeff = function corrcoeff(arr1, arr2) {
-          return jStat16.covariance(arr1, arr2) / jStat16.stdev(arr1, 1) / jStat16.stdev(arr2, 1);
+        jStat3.corrcoeff = function corrcoeff(arr1, arr2) {
+          return jStat3.covariance(arr1, arr2) / jStat3.stdev(arr1, 1) / jStat3.stdev(arr2, 1);
         };
-        jStat16.spearmancoeff = function(arr1, arr2) {
-          arr1 = jStat16.rank(arr1);
-          arr2 = jStat16.rank(arr2);
-          return jStat16.corrcoeff(arr1, arr2);
+        jStat3.spearmancoeff = function(arr1, arr2) {
+          arr1 = jStat3.rank(arr1);
+          arr2 = jStat3.rank(arr2);
+          return jStat3.corrcoeff(arr1, arr2);
         };
-        jStat16.stanMoment = function stanMoment(arr, n) {
-          var mu = jStat16.mean(arr);
-          var sigma = jStat16.stdev(arr);
+        jStat3.stanMoment = function stanMoment(arr, n) {
+          var mu = jStat3.mean(arr);
+          var sigma = jStat3.stdev(arr);
           var len = arr.length;
           var skewSum = 0;
           for (var i = 0; i < len; i++)
             skewSum += Math2.pow((arr[i] - mu) / sigma, n);
           return skewSum / arr.length;
         };
-        jStat16.skewness = function skewness(arr) {
-          return jStat16.stanMoment(arr, 3);
+        jStat3.skewness = function skewness(arr) {
+          return jStat3.stanMoment(arr, 3);
         };
-        jStat16.kurtosis = function kurtosis(arr) {
-          return jStat16.stanMoment(arr, 4) - 3;
+        jStat3.kurtosis = function kurtosis(arr) {
+          return jStat3.stanMoment(arr, 4) - 3;
         };
-        var jProto = jStat16.prototype;
+        var jProto = jStat3.prototype;
         (function(funcs) {
           for (var i = 0; i < funcs.length; i++) (function(passfunc) {
             jProto[passfunc] = function(fullbool, func) {
@@ -851,10 +851,10 @@ var require_jstat = __commonJS({
               if (this.length > 1) {
                 tmpthis = fullbool === true ? this : this.transpose();
                 for (; i2 < tmpthis.length; i2++)
-                  arr[i2] = jStat16[passfunc](tmpthis[i2]);
+                  arr[i2] = jStat3[passfunc](tmpthis[i2]);
                 return arr;
               }
-              return jStat16[passfunc](this[0], fullbool);
+              return jStat3[passfunc](this[0], fullbool);
             };
           })(funcs[i]);
         })("cumsum cumprod".split(" "));
@@ -878,10 +878,10 @@ var require_jstat = __commonJS({
                 if (passfunc !== "sumrow")
                   tmpthis = fullbool === true ? this : this.transpose();
                 for (; i2 < tmpthis.length; i2++)
-                  arr[i2] = jStat16[passfunc](tmpthis[i2]);
-                return fullbool === true ? jStat16[passfunc](jStat16.utils.toVector(arr)) : arr;
+                  arr[i2] = jStat3[passfunc](tmpthis[i2]);
+                return fullbool === true ? jStat3[passfunc](jStat3.utils.toVector(arr)) : arr;
               }
-              return jStat16[passfunc](this[0], fullbool);
+              return jStat3[passfunc](this[0], fullbool);
             };
           })(funcs[i]);
         })("sum sumsqrd sumsqerr sumrow product min max unique mean meansqerr geomean median diff rank mode range variance deviation stdev meandev meddev coeffvar quartiles histogram skewness kurtosis".split(" "));
@@ -906,7 +906,7 @@ var require_jstat = __commonJS({
               } else {
                 callbackFunction = void 0;
                 var curriedFunction = function curriedFunction2(vector) {
-                  return jStat16[passfunc].apply(tmpthis, [vector].concat(args));
+                  return jStat3[passfunc].apply(tmpthis, [vector].concat(args));
                 };
               }
               if (this.length > 1) {
@@ -919,9 +919,9 @@ var require_jstat = __commonJS({
             };
           })(funcs[i]);
         })("quantiles percentileOfScore".split(" "));
-      })(jStat15, Math);
-      (function(jStat16, Math2) {
-        jStat16.gammaln = function gammaln(x) {
+      })(jStat2, Math);
+      (function(jStat3, Math2) {
+        jStat3.gammaln = function gammaln(x) {
           var j = 0;
           var cof = [
             76.18009172947146,
@@ -939,7 +939,7 @@ var require_jstat = __commonJS({
             ser += cof[j] / ++y;
           return Math2.log(2.5066282746310007 * ser / xx) - tmp;
         };
-        jStat16.loggam = function loggam(x) {
+        jStat3.loggam = function loggam(x) {
           var x0, x2, xp, gl, gl0;
           var k, n;
           var a = [
@@ -979,7 +979,7 @@ var require_jstat = __commonJS({
           }
           return gl;
         };
-        jStat16.gammafn = function gammafn(x) {
+        jStat3.gammafn = function gammafn(x) {
           var p = [
             -1.716185138865495,
             24.76565080557592,
@@ -1042,11 +1042,11 @@ var require_jstat = __commonJS({
           }
           return res;
         };
-        jStat16.gammap = function gammap(a, x) {
-          return jStat16.lowRegGamma(a, x) * jStat16.gammafn(a);
+        jStat3.gammap = function gammap(a, x) {
+          return jStat3.lowRegGamma(a, x) * jStat3.gammafn(a);
         };
-        jStat16.lowRegGamma = function lowRegGamma(a, x) {
-          var aln = jStat16.gammaln(a);
+        jStat3.lowRegGamma = function lowRegGamma(a, x) {
+          var aln = jStat3.gammaln(a);
           var ap = a;
           var sum = 1 / a;
           var del = sum;
@@ -1075,30 +1075,30 @@ var require_jstat = __commonJS({
           }
           return 1 - h * Math2.exp(-x + a * Math2.log(x) - aln);
         };
-        jStat16.factorialln = function factorialln(n) {
-          return n < 0 ? NaN : jStat16.gammaln(n + 1);
+        jStat3.factorialln = function factorialln(n) {
+          return n < 0 ? NaN : jStat3.gammaln(n + 1);
         };
-        jStat16.factorial = function factorial(n) {
-          return n < 0 ? NaN : jStat16.gammafn(n + 1);
+        jStat3.factorial = function factorial(n) {
+          return n < 0 ? NaN : jStat3.gammafn(n + 1);
         };
-        jStat16.combination = function combination(n, m) {
-          return n > 170 || m > 170 ? Math2.exp(jStat16.combinationln(n, m)) : jStat16.factorial(n) / jStat16.factorial(m) / jStat16.factorial(n - m);
+        jStat3.combination = function combination(n, m) {
+          return n > 170 || m > 170 ? Math2.exp(jStat3.combinationln(n, m)) : jStat3.factorial(n) / jStat3.factorial(m) / jStat3.factorial(n - m);
         };
-        jStat16.combinationln = function combinationln(n, m) {
-          return jStat16.factorialln(n) - jStat16.factorialln(m) - jStat16.factorialln(n - m);
+        jStat3.combinationln = function combinationln(n, m) {
+          return jStat3.factorialln(n) - jStat3.factorialln(m) - jStat3.factorialln(n - m);
         };
-        jStat16.permutation = function permutation(n, m) {
-          return jStat16.factorial(n) / jStat16.factorial(n - m);
+        jStat3.permutation = function permutation(n, m) {
+          return jStat3.factorial(n) / jStat3.factorial(n - m);
         };
-        jStat16.betafn = function betafn(x, y) {
+        jStat3.betafn = function betafn(x, y) {
           if (x <= 0 || y <= 0)
             return void 0;
-          return x + y > 170 ? Math2.exp(jStat16.betaln(x, y)) : jStat16.gammafn(x) * jStat16.gammafn(y) / jStat16.gammafn(x + y);
+          return x + y > 170 ? Math2.exp(jStat3.betaln(x, y)) : jStat3.gammafn(x) * jStat3.gammafn(y) / jStat3.gammafn(x + y);
         };
-        jStat16.betaln = function betaln(x, y) {
-          return jStat16.gammaln(x) + jStat16.gammaln(y) - jStat16.gammaln(x + y);
+        jStat3.betaln = function betaln(x, y) {
+          return jStat3.gammaln(x) + jStat3.gammaln(y) - jStat3.gammaln(x + y);
         };
-        jStat16.betacf = function betacf(x, a, b) {
+        jStat3.betacf = function betacf(x, a, b) {
           var fpmin = 1e-30;
           var m = 1;
           var qab = a + b;
@@ -1137,11 +1137,11 @@ var require_jstat = __commonJS({
           }
           return h;
         };
-        jStat16.gammapinv = function gammapinv(p, a) {
+        jStat3.gammapinv = function gammapinv(p, a) {
           var j = 0;
           var a1 = a - 1;
           var EPS = 1e-8;
-          var gln = jStat16.gammaln(a);
+          var gln = jStat3.gammaln(a);
           var x, err, t, u, pp, lna1, afac;
           if (p >= 1)
             return Math2.max(100, a + 100 * Math2.sqrt(a));
@@ -1169,7 +1169,7 @@ var require_jstat = __commonJS({
           for (; j < 12; j++) {
             if (x <= 0)
               return 0;
-            err = jStat16.lowRegGamma(a, x) - p;
+            err = jStat3.lowRegGamma(a, x) - p;
             if (a > 1)
               t = afac * Math2.exp(-(x - a1) + a1 * (Math2.log(x) - lna1));
             else
@@ -1183,7 +1183,7 @@ var require_jstat = __commonJS({
           }
           return x;
         };
-        jStat16.erf = function erf(x) {
+        jStat3.erf = function erf(x) {
           var cof = [
             -1.3026537197817094,
             0.6419697923564902,
@@ -1233,10 +1233,10 @@ var require_jstat = __commonJS({
           res = t * Math2.exp(-x * x + 0.5 * (cof[0] + ty * d) - dd);
           return isneg ? res - 1 : 1 - res;
         };
-        jStat16.erfc = function erfc(x) {
-          return 1 - jStat16.erf(x);
+        jStat3.erfc = function erfc(x) {
+          return 1 - jStat3.erf(x);
         };
-        jStat16.erfcinv = function erfcinv(p) {
+        jStat3.erfcinv = function erfcinv(p) {
           var j = 0;
           var x, err, t, pp;
           if (p >= 2)
@@ -1247,12 +1247,12 @@ var require_jstat = __commonJS({
           t = Math2.sqrt(-2 * Math2.log(pp / 2));
           x = -0.70711 * ((2.30753 + t * 0.27061) / (1 + t * (0.99229 + t * 0.04481)) - t);
           for (; j < 2; j++) {
-            err = jStat16.erfc(x) - pp;
+            err = jStat3.erfc(x) - pp;
             x += err / (1.1283791670955126 * Math2.exp(-x * x) - x * err);
           }
           return p < 1 ? x : -x;
         };
-        jStat16.ibetainv = function ibetainv(p, a, b) {
+        jStat3.ibetainv = function ibetainv(p, a, b) {
           var EPS = 1e-8;
           var a1 = a - 1;
           var b1 = b - 1;
@@ -1283,11 +1283,11 @@ var require_jstat = __commonJS({
             else
               x = 1 - Math2.pow(b * w * (1 - p), 1 / b);
           }
-          afac = -jStat16.gammaln(a) - jStat16.gammaln(b) + jStat16.gammaln(a + b);
+          afac = -jStat3.gammaln(a) - jStat3.gammaln(b) + jStat3.gammaln(a + b);
           for (; j < 10; j++) {
             if (x === 0 || x === 1)
               return x;
-            err = jStat16.ibeta(x, a, b) - p;
+            err = jStat3.ibeta(x, a, b) - p;
             t = Math2.exp(a1 * Math2.log(x) + b1 * Math2.log(1 - x) + afac);
             u = err / t;
             x -= t = u / (1 - 0.5 * Math2.min(1, u * (a1 / x - b1 / (1 - x))));
@@ -1300,32 +1300,32 @@ var require_jstat = __commonJS({
           }
           return x;
         };
-        jStat16.ibeta = function ibeta(x, a, b) {
-          var bt = x === 0 || x === 1 ? 0 : Math2.exp(jStat16.gammaln(a + b) - jStat16.gammaln(a) - jStat16.gammaln(b) + a * Math2.log(x) + b * Math2.log(1 - x));
+        jStat3.ibeta = function ibeta(x, a, b) {
+          var bt = x === 0 || x === 1 ? 0 : Math2.exp(jStat3.gammaln(a + b) - jStat3.gammaln(a) - jStat3.gammaln(b) + a * Math2.log(x) + b * Math2.log(1 - x));
           if (x < 0 || x > 1)
             return false;
           if (x < (a + 1) / (a + b + 2))
-            return bt * jStat16.betacf(x, a, b) / a;
-          return 1 - bt * jStat16.betacf(1 - x, b, a) / b;
+            return bt * jStat3.betacf(x, a, b) / a;
+          return 1 - bt * jStat3.betacf(1 - x, b, a) / b;
         };
-        jStat16.randn = function randn(n, m) {
+        jStat3.randn = function randn(n, m) {
           var u, v, x, y, q;
           if (!m)
             m = n;
           if (n)
-            return jStat16.create(n, m, function() {
-              return jStat16.randn();
+            return jStat3.create(n, m, function() {
+              return jStat3.randn();
             });
           do {
-            u = jStat16._random_fn();
-            v = 1.7156 * (jStat16._random_fn() - 0.5);
+            u = jStat3._random_fn();
+            v = 1.7156 * (jStat3._random_fn() - 0.5);
             x = u - 0.449871;
             y = Math2.abs(v) + 0.386595;
             q = x * x + y * (0.196 * y - 0.25472 * x);
           } while (q > 0.27597 && (q > 0.27846 || v * v > -4 * Math2.log(u) * u * u));
           return v / u;
         };
-        jStat16.randg = function randg(shape, n, m) {
+        jStat3.randg = function randg(shape, n, m) {
           var oalph = shape;
           var a1, a2, u, v, x, mat;
           if (!m)
@@ -1333,9 +1333,9 @@ var require_jstat = __commonJS({
           if (!shape)
             shape = 1;
           if (n) {
-            mat = jStat16.zeros(n, m);
+            mat = jStat3.zeros(n, m);
             mat.alter(function() {
-              return jStat16.randg(shape);
+              return jStat3.randg(shape);
             });
             return mat;
           }
@@ -1345,25 +1345,25 @@ var require_jstat = __commonJS({
           a2 = 1 / Math2.sqrt(9 * a1);
           do {
             do {
-              x = jStat16.randn();
+              x = jStat3.randn();
               v = 1 + a2 * x;
             } while (v <= 0);
             v = v * v * v;
-            u = jStat16._random_fn();
+            u = jStat3._random_fn();
           } while (u > 1 - 0.331 * Math2.pow(x, 4) && Math2.log(u) > 0.5 * x * x + a1 * (1 - v + Math2.log(v)));
           if (shape == oalph)
             return a1 * v;
           do {
-            u = jStat16._random_fn();
+            u = jStat3._random_fn();
           } while (u === 0);
           return Math2.pow(u, 1 / oalph) * a1 * v;
         };
         (function(funcs) {
           for (var i = 0; i < funcs.length; i++) (function(passfunc) {
-            jStat16.fn[passfunc] = function() {
-              return jStat16(
-                jStat16.map(this, function(value) {
-                  return jStat16[passfunc](value);
+            jStat3.fn[passfunc] = function() {
+              return jStat3(
+                jStat3.map(this, function(value) {
+                  return jStat3[passfunc](value);
                 })
               );
             };
@@ -1371,16 +1371,16 @@ var require_jstat = __commonJS({
         })("gammaln gammafn factorial factorialln".split(" "));
         (function(funcs) {
           for (var i = 0; i < funcs.length; i++) (function(passfunc) {
-            jStat16.fn[passfunc] = function() {
-              return jStat16(jStat16[passfunc].apply(null, arguments));
+            jStat3.fn[passfunc] = function() {
+              return jStat3(jStat3[passfunc].apply(null, arguments));
             };
           })(funcs[i]);
         })("randn".split(" "));
-      })(jStat15, Math);
-      (function(jStat16, Math2) {
+      })(jStat2, Math);
+      (function(jStat3, Math2) {
         (function(list) {
           for (var i = 0; i < list.length; i++) (function(func) {
-            jStat16[func] = function f(a, b, c) {
+            jStat3[func] = function f(a, b, c) {
               if (!(this instanceof f))
                 return new f(a, b, c);
               this._a = a;
@@ -1388,85 +1388,85 @@ var require_jstat = __commonJS({
               this._c = c;
               return this;
             };
-            jStat16.fn[func] = function(a, b, c) {
-              var newthis = jStat16[func](a, b, c);
+            jStat3.fn[func] = function(a, b, c) {
+              var newthis = jStat3[func](a, b, c);
               newthis.data = this;
               return newthis;
             };
-            jStat16[func].prototype.sample = function(arr) {
+            jStat3[func].prototype.sample = function(arr) {
               var a = this._a;
               var b = this._b;
               var c = this._c;
               if (arr)
-                return jStat16.alter(arr, function() {
-                  return jStat16[func].sample(a, b, c);
+                return jStat3.alter(arr, function() {
+                  return jStat3[func].sample(a, b, c);
                 });
               else
-                return jStat16[func].sample(a, b, c);
+                return jStat3[func].sample(a, b, c);
             };
             (function(vals) {
               for (var i2 = 0; i2 < vals.length; i2++) (function(fnfunc) {
-                jStat16[func].prototype[fnfunc] = function(x) {
+                jStat3[func].prototype[fnfunc] = function(x) {
                   var a = this._a;
                   var b = this._b;
                   var c = this._c;
                   if (!x && x !== 0)
                     x = this.data;
                   if (typeof x !== "number") {
-                    return jStat16.fn.map.call(x, function(x2) {
-                      return jStat16[func][fnfunc](x2, a, b, c);
+                    return jStat3.fn.map.call(x, function(x2) {
+                      return jStat3[func][fnfunc](x2, a, b, c);
                     });
                   }
-                  return jStat16[func][fnfunc](x, a, b, c);
+                  return jStat3[func][fnfunc](x, a, b, c);
                 };
               })(vals[i2]);
             })("pdf cdf inv".split(" "));
             (function(vals) {
               for (var i2 = 0; i2 < vals.length; i2++) (function(fnfunc) {
-                jStat16[func].prototype[fnfunc] = function() {
-                  return jStat16[func][fnfunc](this._a, this._b, this._c);
+                jStat3[func].prototype[fnfunc] = function() {
+                  return jStat3[func][fnfunc](this._a, this._b, this._c);
                 };
               })(vals[i2]);
             })("mean median mode variance".split(" "));
           })(list[i]);
         })("beta centralF cauchy chisquare exponential gamma invgamma kumaraswamy laplace lognormal noncentralt normal pareto studentt weibull uniform binomial negbin hypgeom poisson triangular tukey arcsine".split(" "));
-        jStat16.extend(jStat16.beta, {
-          pdf: function pdf(x, alpha, beta2) {
+        jStat3.extend(jStat3.beta, {
+          pdf: function pdf(x, alpha, beta) {
             if (x > 1 || x < 0)
               return 0;
-            if (alpha == 1 && beta2 == 1)
+            if (alpha == 1 && beta == 1)
               return 1;
-            if (alpha < 512 && beta2 < 512) {
-              return Math2.pow(x, alpha - 1) * Math2.pow(1 - x, beta2 - 1) / jStat16.betafn(alpha, beta2);
+            if (alpha < 512 && beta < 512) {
+              return Math2.pow(x, alpha - 1) * Math2.pow(1 - x, beta - 1) / jStat3.betafn(alpha, beta);
             } else {
-              return Math2.exp((alpha - 1) * Math2.log(x) + (beta2 - 1) * Math2.log(1 - x) - jStat16.betaln(alpha, beta2));
+              return Math2.exp((alpha - 1) * Math2.log(x) + (beta - 1) * Math2.log(1 - x) - jStat3.betaln(alpha, beta));
             }
           },
-          cdf: function cdf(x, alpha, beta2) {
-            return x > 1 || x < 0 ? (x > 1) * 1 : jStat16.ibeta(x, alpha, beta2);
+          cdf: function cdf(x, alpha, beta) {
+            return x > 1 || x < 0 ? (x > 1) * 1 : jStat3.ibeta(x, alpha, beta);
           },
-          inv: function inv(x, alpha, beta2) {
-            return jStat16.ibetainv(x, alpha, beta2);
+          inv: function inv(x, alpha, beta) {
+            return jStat3.ibetainv(x, alpha, beta);
           },
-          mean: function mean6(alpha, beta2) {
-            return alpha / (alpha + beta2);
+          mean: function mean(alpha, beta) {
+            return alpha / (alpha + beta);
           },
-          median: function median2(alpha, beta2) {
-            return jStat16.ibetainv(0.5, alpha, beta2);
+          median: function median(alpha, beta) {
+            return jStat3.ibetainv(0.5, alpha, beta);
           },
-          mode: function mode(alpha, beta2) {
-            return (alpha - 1) / (alpha + beta2 - 2);
+          mode: function mode(alpha, beta) {
+            return (alpha - 1) / (alpha + beta - 2);
           },
           // return a random sample
-          sample: function sample(alpha, beta2) {
-            var u = jStat16.randg(alpha);
-            return u / (u + jStat16.randg(beta2));
+          sample: function sample(alpha, beta) {
+            var u = jStat3.randg(alpha);
+            return u / (u + jStat3.randg(beta));
           },
-          variance: function variance(alpha, beta2) {
-            return alpha * beta2 / (Math2.pow(alpha + beta2, 2) * (alpha + beta2 + 1));
+          variance: function variance(alpha, beta) {
+            return alpha * beta / (Math2.pow(alpha + beta, 2) * (alpha + beta + 1));
           }
         });
-        jStat16.extend(jStat16.centralF, {
+        jStat3.extend(jStat3.centralF, {
           // This implementation of the pdf function avoids float overflow
           // See the way that R calculates this value:
           // https://svn.r-project.org/R/trunk/src/nmath/df.c
@@ -1481,22 +1481,22 @@ var require_jstat = __commonJS({
               if (x === 0 && df1 === 2) {
                 return 1;
               }
-              return 1 / jStat16.betafn(df1 / 2, df2 / 2) * Math2.pow(df1 / df2, df1 / 2) * Math2.pow(x, df1 / 2 - 1) * Math2.pow(1 + df1 / df2 * x, -(df1 + df2) / 2);
+              return 1 / jStat3.betafn(df1 / 2, df2 / 2) * Math2.pow(df1 / df2, df1 / 2) * Math2.pow(x, df1 / 2 - 1) * Math2.pow(1 + df1 / df2 * x, -(df1 + df2) / 2);
             }
             p = df1 * x / (df2 + x * df1);
             q = df2 / (df2 + x * df1);
             f = df1 * q / 2;
-            return f * jStat16.binomial.pdf((df1 - 2) / 2, (df1 + df2 - 2) / 2, p);
+            return f * jStat3.binomial.pdf((df1 - 2) / 2, (df1 + df2 - 2) / 2, p);
           },
           cdf: function cdf(x, df1, df2) {
             if (x < 0)
               return 0;
-            return jStat16.ibeta(df1 * x / (df1 * x + df2), df1 / 2, df2 / 2);
+            return jStat3.ibeta(df1 * x / (df1 * x + df2), df1 / 2, df2 / 2);
           },
           inv: function inv(x, df1, df2) {
-            return df2 / (df1 * (1 / jStat16.ibetainv(x, df1 / 2, df2 / 2) - 1));
+            return df2 / (df1 * (1 / jStat3.ibetainv(x, df1 / 2, df2 / 2) - 1));
           },
-          mean: function mean6(df1, df2) {
+          mean: function mean(df1, df2) {
             return df2 > 2 ? df2 / (df2 - 2) : void 0;
           },
           mode: function mode(df1, df2) {
@@ -1504,8 +1504,8 @@ var require_jstat = __commonJS({
           },
           // return a random sample
           sample: function sample(df1, df2) {
-            var x1 = jStat16.randg(df1 / 2) * 2;
-            var x2 = jStat16.randg(df2 / 2) * 2;
+            var x1 = jStat3.randg(df1 / 2) * 2;
+            var x2 = jStat3.randg(df2 / 2) * 2;
             return x1 / df1 / (x2 / df2);
           },
           variance: function variance(df1, df2) {
@@ -1514,61 +1514,61 @@ var require_jstat = __commonJS({
             return 2 * df2 * df2 * (df1 + df2 - 2) / (df1 * (df2 - 2) * (df2 - 2) * (df2 - 4));
           }
         });
-        jStat16.extend(jStat16.cauchy, {
-          pdf: function pdf(x, local, scale3) {
-            if (scale3 < 0) {
+        jStat3.extend(jStat3.cauchy, {
+          pdf: function pdf(x, local, scale) {
+            if (scale < 0) {
               return 0;
             }
-            return scale3 / (Math2.pow(x - local, 2) + Math2.pow(scale3, 2)) / Math2.PI;
+            return scale / (Math2.pow(x - local, 2) + Math2.pow(scale, 2)) / Math2.PI;
           },
-          cdf: function cdf(x, local, scale3) {
-            return Math2.atan((x - local) / scale3) / Math2.PI + 0.5;
+          cdf: function cdf(x, local, scale) {
+            return Math2.atan((x - local) / scale) / Math2.PI + 0.5;
           },
-          inv: function(p, local, scale3) {
-            return local + scale3 * Math2.tan(Math2.PI * (p - 0.5));
+          inv: function(p, local, scale) {
+            return local + scale * Math2.tan(Math2.PI * (p - 0.5));
           },
-          median: function median2(local) {
+          median: function median(local) {
             return local;
           },
           mode: function mode(local) {
             return local;
           },
-          sample: function sample(local, scale3) {
-            return jStat16.randn() * Math2.sqrt(1 / (2 * jStat16.randg(0.5))) * scale3 + local;
+          sample: function sample(local, scale) {
+            return jStat3.randn() * Math2.sqrt(1 / (2 * jStat3.randg(0.5))) * scale + local;
           }
         });
-        jStat16.extend(jStat16.chisquare, {
+        jStat3.extend(jStat3.chisquare, {
           pdf: function pdf(x, dof) {
             if (x < 0)
               return 0;
-            return x === 0 && dof === 2 ? 0.5 : Math2.exp((dof / 2 - 1) * Math2.log(x) - x / 2 - dof / 2 * Math2.log(2) - jStat16.gammaln(dof / 2));
+            return x === 0 && dof === 2 ? 0.5 : Math2.exp((dof / 2 - 1) * Math2.log(x) - x / 2 - dof / 2 * Math2.log(2) - jStat3.gammaln(dof / 2));
           },
           cdf: function cdf(x, dof) {
             if (x < 0)
               return 0;
-            return jStat16.lowRegGamma(dof / 2, x / 2);
+            return jStat3.lowRegGamma(dof / 2, x / 2);
           },
           inv: function(p, dof) {
-            return 2 * jStat16.gammapinv(p, 0.5 * dof);
+            return 2 * jStat3.gammapinv(p, 0.5 * dof);
           },
           mean: function(dof) {
             return dof;
           },
           // TODO: this is an approximation (is there a better way?)
-          median: function median2(dof) {
+          median: function median(dof) {
             return dof * Math2.pow(1 - 2 / (9 * dof), 3);
           },
           mode: function mode(dof) {
             return dof - 2 > 0 ? dof - 2 : 0;
           },
           sample: function sample(dof) {
-            return jStat16.randg(dof / 2) * 2;
+            return jStat3.randg(dof / 2) * 2;
           },
           variance: function variance(dof) {
             return 2 * dof;
           }
         });
-        jStat16.extend(jStat16.exponential, {
+        jStat3.extend(jStat3.exponential, {
           pdf: function pdf(x, rate) {
             return x < 0 ? 0 : rate * Math2.exp(-rate * x);
           },
@@ -1588,103 +1588,103 @@ var require_jstat = __commonJS({
             return 0;
           },
           sample: function sample(rate) {
-            return -1 / rate * Math2.log(jStat16._random_fn());
+            return -1 / rate * Math2.log(jStat3._random_fn());
           },
           variance: function(rate) {
             return Math2.pow(rate, -2);
           }
         });
-        jStat16.extend(jStat16.gamma, {
-          pdf: function pdf(x, shape, scale3) {
+        jStat3.extend(jStat3.gamma, {
+          pdf: function pdf(x, shape, scale) {
             if (x < 0)
               return 0;
-            return x === 0 && shape === 1 ? 1 / scale3 : Math2.exp((shape - 1) * Math2.log(x) - x / scale3 - jStat16.gammaln(shape) - shape * Math2.log(scale3));
+            return x === 0 && shape === 1 ? 1 / scale : Math2.exp((shape - 1) * Math2.log(x) - x / scale - jStat3.gammaln(shape) - shape * Math2.log(scale));
           },
-          cdf: function cdf(x, shape, scale3) {
+          cdf: function cdf(x, shape, scale) {
             if (x < 0)
               return 0;
-            return jStat16.lowRegGamma(shape, x / scale3);
+            return jStat3.lowRegGamma(shape, x / scale);
           },
-          inv: function(p, shape, scale3) {
-            return jStat16.gammapinv(p, shape) * scale3;
+          inv: function(p, shape, scale) {
+            return jStat3.gammapinv(p, shape) * scale;
           },
-          mean: function(shape, scale3) {
-            return shape * scale3;
+          mean: function(shape, scale) {
+            return shape * scale;
           },
-          mode: function mode(shape, scale3) {
-            if (shape > 1) return (shape - 1) * scale3;
+          mode: function mode(shape, scale) {
+            if (shape > 1) return (shape - 1) * scale;
             return void 0;
           },
-          sample: function sample(shape, scale3) {
-            return jStat16.randg(shape) * scale3;
+          sample: function sample(shape, scale) {
+            return jStat3.randg(shape) * scale;
           },
-          variance: function variance(shape, scale3) {
-            return shape * scale3 * scale3;
+          variance: function variance(shape, scale) {
+            return shape * scale * scale;
           }
         });
-        jStat16.extend(jStat16.invgamma, {
-          pdf: function pdf(x, shape, scale3) {
+        jStat3.extend(jStat3.invgamma, {
+          pdf: function pdf(x, shape, scale) {
             if (x <= 0)
               return 0;
-            return Math2.exp(-(shape + 1) * Math2.log(x) - scale3 / x - jStat16.gammaln(shape) + shape * Math2.log(scale3));
+            return Math2.exp(-(shape + 1) * Math2.log(x) - scale / x - jStat3.gammaln(shape) + shape * Math2.log(scale));
           },
-          cdf: function cdf(x, shape, scale3) {
+          cdf: function cdf(x, shape, scale) {
             if (x <= 0)
               return 0;
-            return 1 - jStat16.lowRegGamma(shape, scale3 / x);
+            return 1 - jStat3.lowRegGamma(shape, scale / x);
           },
-          inv: function(p, shape, scale3) {
-            return scale3 / jStat16.gammapinv(1 - p, shape);
+          inv: function(p, shape, scale) {
+            return scale / jStat3.gammapinv(1 - p, shape);
           },
-          mean: function(shape, scale3) {
-            return shape > 1 ? scale3 / (shape - 1) : void 0;
+          mean: function(shape, scale) {
+            return shape > 1 ? scale / (shape - 1) : void 0;
           },
-          mode: function mode(shape, scale3) {
-            return scale3 / (shape + 1);
+          mode: function mode(shape, scale) {
+            return scale / (shape + 1);
           },
-          sample: function sample(shape, scale3) {
-            return scale3 / jStat16.randg(shape);
+          sample: function sample(shape, scale) {
+            return scale / jStat3.randg(shape);
           },
-          variance: function variance(shape, scale3) {
+          variance: function variance(shape, scale) {
             if (shape <= 2)
               return void 0;
-            return scale3 * scale3 / ((shape - 1) * (shape - 1) * (shape - 2));
+            return scale * scale / ((shape - 1) * (shape - 1) * (shape - 2));
           }
         });
-        jStat16.extend(jStat16.kumaraswamy, {
-          pdf: function pdf(x, alpha, beta2) {
+        jStat3.extend(jStat3.kumaraswamy, {
+          pdf: function pdf(x, alpha, beta) {
             if (x === 0 && alpha === 1)
-              return beta2;
-            else if (x === 1 && beta2 === 1)
+              return beta;
+            else if (x === 1 && beta === 1)
               return alpha;
-            return Math2.exp(Math2.log(alpha) + Math2.log(beta2) + (alpha - 1) * Math2.log(x) + (beta2 - 1) * Math2.log(1 - Math2.pow(x, alpha)));
+            return Math2.exp(Math2.log(alpha) + Math2.log(beta) + (alpha - 1) * Math2.log(x) + (beta - 1) * Math2.log(1 - Math2.pow(x, alpha)));
           },
-          cdf: function cdf(x, alpha, beta2) {
+          cdf: function cdf(x, alpha, beta) {
             if (x < 0)
               return 0;
             else if (x > 1)
               return 1;
-            return 1 - Math2.pow(1 - Math2.pow(x, alpha), beta2);
+            return 1 - Math2.pow(1 - Math2.pow(x, alpha), beta);
           },
-          inv: function inv(p, alpha, beta2) {
-            return Math2.pow(1 - Math2.pow(1 - p, 1 / beta2), 1 / alpha);
+          inv: function inv(p, alpha, beta) {
+            return Math2.pow(1 - Math2.pow(1 - p, 1 / beta), 1 / alpha);
           },
-          mean: function(alpha, beta2) {
-            return beta2 * jStat16.gammafn(1 + 1 / alpha) * jStat16.gammafn(beta2) / jStat16.gammafn(1 + 1 / alpha + beta2);
+          mean: function(alpha, beta) {
+            return beta * jStat3.gammafn(1 + 1 / alpha) * jStat3.gammafn(beta) / jStat3.gammafn(1 + 1 / alpha + beta);
           },
-          median: function median2(alpha, beta2) {
-            return Math2.pow(1 - Math2.pow(2, -1 / beta2), 1 / alpha);
+          median: function median(alpha, beta) {
+            return Math2.pow(1 - Math2.pow(2, -1 / beta), 1 / alpha);
           },
-          mode: function mode(alpha, beta2) {
-            if (!(alpha >= 1 && beta2 >= 1 && (alpha !== 1 && beta2 !== 1)))
+          mode: function mode(alpha, beta) {
+            if (!(alpha >= 1 && beta >= 1 && (alpha !== 1 && beta !== 1)))
               return void 0;
-            return Math2.pow((alpha - 1) / (alpha * beta2 - 1), 1 / alpha);
+            return Math2.pow((alpha - 1) / (alpha * beta - 1), 1 / alpha);
           },
           variance: function variance() {
             throw new Error("variance not yet implemented");
           }
         });
-        jStat16.extend(jStat16.lognormal, {
+        jStat3.extend(jStat3.lognormal, {
           pdf: function pdf(x, mu, sigma) {
             if (x <= 0)
               return 0;
@@ -1693,185 +1693,185 @@ var require_jstat = __commonJS({
           cdf: function cdf(x, mu, sigma) {
             if (x < 0)
               return 0;
-            return 0.5 + 0.5 * jStat16.erf((Math2.log(x) - mu) / Math2.sqrt(2 * sigma * sigma));
+            return 0.5 + 0.5 * jStat3.erf((Math2.log(x) - mu) / Math2.sqrt(2 * sigma * sigma));
           },
           inv: function(p, mu, sigma) {
-            return Math2.exp(-1.4142135623730951 * sigma * jStat16.erfcinv(2 * p) + mu);
+            return Math2.exp(-1.4142135623730951 * sigma * jStat3.erfcinv(2 * p) + mu);
           },
-          mean: function mean6(mu, sigma) {
+          mean: function mean(mu, sigma) {
             return Math2.exp(mu + sigma * sigma / 2);
           },
-          median: function median2(mu) {
+          median: function median(mu) {
             return Math2.exp(mu);
           },
           mode: function mode(mu, sigma) {
             return Math2.exp(mu - sigma * sigma);
           },
           sample: function sample(mu, sigma) {
-            return Math2.exp(jStat16.randn() * sigma + mu);
+            return Math2.exp(jStat3.randn() * sigma + mu);
           },
           variance: function variance(mu, sigma) {
             return (Math2.exp(sigma * sigma) - 1) * Math2.exp(2 * mu + sigma * sigma);
           }
         });
-        jStat16.extend(jStat16.noncentralt, {
+        jStat3.extend(jStat3.noncentralt, {
           pdf: function pdf(x, dof, ncp) {
             var tol = 1e-14;
             if (Math2.abs(ncp) < tol)
-              return jStat16.studentt.pdf(x, dof);
+              return jStat3.studentt.pdf(x, dof);
             if (Math2.abs(x) < tol) {
-              return Math2.exp(jStat16.gammaln((dof + 1) / 2) - ncp * ncp / 2 - 0.5 * Math2.log(Math2.PI * dof) - jStat16.gammaln(dof / 2));
+              return Math2.exp(jStat3.gammaln((dof + 1) / 2) - ncp * ncp / 2 - 0.5 * Math2.log(Math2.PI * dof) - jStat3.gammaln(dof / 2));
             }
-            return dof / x * (jStat16.noncentralt.cdf(x * Math2.sqrt(1 + 2 / dof), dof + 2, ncp) - jStat16.noncentralt.cdf(x, dof, ncp));
+            return dof / x * (jStat3.noncentralt.cdf(x * Math2.sqrt(1 + 2 / dof), dof + 2, ncp) - jStat3.noncentralt.cdf(x, dof, ncp));
           },
           cdf: function cdf(x, dof, ncp) {
             var tol = 1e-14;
             var min_iterations = 200;
             if (Math2.abs(ncp) < tol)
-              return jStat16.studentt.cdf(x, dof);
+              return jStat3.studentt.cdf(x, dof);
             var flip = false;
             if (x < 0) {
               flip = true;
               ncp = -ncp;
             }
-            var prob = jStat16.normal.cdf(-ncp, 0, 1);
+            var prob = jStat3.normal.cdf(-ncp, 0, 1);
             var value = tol + 1;
             var lastvalue = value;
             var y = x * x / (x * x + dof);
             var j = 0;
             var p = Math2.exp(-ncp * ncp / 2);
-            var q = Math2.exp(-ncp * ncp / 2 - 0.5 * Math2.log(2) - jStat16.gammaln(3 / 2)) * ncp;
+            var q = Math2.exp(-ncp * ncp / 2 - 0.5 * Math2.log(2) - jStat3.gammaln(3 / 2)) * ncp;
             while (j < min_iterations || lastvalue > tol || value > tol) {
               lastvalue = value;
               if (j > 0) {
                 p *= ncp * ncp / (2 * j);
                 q *= ncp * ncp / (2 * (j + 1 / 2));
               }
-              value = p * jStat16.beta.cdf(y, j + 0.5, dof / 2) + q * jStat16.beta.cdf(y, j + 1, dof / 2);
+              value = p * jStat3.beta.cdf(y, j + 0.5, dof / 2) + q * jStat3.beta.cdf(y, j + 1, dof / 2);
               prob += 0.5 * value;
               j++;
             }
             return flip ? 1 - prob : prob;
           }
         });
-        jStat16.extend(jStat16.normal, {
-          pdf: function pdf(x, mean6, std) {
-            return Math2.exp(-0.5 * Math2.log(2 * Math2.PI) - Math2.log(std) - Math2.pow(x - mean6, 2) / (2 * std * std));
+        jStat3.extend(jStat3.normal, {
+          pdf: function pdf(x, mean, std) {
+            return Math2.exp(-0.5 * Math2.log(2 * Math2.PI) - Math2.log(std) - Math2.pow(x - mean, 2) / (2 * std * std));
           },
-          cdf: function cdf(x, mean6, std) {
-            return 0.5 * (1 + jStat16.erf((x - mean6) / Math2.sqrt(2 * std * std)));
+          cdf: function cdf(x, mean, std) {
+            return 0.5 * (1 + jStat3.erf((x - mean) / Math2.sqrt(2 * std * std)));
           },
-          inv: function(p, mean6, std) {
-            return -1.4142135623730951 * std * jStat16.erfcinv(2 * p) + mean6;
+          inv: function(p, mean, std) {
+            return -1.4142135623730951 * std * jStat3.erfcinv(2 * p) + mean;
           },
-          mean: function(mean6) {
-            return mean6;
+          mean: function(mean) {
+            return mean;
           },
-          median: function median2(mean6) {
-            return mean6;
+          median: function median(mean) {
+            return mean;
           },
-          mode: function(mean6) {
-            return mean6;
+          mode: function(mean) {
+            return mean;
           },
-          sample: function sample(mean6, std) {
-            return jStat16.randn() * std + mean6;
+          sample: function sample(mean, std) {
+            return jStat3.randn() * std + mean;
           },
-          variance: function(mean6, std) {
+          variance: function(mean, std) {
             return std * std;
           }
         });
-        jStat16.extend(jStat16.pareto, {
-          pdf: function pdf(x, scale3, shape) {
-            if (x < scale3)
+        jStat3.extend(jStat3.pareto, {
+          pdf: function pdf(x, scale, shape) {
+            if (x < scale)
               return 0;
-            return shape * Math2.pow(scale3, shape) / Math2.pow(x, shape + 1);
+            return shape * Math2.pow(scale, shape) / Math2.pow(x, shape + 1);
           },
-          cdf: function cdf(x, scale3, shape) {
-            if (x < scale3)
+          cdf: function cdf(x, scale, shape) {
+            if (x < scale)
               return 0;
-            return 1 - Math2.pow(scale3 / x, shape);
+            return 1 - Math2.pow(scale / x, shape);
           },
-          inv: function inv(p, scale3, shape) {
-            return scale3 / Math2.pow(1 - p, 1 / shape);
+          inv: function inv(p, scale, shape) {
+            return scale / Math2.pow(1 - p, 1 / shape);
           },
-          mean: function mean6(scale3, shape) {
+          mean: function mean(scale, shape) {
             if (shape <= 1)
               return void 0;
-            return shape * Math2.pow(scale3, shape) / (shape - 1);
+            return shape * Math2.pow(scale, shape) / (shape - 1);
           },
-          median: function median2(scale3, shape) {
-            return scale3 * (shape * Math2.SQRT2);
+          median: function median(scale, shape) {
+            return scale * (shape * Math2.SQRT2);
           },
-          mode: function mode(scale3) {
-            return scale3;
+          mode: function mode(scale) {
+            return scale;
           },
-          variance: function(scale3, shape) {
+          variance: function(scale, shape) {
             if (shape <= 2)
               return void 0;
-            return scale3 * scale3 * shape / (Math2.pow(shape - 1, 2) * (shape - 2));
+            return scale * scale * shape / (Math2.pow(shape - 1, 2) * (shape - 2));
           }
         });
-        jStat16.extend(jStat16.studentt, {
+        jStat3.extend(jStat3.studentt, {
           pdf: function pdf(x, dof) {
             dof = dof > 1e100 ? 1e100 : dof;
-            return 1 / (Math2.sqrt(dof) * jStat16.betafn(0.5, dof / 2)) * Math2.pow(1 + x * x / dof, -((dof + 1) / 2));
+            return 1 / (Math2.sqrt(dof) * jStat3.betafn(0.5, dof / 2)) * Math2.pow(1 + x * x / dof, -((dof + 1) / 2));
           },
           cdf: function cdf(x, dof) {
             var dof2 = dof / 2;
-            return jStat16.ibeta((x + Math2.sqrt(x * x + dof)) / (2 * Math2.sqrt(x * x + dof)), dof2, dof2);
+            return jStat3.ibeta((x + Math2.sqrt(x * x + dof)) / (2 * Math2.sqrt(x * x + dof)), dof2, dof2);
           },
           inv: function(p, dof) {
-            var x = jStat16.ibetainv(2 * Math2.min(p, 1 - p), 0.5 * dof, 0.5);
+            var x = jStat3.ibetainv(2 * Math2.min(p, 1 - p), 0.5 * dof, 0.5);
             x = Math2.sqrt(dof * (1 - x) / x);
             return p > 0.5 ? x : -x;
           },
-          mean: function mean6(dof) {
+          mean: function mean(dof) {
             return dof > 1 ? 0 : void 0;
           },
-          median: function median2() {
+          median: function median() {
             return 0;
           },
           mode: function mode() {
             return 0;
           },
           sample: function sample(dof) {
-            return jStat16.randn() * Math2.sqrt(dof / (2 * jStat16.randg(dof / 2)));
+            return jStat3.randn() * Math2.sqrt(dof / (2 * jStat3.randg(dof / 2)));
           },
           variance: function variance(dof) {
             return dof > 2 ? dof / (dof - 2) : dof > 1 ? Infinity : void 0;
           }
         });
-        jStat16.extend(jStat16.weibull, {
-          pdf: function pdf(x, scale3, shape) {
-            if (x < 0 || scale3 < 0 || shape < 0)
+        jStat3.extend(jStat3.weibull, {
+          pdf: function pdf(x, scale, shape) {
+            if (x < 0 || scale < 0 || shape < 0)
               return 0;
-            return shape / scale3 * Math2.pow(x / scale3, shape - 1) * Math2.exp(-Math2.pow(x / scale3, shape));
+            return shape / scale * Math2.pow(x / scale, shape - 1) * Math2.exp(-Math2.pow(x / scale, shape));
           },
-          cdf: function cdf(x, scale3, shape) {
-            return x < 0 ? 0 : 1 - Math2.exp(-Math2.pow(x / scale3, shape));
+          cdf: function cdf(x, scale, shape) {
+            return x < 0 ? 0 : 1 - Math2.exp(-Math2.pow(x / scale, shape));
           },
-          inv: function(p, scale3, shape) {
-            return scale3 * Math2.pow(-Math2.log(1 - p), 1 / shape);
+          inv: function(p, scale, shape) {
+            return scale * Math2.pow(-Math2.log(1 - p), 1 / shape);
           },
-          mean: function(scale3, shape) {
-            return scale3 * jStat16.gammafn(1 + 1 / shape);
+          mean: function(scale, shape) {
+            return scale * jStat3.gammafn(1 + 1 / shape);
           },
-          median: function median2(scale3, shape) {
-            return scale3 * Math2.pow(Math2.log(2), 1 / shape);
+          median: function median(scale, shape) {
+            return scale * Math2.pow(Math2.log(2), 1 / shape);
           },
-          mode: function mode(scale3, shape) {
+          mode: function mode(scale, shape) {
             if (shape <= 1)
               return 0;
-            return scale3 * Math2.pow((shape - 1) / shape, 1 / shape);
+            return scale * Math2.pow((shape - 1) / shape, 1 / shape);
           },
-          sample: function sample(scale3, shape) {
-            return scale3 * Math2.pow(-Math2.log(jStat16._random_fn()), 1 / shape);
+          sample: function sample(scale, shape) {
+            return scale * Math2.pow(-Math2.log(jStat3._random_fn()), 1 / shape);
           },
-          variance: function variance(scale3, shape) {
-            return scale3 * scale3 * jStat16.gammafn(1 + 2 / shape) - Math2.pow(jStat16.weibull.mean(scale3, shape), 2);
+          variance: function variance(scale, shape) {
+            return scale * scale * jStat3.gammafn(1 + 2 / shape) - Math2.pow(jStat3.weibull.mean(scale, shape), 2);
           }
         });
-        jStat16.extend(jStat16.uniform, {
+        jStat3.extend(jStat3.uniform, {
           pdf: function pdf(x, a, b) {
             return x < a || x > b ? 0 : 1 / (b - a);
           },
@@ -1885,17 +1885,17 @@ var require_jstat = __commonJS({
           inv: function(p, a, b) {
             return a + p * (b - a);
           },
-          mean: function mean6(a, b) {
+          mean: function mean(a, b) {
             return 0.5 * (a + b);
           },
-          median: function median2(a, b) {
-            return jStat16.mean(a, b);
+          median: function median(a, b) {
+            return jStat3.mean(a, b);
           },
           mode: function mode() {
             throw new Error("mode is not yet implemented");
           },
           sample: function sample(a, b) {
-            return a / 2 + b / 2 + (b / 2 - a / 2) * (2 * jStat16._random_fn() - 1);
+            return a / 2 + b / 2 + (b / 2 - a / 2) * (2 * jStat3._random_fn() - 1);
           },
           variance: function variance(a, b) {
             return Math2.pow(b - a, 2) / 12;
@@ -1925,9 +1925,9 @@ var require_jstat = __commonJS({
           }
           return a1 / a;
         }
-        jStat16.extend(jStat16.binomial, {
+        jStat3.extend(jStat3.binomial, {
           pdf: function pdf(k, n, p) {
-            return p === 0 || p === 1 ? n * p === k ? 1 : 0 : jStat16.combination(n, k) * Math2.pow(p, k) * Math2.pow(1 - p, n - k);
+            return p === 0 || p === 1 ? n * p === k ? 1 : 0 : jStat3.combination(n, k) * Math2.pow(p, k) * Math2.pow(1 - p, n - k);
           },
           cdf: function cdf(x, n, p) {
             var betacdf;
@@ -1943,7 +1943,7 @@ var require_jstat = __commonJS({
             var a = x + 1;
             var b = n - x;
             var s = a + b;
-            var bt = Math2.exp(jStat16.gammaln(s) - jStat16.gammaln(b) - jStat16.gammaln(a) + a * Math2.log(z) + b * Math2.log(1 - z));
+            var bt = Math2.exp(jStat3.gammaln(s) - jStat3.gammaln(b) - jStat3.gammaln(a) + a * Math2.log(z) + b * Math2.log(1 - z));
             if (z < (a + 1) / (s + 2))
               betacdf = bt * betinc(z, a, b, eps);
             else
@@ -1951,24 +1951,24 @@ var require_jstat = __commonJS({
             return Math2.round((1 - betacdf) * (1 / eps)) / (1 / eps);
           }
         });
-        jStat16.extend(jStat16.negbin, {
+        jStat3.extend(jStat3.negbin, {
           pdf: function pdf(k, r, p) {
             if (k !== k >>> 0)
               return false;
             if (k < 0)
               return 0;
-            return jStat16.combination(k + r - 1, r - 1) * Math2.pow(1 - p, k) * Math2.pow(p, r);
+            return jStat3.combination(k + r - 1, r - 1) * Math2.pow(1 - p, k) * Math2.pow(p, r);
           },
           cdf: function cdf(x, r, p) {
             var sum = 0, k = 0;
             if (x < 0) return 0;
             for (; k <= x; k++) {
-              sum += jStat16.negbin.pdf(k, r, p);
+              sum += jStat3.negbin.pdf(k, r, p);
             }
             return sum;
           }
         });
-        jStat16.extend(jStat16.hypgeom, {
+        jStat3.extend(jStat3.hypgeom, {
           pdf: function pdf(k, N, m, n) {
             if (k !== k | 0) {
               return false;
@@ -1978,14 +1978,14 @@ var require_jstat = __commonJS({
               return 0;
             } else if (m * 2 > N) {
               if (n * 2 > N) {
-                return jStat16.hypgeom.pdf(N - m - n + k, N, N - m, N - n);
+                return jStat3.hypgeom.pdf(N - m - n + k, N, N - m, N - n);
               } else {
-                return jStat16.hypgeom.pdf(n - k, N, N - m, n);
+                return jStat3.hypgeom.pdf(n - k, N, N - m, n);
               }
             } else if (n * 2 > N) {
-              return jStat16.hypgeom.pdf(m - k, N, m, N - n);
+              return jStat3.hypgeom.pdf(m - k, N, m, N - n);
             } else if (m < n) {
-              return jStat16.hypgeom.pdf(k, N, n, m);
+              return jStat3.hypgeom.pdf(k, N, n, m);
             } else {
               var scaledPDF = 1;
               var samplesDone = 0;
@@ -2009,14 +2009,14 @@ var require_jstat = __commonJS({
               return 1;
             } else if (m * 2 > N) {
               if (n * 2 > N) {
-                return jStat16.hypgeom.cdf(N - m - n + x, N, N - m, N - n);
+                return jStat3.hypgeom.cdf(N - m - n + x, N, N - m, N - n);
               } else {
-                return 1 - jStat16.hypgeom.cdf(n - x - 1, N, N - m, n);
+                return 1 - jStat3.hypgeom.cdf(n - x - 1, N, N - m, n);
               }
             } else if (n * 2 > N) {
-              return 1 - jStat16.hypgeom.cdf(m - x - 1, N, m, N - n);
+              return 1 - jStat3.hypgeom.cdf(m - x - 1, N, m, N - n);
             } else if (m < n) {
-              return jStat16.hypgeom.cdf(x, N, n, m);
+              return jStat3.hypgeom.cdf(x, N, n, m);
             } else {
               var scaledCDF = 1;
               var scaledPDF = 1;
@@ -2038,20 +2038,20 @@ var require_jstat = __commonJS({
             }
           }
         });
-        jStat16.extend(jStat16.poisson, {
+        jStat3.extend(jStat3.poisson, {
           pdf: function pdf(k, l) {
             if (l < 0 || k % 1 !== 0 || k < 0) {
               return 0;
             }
-            return Math2.pow(l, k) * Math2.exp(-l) / jStat16.factorial(k);
+            return Math2.pow(l, k) * Math2.exp(-l) / jStat3.factorial(k);
           },
           cdf: function cdf(x, l) {
             var sumarr = [], k = 0;
             if (x < 0) return 0;
             for (; k <= x; k++) {
-              sumarr.push(jStat16.poisson.pdf(k, l));
+              sumarr.push(jStat3.poisson.pdf(k, l));
             }
-            return jStat16.sum(sumarr);
+            return jStat3.sum(sumarr);
           },
           mean: function(l) {
             return l;
@@ -2063,7 +2063,7 @@ var require_jstat = __commonJS({
             var p = 1, k = 0, L = Math2.exp(-l);
             do {
               k++;
-              p *= jStat16._random_fn();
+              p *= jStat3._random_fn();
             } while (p > L);
             return k - 1;
           },
@@ -2088,7 +2088,7 @@ var require_jstat = __commonJS({
               if (k < 0 || us < 0.013 && V > us) {
                 continue;
               }
-              if (Math2.log(V) + Math2.log(invalpha) - Math2.log(a / (us * us) + b) <= -lam + k * loglam - jStat16.loggam(k + 1)) {
+              if (Math2.log(V) + Math2.log(invalpha) - Math2.log(a / (us * us) + b) <= -lam + k * loglam - jStat3.loggam(k + 1)) {
                 return k;
               }
             }
@@ -2100,7 +2100,7 @@ var require_jstat = __commonJS({
               return this.sampleLarge(l);
           }
         });
-        jStat16.extend(jStat16.triangular, {
+        jStat3.extend(jStat3.triangular, {
           pdf: function pdf(x, a, b, c) {
             if (b <= a || c < a || c > b) {
               return NaN;
@@ -2139,10 +2139,10 @@ var require_jstat = __commonJS({
               }
             }
           },
-          mean: function mean6(a, b, c) {
+          mean: function mean(a, b, c) {
             return (a + b + c) / 3;
           },
-          median: function median2(a, b, c) {
+          median: function median(a, b, c) {
             if (c <= (a + b) / 2) {
               return b - Math2.sqrt((b - a) * (b - c)) / Math2.sqrt(2);
             } else if (c > (a + b) / 2) {
@@ -2153,7 +2153,7 @@ var require_jstat = __commonJS({
             return c;
           },
           sample: function sample(a, b, c) {
-            var u = jStat16._random_fn();
+            var u = jStat3._random_fn();
             if (u < (c - a) / (b - a))
               return a + Math2.sqrt(u * (b - a) * (c - a));
             return b - Math2.sqrt((1 - u) * (b - a) * (b - c));
@@ -2162,7 +2162,7 @@ var require_jstat = __commonJS({
             return (a * a + b * b + c * c - a * b - a * c - b * c) / 18;
           }
         });
-        jStat16.extend(jStat16.arcsine, {
+        jStat3.extend(jStat3.arcsine, {
           pdf: function pdf(x, a, b) {
             if (b <= a) return NaN;
             return x <= a || x >= b ? 0 : 2 / Math2.PI * Math2.pow(Math2.pow(b - a, 2) - Math2.pow(2 * x - a - b, 2), -0.5);
@@ -2177,11 +2177,11 @@ var require_jstat = __commonJS({
           inv: function(p, a, b) {
             return a + (0.5 - 0.5 * Math2.cos(Math2.PI * p)) * (b - a);
           },
-          mean: function mean6(a, b) {
+          mean: function mean(a, b) {
             if (b <= a) return NaN;
             return (a + b) / 2;
           },
-          median: function median2(a, b) {
+          median: function median(a, b) {
             if (b <= a) return NaN;
             return (a + b) / 2;
           },
@@ -2189,7 +2189,7 @@ var require_jstat = __commonJS({
             throw new Error("mode is not yet implemented");
           },
           sample: function sample(a, b) {
-            return (a + b) / 2 + (b - a) / 2 * Math2.sin(2 * Math2.PI * jStat16.uniform.sample(0, 1));
+            return (a + b) / 2 + (b - a) / 2 * Math2.sin(2 * Math2.PI * jStat3.uniform.sample(0, 1));
           },
           variance: function variance(a, b) {
             if (b <= a) return NaN;
@@ -2199,7 +2199,7 @@ var require_jstat = __commonJS({
         function laplaceSign(x) {
           return x / Math2.abs(x);
         }
-        jStat16.extend(jStat16.laplace, {
+        jStat3.extend(jStat3.laplace, {
           pdf: function pdf(x, mu, b) {
             return b <= 0 ? 0 : Math2.exp(-Math2.abs(x - mu) / b) / (2 * b);
           },
@@ -2226,7 +2226,7 @@ var require_jstat = __commonJS({
             return 2 * b * b;
           },
           sample: function sample(mu, b) {
-            var u = jStat16._random_fn() - 0.5;
+            var u = jStat3._random_fn() - 0.5;
             return mu - b * laplaceSign(u) * Math2.log(1 - 2 * Math2.abs(u));
           }
         });
@@ -2259,7 +2259,7 @@ var require_jstat = __commonJS({
           var qsqz = w * 0.5;
           if (qsqz >= bb)
             return 1;
-          var pr_w = 2 * jStat16.normal.cdf(qsqz, 0, 1, 1, 0) - 1;
+          var pr_w = 2 * jStat3.normal.cdf(qsqz, 0, 1, 1, 0) - 1;
           if (pr_w >= Math2.exp(C2 / cc))
             pr_w = Math2.pow(pr_w, cc);
           else
@@ -2292,8 +2292,8 @@ var require_jstat = __commonJS({
               var qexpo = ac * ac;
               if (qexpo > C3)
                 break;
-              var pplus = 2 * jStat16.normal.cdf(ac, 0, 1, 1, 0);
-              var pminus = 2 * jStat16.normal.cdf(ac, w, 1, 1, 0);
+              var pplus = 2 * jStat3.normal.cdf(ac, 0, 1, 1, 0);
+              var pminus = 2 * jStat3.normal.cdf(ac, w, 1, 1, 0);
               var rinsum = pplus * 0.5 - pminus * 0.5;
               if (rinsum >= Math2.exp(C1 / cc1)) {
                 rinsum = aleg[j - 1] * Math2.exp(-(0.5 * qexpo)) * Math2.pow(rinsum, cc1);
@@ -2338,7 +2338,7 @@ var require_jstat = __commonJS({
           if (v < vmax) q += -c3 / v + c4 * t / v;
           return t * (q * Math2.log(c - 1) + c5);
         }
-        jStat16.extend(jStat16.tukey, {
+        jStat3.extend(jStat3.tukey, {
           cdf: function cdf(q, nmeans, df) {
             var rr = 1;
             var cc = nmeans;
@@ -2382,7 +2382,7 @@ var require_jstat = __commonJS({
             if (df > dlarg)
               return tukeyWprob(q, rr, cc);
             var f2 = df * 0.5;
-            var f2lf = f2 * Math2.log(df) - df * Math2.log(2) - jStat16.gammaln(f2);
+            var f2lf = f2 * Math2.log(df) - df * Math2.log(2) - jStat3.gammaln(f2);
             var f21 = f2 - 1;
             var ff4 = df * 0.25;
             var ulen;
@@ -2437,13 +2437,13 @@ var require_jstat = __commonJS({
             if (p === 0) return 0;
             if (p === 1) return Infinity;
             var x0 = tukeyQinv(p, cc, df);
-            var valx0 = jStat16.tukey.cdf(x0, nmeans, df) - p;
+            var valx0 = jStat3.tukey.cdf(x0, nmeans, df) - p;
             var x1;
             if (valx0 > 0)
               x1 = Math2.max(0, x0 - 1);
             else
               x1 = x0 + 1;
-            var valx1 = jStat16.tukey.cdf(x1, nmeans, df) - p;
+            var valx1 = jStat3.tukey.cdf(x1, nmeans, df) - p;
             var ans;
             for (var iter = 1; iter < maxiter; iter++) {
               ans = x1 - valx1 * (x1 - x0) / (valx1 - valx0);
@@ -2453,7 +2453,7 @@ var require_jstat = __commonJS({
                 ans = 0;
                 valx1 = -p;
               }
-              valx1 = jStat16.tukey.cdf(ans, nmeans, df) - p;
+              valx1 = jStat3.tukey.cdf(ans, nmeans, df) - p;
               x1 = ans;
               var xabs = Math2.abs(x1 - x0);
               if (xabs < eps)
@@ -2462,23 +2462,23 @@ var require_jstat = __commonJS({
             throw new Error("tukey.inv failed to converge");
           }
         });
-      })(jStat15, Math);
-      (function(jStat16, Math2) {
+      })(jStat2, Math);
+      (function(jStat3, Math2) {
         var push = Array.prototype.push;
-        var isArray = jStat16.utils.isArray;
+        var isArray = jStat3.utils.isArray;
         function isUsable(arg) {
-          return isArray(arg) || arg instanceof jStat16;
+          return isArray(arg) || arg instanceof jStat3;
         }
-        jStat16.extend({
+        jStat3.extend({
           // add a vector/matrix to a vector/matrix or scalar
           add: function add(arr, arg) {
             if (isUsable(arg)) {
               if (!isUsable(arg[0])) arg = [arg];
-              return jStat16.map(arr, function(value, row, col) {
+              return jStat3.map(arr, function(value, row, col) {
                 return value + arg[row][col];
               });
             }
-            return jStat16.map(arr, function(value) {
+            return jStat3.map(arr, function(value) {
               return value + arg;
             });
           },
@@ -2486,11 +2486,11 @@ var require_jstat = __commonJS({
           subtract: function subtract(arr, arg) {
             if (isUsable(arg)) {
               if (!isUsable(arg[0])) arg = [arg];
-              return jStat16.map(arr, function(value, row, col) {
+              return jStat3.map(arr, function(value, row, col) {
                 return value - arg[row][col] || 0;
               });
             }
-            return jStat16.map(arr, function(value) {
+            return jStat3.map(arr, function(value) {
               return value - arg;
             });
           },
@@ -2498,9 +2498,9 @@ var require_jstat = __commonJS({
           divide: function divide(arr, arg) {
             if (isUsable(arg)) {
               if (!isUsable(arg[0])) arg = [arg];
-              return jStat16.multiply(arr, jStat16.inv(arg));
+              return jStat3.multiply(arr, jStat3.inv(arg));
             }
-            return jStat16.map(arr, function(value) {
+            return jStat3.map(arr, function(value) {
               return value / arg;
             });
           },
@@ -2510,7 +2510,7 @@ var require_jstat = __commonJS({
             if (arr.length === void 0 && arg.length === void 0) {
               return arr * arg;
             }
-            nrow = arr.length, ncol = arr[0].length, res = jStat16.zeros(nrow, nrescols = isUsable(arg) ? arg[0].length : ncol), rescols = 0;
+            nrow = arr.length, ncol = arr[0].length, res = jStat3.zeros(nrow, nrescols = isUsable(arg) ? arg[0].length : ncol), rescols = 0;
             if (isUsable(arg)) {
               for (; rescols < nrescols; rescols++) {
                 for (row = 0; row < nrow; row++) {
@@ -2522,7 +2522,7 @@ var require_jstat = __commonJS({
               }
               return nrow === 1 && rescols === 1 ? res[0][0] : res;
             }
-            return jStat16.map(arr, function(value) {
+            return jStat3.map(arr, function(value) {
               return value * arg;
             });
           },
@@ -2532,7 +2532,7 @@ var require_jstat = __commonJS({
           // ->
           // [[4,5,6],[8,10,12],[12,15,18]]
           outer: function outer(A, B) {
-            return jStat16.multiply(A.map(function(t) {
+            return jStat3.multiply(A.map(function(t) {
               return [t];
             }), [B]);
           },
@@ -2540,7 +2540,7 @@ var require_jstat = __commonJS({
           dot: function dot(arr, arg) {
             if (!isUsable(arr[0])) arr = [arr];
             if (!isUsable(arg[0])) arg = [arg];
-            var left = arr[0].length === 1 && arr.length !== 1 ? jStat16.transpose(arr) : arr, right = arg[0].length === 1 && arg.length !== 1 ? jStat16.transpose(arg) : arg, res = [], row = 0, nrow = left.length, ncol = left[0].length, sum, col;
+            var left = arr[0].length === 1 && arr.length !== 1 ? jStat3.transpose(arr) : arr, right = arg[0].length === 1 && arg.length !== 1 ? jStat3.transpose(arg) : arg, res = [], row = 0, nrow = left.length, ncol = left[0].length, sum, col;
             for (; row < nrow; row++) {
               res[row] = [];
               sum = 0;
@@ -2552,25 +2552,25 @@ var require_jstat = __commonJS({
           },
           // raise every element by a scalar
           pow: function pow(arr, arg) {
-            return jStat16.map(arr, function(value) {
+            return jStat3.map(arr, function(value) {
               return Math2.pow(value, arg);
             });
           },
           // exponentiate every element
           exp: function exp(arr) {
-            return jStat16.map(arr, function(value) {
+            return jStat3.map(arr, function(value) {
               return Math2.exp(value);
             });
           },
           // generate the natural log of every element
           log: function exp(arr) {
-            return jStat16.map(arr, function(value) {
+            return jStat3.map(arr, function(value) {
               return Math2.log(value);
             });
           },
           // generate the absolute values of the vector
           abs: function abs(arr) {
-            return jStat16.map(arr, function(value) {
+            return jStat3.map(arr, function(value) {
               return Math2.abs(value);
             });
           },
@@ -2588,7 +2588,7 @@ var require_jstat = __commonJS({
           // computes the angle between two vectors in rads
           // In case a matrix is passed, this uses the first row as the vector
           angle: function angle(arr, arg) {
-            return Math2.acos(jStat16.dot(arr, arg) / (jStat16.norm(arr) * jStat16.norm(arg)));
+            return Math2.acos(jStat3.dot(arr, arg) / (jStat3.norm(arr) * jStat3.norm(arg)));
           },
           // augment one matrix by another
           // Note: this function returns a matrix, not a jStat object
@@ -2609,8 +2609,8 @@ var require_jstat = __commonJS({
           inv: function inv(a) {
             var rows = a.length;
             var cols = a[0].length;
-            var b = jStat16.identity(rows, cols);
-            var c = jStat16.gauss_jordan(a, b);
+            var b = jStat3.identity(rows, cols);
+            var c = jStat3.gauss_jordan(a, b);
             var result = [];
             var i = 0;
             var j;
@@ -2646,7 +2646,7 @@ var require_jstat = __commonJS({
           },
           gauss_elimination: function gauss_elimination(a, b) {
             var i = 0, j = 0, n = a.length, m = a[0].length, factor = 1, sum = 0, x = [], maug, pivot, temp, k;
-            a = jStat16.aug(a, b);
+            a = jStat3.aug(a, b);
             maug = a[0].length;
             for (i = 0; i < n; i++) {
               pivot = a[i][i];
@@ -2681,7 +2681,7 @@ var require_jstat = __commonJS({
             return x;
           },
           gauss_jordan: function gauss_jordan(a, b) {
-            var m = jStat16.aug(a, b);
+            var m = jStat3.aug(a, b);
             var h = m.length;
             var w = m[0].length;
             var c = 0;
@@ -2728,7 +2728,7 @@ var require_jstat = __commonJS({
           // will return [[2.666],[0.1666],[1.666]]
           triaUpSolve: function triaUpSolve(A, b) {
             var size = A[0].length;
-            var x = jStat16.zeros(1, size)[0];
+            var x = jStat3.zeros(1, size)[0];
             var parts;
             var matrix_mode = false;
             if (b[0].length != void 0) {
@@ -2737,11 +2737,11 @@ var require_jstat = __commonJS({
               });
               matrix_mode = true;
             }
-            jStat16.arange(size - 1, -1, -1).forEach(function(i) {
-              parts = jStat16.arange(i + 1, size).map(function(j) {
+            jStat3.arange(size - 1, -1, -1).forEach(function(i) {
+              parts = jStat3.arange(i + 1, size).map(function(j) {
                 return x[j] * A[i][j];
               });
-              x[i] = (b[i] - jStat16.sum(parts)) / A[i][i];
+              x[i] = (b[i] - jStat3.sum(parts)) / A[i][i];
             });
             if (matrix_mode)
               return x.map(function(i) {
@@ -2751,7 +2751,7 @@ var require_jstat = __commonJS({
           },
           triaLowSolve: function triaLowSolve(A, b) {
             var size = A[0].length;
-            var x = jStat16.zeros(1, size)[0];
+            var x = jStat3.zeros(1, size)[0];
             var parts;
             var matrix_mode = false;
             if (b[0].length != void 0) {
@@ -2760,11 +2760,11 @@ var require_jstat = __commonJS({
               });
               matrix_mode = true;
             }
-            jStat16.arange(size).forEach(function(i) {
-              parts = jStat16.arange(i).map(function(j) {
+            jStat3.arange(size).forEach(function(i) {
+              parts = jStat3.arange(i).map(function(j) {
                 return A[i][j] * x[j];
               });
-              x[i] = (b[i] - jStat16.sum(parts)) / A[i][i];
+              x[i] = (b[i] - jStat3.sum(parts)) / A[i][i];
             });
             if (matrix_mode)
               return x.map(function(i) {
@@ -2778,24 +2778,24 @@ var require_jstat = __commonJS({
           // U is upper triangular matrix
           lu: function lu(A) {
             var size = A.length;
-            var L = jStat16.identity(size);
-            var R = jStat16.zeros(A.length, A[0].length);
+            var L = jStat3.identity(size);
+            var R = jStat3.zeros(A.length, A[0].length);
             var parts;
-            jStat16.arange(size).forEach(function(t) {
+            jStat3.arange(size).forEach(function(t) {
               R[0][t] = A[0][t];
             });
-            jStat16.arange(1, size).forEach(function(l) {
-              jStat16.arange(l).forEach(function(i) {
-                parts = jStat16.arange(i).map(function(jj) {
+            jStat3.arange(1, size).forEach(function(l) {
+              jStat3.arange(l).forEach(function(i) {
+                parts = jStat3.arange(i).map(function(jj) {
                   return L[l][jj] * R[jj][i];
                 });
-                L[l][i] = (A[l][i] - jStat16.sum(parts)) / R[i][i];
+                L[l][i] = (A[l][i] - jStat3.sum(parts)) / R[i][i];
               });
-              jStat16.arange(l, size).forEach(function(j) {
-                parts = jStat16.arange(l).map(function(jj) {
+              jStat3.arange(l, size).forEach(function(j) {
+                parts = jStat3.arange(l).map(function(jj) {
                   return L[l][jj] * R[jj][j];
                 });
-                R[l][j] = A[parts.length][j] - jStat16.sum(parts);
+                R[l][j] = A[parts.length][j] - jStat3.sum(parts);
               });
             });
             return [L, R];
@@ -2805,18 +2805,18 @@ var require_jstat = __commonJS({
           // T is lower triangular matrix
           cholesky: function cholesky(A) {
             var size = A.length;
-            var T = jStat16.zeros(A.length, A[0].length);
+            var T = jStat3.zeros(A.length, A[0].length);
             var parts;
-            jStat16.arange(size).forEach(function(i) {
-              parts = jStat16.arange(i).map(function(t) {
+            jStat3.arange(size).forEach(function(i) {
+              parts = jStat3.arange(i).map(function(t) {
                 return Math2.pow(T[i][t], 2);
               });
-              T[i][i] = Math2.sqrt(A[i][i] - jStat16.sum(parts));
-              jStat16.arange(i + 1, size).forEach(function(j) {
-                parts = jStat16.arange(i).map(function(t) {
+              T[i][i] = Math2.sqrt(A[i][i] - jStat3.sum(parts));
+              jStat3.arange(i + 1, size).forEach(function(j) {
+                parts = jStat3.arange(i).map(function(t) {
                   return T[i][t] * T[j][t];
                 });
-                T[j][i] = (A[i][j] - jStat16.sum(parts)) / T[i][i];
+                T[j][i] = (A[i][j] - jStat3.sum(parts)) / T[i][i];
               });
             });
             return T;
@@ -2846,14 +2846,14 @@ var require_jstat = __commonJS({
                 }
               }
             }
-            h = jStat16.multiply(jStat16.multiply(jStat16.inv(d), jStat16.add(l, u)), -1);
-            c = jStat16.multiply(jStat16.inv(d), b);
+            h = jStat3.multiply(jStat3.multiply(jStat3.inv(d), jStat3.add(l, u)), -1);
+            c = jStat3.multiply(jStat3.inv(d), b);
             xv = x;
-            xk = jStat16.add(jStat16.multiply(h, x), c);
+            xk = jStat3.add(jStat3.multiply(h, x), c);
             i = 2;
-            while (Math2.abs(jStat16.norm(jStat16.subtract(xk, xv))) > r) {
+            while (Math2.abs(jStat3.norm(jStat3.subtract(xk, xv))) > r) {
               xv = xk;
-              xk = jStat16.add(jStat16.multiply(h, xv), c);
+              xk = jStat3.add(jStat3.multiply(h, xv), c);
               i++;
             }
             return xk;
@@ -2882,14 +2882,14 @@ var require_jstat = __commonJS({
                 }
               }
             }
-            h = jStat16.multiply(jStat16.multiply(jStat16.inv(jStat16.add(d, l)), u), -1);
-            c = jStat16.multiply(jStat16.inv(jStat16.add(d, l)), b);
+            h = jStat3.multiply(jStat3.multiply(jStat3.inv(jStat3.add(d, l)), u), -1);
+            c = jStat3.multiply(jStat3.inv(jStat3.add(d, l)), b);
             xv = x;
-            xk = jStat16.add(jStat16.multiply(h, x), c);
+            xk = jStat3.add(jStat3.multiply(h, x), c);
             i = 2;
-            while (Math2.abs(jStat16.norm(jStat16.subtract(xk, xv))) > r) {
+            while (Math2.abs(jStat3.norm(jStat3.subtract(xk, xv))) > r) {
               xv = xk;
-              xk = jStat16.add(jStat16.multiply(h, xv), c);
+              xk = jStat3.add(jStat3.multiply(h, xv), c);
               i = i + 1;
             }
             return xk;
@@ -2918,23 +2918,23 @@ var require_jstat = __commonJS({
                 }
               }
             }
-            h = jStat16.multiply(
-              jStat16.inv(jStat16.add(d, jStat16.multiply(l, w))),
-              jStat16.subtract(
-                jStat16.multiply(d, 1 - w),
-                jStat16.multiply(u, w)
+            h = jStat3.multiply(
+              jStat3.inv(jStat3.add(d, jStat3.multiply(l, w))),
+              jStat3.subtract(
+                jStat3.multiply(d, 1 - w),
+                jStat3.multiply(u, w)
               )
             );
-            c = jStat16.multiply(jStat16.multiply(jStat16.inv(jStat16.add(
+            c = jStat3.multiply(jStat3.multiply(jStat3.inv(jStat3.add(
               d,
-              jStat16.multiply(l, w)
+              jStat3.multiply(l, w)
             )), b), w);
             xv = x;
-            xk = jStat16.add(jStat16.multiply(h, x), c);
+            xk = jStat3.add(jStat3.multiply(h, x), c);
             i = 2;
-            while (Math2.abs(jStat16.norm(jStat16.subtract(xk, xv))) > r) {
+            while (Math2.abs(jStat3.norm(jStat3.subtract(xk, xv))) > r) {
               xv = xk;
-              xk = jStat16.add(jStat16.multiply(h, xv), c);
+              xk = jStat3.add(jStat3.multiply(h, xv), c);
               i++;
             }
             return xk;
@@ -2953,14 +2953,14 @@ var require_jstat = __commonJS({
               factor = a[i + 1][i] > 0 ? -1 : 1;
               alpha = factor * Math2.sqrt(alpha);
               r = Math2.sqrt((alpha * alpha - a[i + 1][i] * alpha) / 2);
-              w = jStat16.zeros(m, 1);
+              w = jStat3.zeros(m, 1);
               w[i + 1][0] = (a[i + 1][i] - alpha) / (2 * r);
               for (k = i + 2; k < m; k++) w[k][0] = a[k][i] / (2 * r);
-              p = jStat16.subtract(
-                jStat16.identity(m, n),
-                jStat16.multiply(jStat16.multiply(w, jStat16.transpose(w)), 2)
+              p = jStat3.subtract(
+                jStat3.identity(m, n),
+                jStat3.multiply(jStat3.multiply(w, jStat3.transpose(w)), 2)
               );
-              a = jStat16.multiply(p, jStat16.multiply(a, p));
+              a = jStat3.multiply(p, jStat3.multiply(a, p));
             }
             return a;
           },
@@ -2968,13 +2968,13 @@ var require_jstat = __commonJS({
           // Q is orthogonal matrix
           // R is upper triangular
           QR: (function() {
-            var sum = jStat16.sum;
-            var range = jStat16.arange;
+            var sum = jStat3.sum;
+            var range = jStat3.arange;
             function qr2(x) {
               var n = x.length;
               var p = x[0].length;
-              var r = jStat16.zeros(p, p);
-              x = jStat16.copy(x);
+              var r = jStat3.zeros(p, p);
+              x = jStat3.copy(x);
               var i, j, k;
               for (j = 0; j < p; j++) {
                 r[j][j] = Math2.sqrt(sum(range(n).map(function(i2) {
@@ -2998,28 +2998,28 @@ var require_jstat = __commonJS({
           })(),
           lstsq: /* @__PURE__ */ (function() {
             function R_I(A) {
-              A = jStat16.copy(A);
+              A = jStat3.copy(A);
               var size = A.length;
-              var I = jStat16.identity(size);
-              jStat16.arange(size - 1, -1, -1).forEach(function(i) {
-                jStat16.sliceAssign(
+              var I = jStat3.identity(size);
+              jStat3.arange(size - 1, -1, -1).forEach(function(i) {
+                jStat3.sliceAssign(
                   I,
                   { row: i },
-                  jStat16.divide(jStat16.slice(I, { row: i }), A[i][i])
+                  jStat3.divide(jStat3.slice(I, { row: i }), A[i][i])
                 );
-                jStat16.sliceAssign(
+                jStat3.sliceAssign(
                   A,
                   { row: i },
-                  jStat16.divide(jStat16.slice(A, { row: i }), A[i][i])
+                  jStat3.divide(jStat3.slice(A, { row: i }), A[i][i])
                 );
-                jStat16.arange(i).forEach(function(j) {
-                  var c = jStat16.multiply(A[j][i], -1);
-                  var Aj = jStat16.slice(A, { row: j });
-                  var cAi = jStat16.multiply(jStat16.slice(A, { row: i }), c);
-                  jStat16.sliceAssign(A, { row: j }, jStat16.add(Aj, cAi));
-                  var Ij = jStat16.slice(I, { row: j });
-                  var cIi = jStat16.multiply(jStat16.slice(I, { row: i }), c);
-                  jStat16.sliceAssign(I, { row: j }, jStat16.add(Ij, cIi));
+                jStat3.arange(i).forEach(function(j) {
+                  var c = jStat3.multiply(A[j][i], -1);
+                  var Aj = jStat3.slice(A, { row: j });
+                  var cAi = jStat3.multiply(jStat3.slice(A, { row: i }), c);
+                  jStat3.sliceAssign(A, { row: j }, jStat3.add(Aj, cAi));
+                  var Ij = jStat3.slice(I, { row: j });
+                  var cIi = jStat3.multiply(jStat3.slice(I, { row: i }), c);
+                  jStat3.sliceAssign(I, { row: j }, jStat3.add(Ij, cIi));
                 });
               });
               return I;
@@ -3032,18 +3032,18 @@ var require_jstat = __commonJS({
                 });
                 array_mode = true;
               }
-              var QR = jStat16.QR(A);
+              var QR = jStat3.QR(A);
               var Q = QR[0];
               var R = QR[1];
               var attrs = A[0].length;
-              var Q1 = jStat16.slice(Q, { col: { end: attrs } });
-              var R1 = jStat16.slice(R, { row: { end: attrs } });
+              var Q1 = jStat3.slice(Q, { col: { end: attrs } });
+              var R1 = jStat3.slice(R, { row: { end: attrs } });
               var RI = R_I(R1);
-              var Q2 = jStat16.transpose(Q1);
+              var Q2 = jStat3.transpose(Q1);
               if (Q2[0].length === void 0) {
                 Q2 = [Q2];
               }
-              var x = jStat16.multiply(jStat16.multiply(RI, Q2), b);
+              var x = jStat3.multiply(jStat3.multiply(RI, Q2), b);
               if (x.length === void 0) {
                 x = [[x]];
               }
@@ -3058,7 +3058,7 @@ var require_jstat = __commonJS({
           jacobi: function jacobi(a) {
             var condition = 1;
             var n = a.length;
-            var e = jStat16.identity(n, n);
+            var e = jStat3.identity(n, n);
             var ev = [];
             var b, i, j, p, q, maxim, theta, s;
             while (condition === 1) {
@@ -3080,13 +3080,13 @@ var require_jstat = __commonJS({
                 theta = a[p][q] > 0 ? Math2.PI / 4 : -Math2.PI / 4;
               else
                 theta = Math2.atan(2 * a[p][q] / (a[p][p] - a[q][q])) / 2;
-              s = jStat16.identity(n, n);
+              s = jStat3.identity(n, n);
               s[p][p] = Math2.cos(theta);
               s[p][q] = -Math2.sin(theta);
               s[q][p] = Math2.sin(theta);
               s[q][q] = Math2.cos(theta);
-              e = jStat16.multiply(e, s);
-              b = jStat16.multiply(jStat16.multiply(jStat16.inv(s), a), s);
+              e = jStat3.multiply(e, s);
+              b = jStat3.multiply(jStat3.multiply(jStat3.inv(s), a), s);
               a = b;
               condition = 0;
               for (i = 1; i < n; i++) {
@@ -3204,7 +3204,7 @@ var require_jstat = __commonJS({
             }
             return h / 3 * (I + f(b));
           },
-          hermite: function hermite(X, F16, dF, value) {
+          hermite: function hermite(X, F2, dF, value) {
             var n = X.length;
             var p = 0;
             var i = 0;
@@ -3224,17 +3224,17 @@ var require_jstat = __commonJS({
               }
               A[i] = (1 - 2 * (value - X[i]) * dl[i]) * (l[i] * l[i]);
               B[i] = (value - X[i]) * (l[i] * l[i]);
-              p += A[i] * F16[i] + B[i] * dF[i];
+              p += A[i] * F2[i] + B[i] * dF[i];
             }
             return p;
           },
-          lagrange: function lagrange(X, F16, value) {
+          lagrange: function lagrange(X, F2, value) {
             var p = 0;
             var i = 0;
             var j, l;
             var n = X.length;
             for (; i < n; i++) {
-              l = F16[i];
+              l = F2[i];
               for (j = 0; j < n; j++) {
                 if (i != j) l *= (value - X[j]) / (X[i] - X[j]);
               }
@@ -3242,7 +3242,7 @@ var require_jstat = __commonJS({
             }
             return p;
           },
-          cubic_spline: function cubic_spline(X, F16, value) {
+          cubic_spline: function cubic_spline(X, F2, value) {
             var n = X.length;
             var i = 0, j;
             var A = [];
@@ -3256,7 +3256,7 @@ var require_jstat = __commonJS({
               h[i] = X[i + 1] - X[i];
             alpha[0] = 0;
             for (i = 1; i < n - 1; i++) {
-              alpha[i] = 3 / h[i] * (F16[i + 1] - F16[i]) - 3 / h[i - 1] * (F16[i] - F16[i - 1]);
+              alpha[i] = 3 / h[i] * (F2[i + 1] - F2[i]) - 3 / h[i - 1] * (F2[i] - F2[i - 1]);
             }
             for (i = 1; i < n - 1; i++) {
               A[i] = [];
@@ -3266,16 +3266,16 @@ var require_jstat = __commonJS({
               A[i][i + 1] = h[i];
               B[i][0] = alpha[i];
             }
-            c = jStat16.multiply(jStat16.inv(A), B);
+            c = jStat3.multiply(jStat3.inv(A), B);
             for (j = 0; j < n - 1; j++) {
-              b[j] = (F16[j + 1] - F16[j]) / h[j] - h[j] * (c[j + 1][0] + 2 * c[j][0]) / 3;
+              b[j] = (F2[j + 1] - F2[j]) / h[j] - h[j] * (c[j + 1][0] + 2 * c[j][0]) / 3;
               d[j] = (c[j + 1][0] - c[j][0]) / (3 * h[j]);
             }
             for (j = 0; j < n; j++) {
               if (X[j] > value) break;
             }
             j -= 1;
-            return F16[j] + (value - X[j]) * b[j] + jStat16.sq(value - X[j]) * c[j] + (value - X[j]) * jStat16.sq(value - X[j]) * d[j];
+            return F2[j] + (value - X[j]) * b[j] + jStat3.sq(value - X[j]) * c[j] + (value - X[j]) * jStat3.sq(value - X[j]) * d[j];
           },
           gauss_quadrature: function gauss_quadrature() {
             throw new Error("gauss_quadrature not yet implemented");
@@ -3296,7 +3296,7 @@ var require_jstat = __commonJS({
             var V = [];
             var Vt = [];
             for (i = 0; i < m; i++) {
-              u[i] = jStat16.sum(X[i]) / n;
+              u[i] = jStat3.sum(X[i]) / n;
             }
             for (i = 0; i < n; i++) {
               B[i] = [];
@@ -3304,17 +3304,17 @@ var require_jstat = __commonJS({
                 B[i][j] = X[j][i] - u[j];
               }
             }
-            B = jStat16.transpose(B);
+            B = jStat3.transpose(B);
             for (i = 0; i < m; i++) {
               C[i] = [];
               for (j = 0; j < m; j++) {
-                C[i][j] = jStat16.dot([B[i]], [B[j]]) / (n - 1);
+                C[i][j] = jStat3.dot([B[i]], [B[j]]) / (n - 1);
               }
             }
-            result = jStat16.jacobi(C);
+            result = jStat3.jacobi(C);
             V = result[0];
             D = result[1];
-            Vt = jStat16.transpose(V);
+            Vt = jStat3.transpose(V);
             for (i = 0; i < D.length; i++) {
               for (j = i; j < D.length; j++) {
                 if (D[i] < D[j]) {
@@ -3327,11 +3327,11 @@ var require_jstat = __commonJS({
                 }
               }
             }
-            Bt = jStat16.transpose(B);
+            Bt = jStat3.transpose(B);
             for (i = 0; i < m; i++) {
               Y[i] = [];
               for (j = 0; j < Bt.length; j++) {
-                Y[i][j] = jStat16.dot([Vt[i]], [Bt[j]]);
+                Y[i][j] = jStat3.dot([Vt[i]], [Bt[j]]);
               }
             }
             return [X, D, Vt, Y];
@@ -3339,27 +3339,27 @@ var require_jstat = __commonJS({
         });
         (function(funcs) {
           for (var i = 0; i < funcs.length; i++) (function(passfunc) {
-            jStat16.fn[passfunc] = function(arg, func) {
+            jStat3.fn[passfunc] = function(arg, func) {
               var tmpthis = this;
               if (func) {
                 setTimeout(function() {
-                  func.call(tmpthis, jStat16.fn[passfunc].call(tmpthis, arg));
+                  func.call(tmpthis, jStat3.fn[passfunc].call(tmpthis, arg));
                 }, 15);
                 return this;
               }
-              if (typeof jStat16[passfunc](this, arg) === "number")
-                return jStat16[passfunc](this, arg);
+              if (typeof jStat3[passfunc](this, arg) === "number")
+                return jStat3[passfunc](this, arg);
               else
-                return jStat16(jStat16[passfunc](this, arg));
+                return jStat3(jStat3[passfunc](this, arg));
             };
           })(funcs[i]);
         })("add divide multiply subtract dot pow exp log abs norm angle".split(" "));
-      })(jStat15, Math);
-      (function(jStat16, Math2) {
+      })(jStat2, Math);
+      (function(jStat3, Math2) {
         var slice = [].slice;
-        var isNumber = jStat16.utils.isNumber;
-        var isArray = jStat16.utils.isArray;
-        jStat16.extend({
+        var isNumber = jStat3.utils.isNumber;
+        var isArray = jStat3.utils.isArray;
+        jStat3.extend({
           // 2 different parameter lists:
           // (value, mean, sd)
           // (value, array, flag)
@@ -3368,7 +3368,7 @@ var require_jstat = __commonJS({
             if (isNumber(args[1])) {
               return (args[0] - args[1]) / args[2];
             }
-            return (args[0] - jStat16.mean(args[1])) / jStat16.stdev(args[1], args[2]);
+            return (args[0] - jStat3.mean(args[1])) / jStat3.stdev(args[1], args[2]);
           },
           // 3 different paramter lists:
           // (value, mean, sd, sides)
@@ -3378,35 +3378,35 @@ var require_jstat = __commonJS({
             var args = slice.call(arguments);
             var z;
             if (isArray(args[1])) {
-              z = jStat16.zscore(args[0], args[1], args[3]);
-              return args[2] === 1 ? jStat16.normal.cdf(-Math2.abs(z), 0, 1) : jStat16.normal.cdf(-Math2.abs(z), 0, 1) * 2;
+              z = jStat3.zscore(args[0], args[1], args[3]);
+              return args[2] === 1 ? jStat3.normal.cdf(-Math2.abs(z), 0, 1) : jStat3.normal.cdf(-Math2.abs(z), 0, 1) * 2;
             } else {
               if (args.length > 2) {
-                z = jStat16.zscore(args[0], args[1], args[2]);
-                return args[3] === 1 ? jStat16.normal.cdf(-Math2.abs(z), 0, 1) : jStat16.normal.cdf(-Math2.abs(z), 0, 1) * 2;
+                z = jStat3.zscore(args[0], args[1], args[2]);
+                return args[3] === 1 ? jStat3.normal.cdf(-Math2.abs(z), 0, 1) : jStat3.normal.cdf(-Math2.abs(z), 0, 1) * 2;
               } else {
                 z = args[0];
-                return args[1] === 1 ? jStat16.normal.cdf(-Math2.abs(z), 0, 1) : jStat16.normal.cdf(-Math2.abs(z), 0, 1) * 2;
+                return args[1] === 1 ? jStat3.normal.cdf(-Math2.abs(z), 0, 1) : jStat3.normal.cdf(-Math2.abs(z), 0, 1) * 2;
               }
             }
           }
         });
-        jStat16.extend(jStat16.fn, {
+        jStat3.extend(jStat3.fn, {
           zscore: function zscore(value, flag) {
             return (value - this.mean()) / this.stdev(flag);
           },
           ztest: function ztest(value, sides, flag) {
             var zscore = Math2.abs(this.zscore(value, flag));
-            return sides === 1 ? jStat16.normal.cdf(-zscore, 0, 1) : jStat16.normal.cdf(-zscore, 0, 1) * 2;
+            return sides === 1 ? jStat3.normal.cdf(-zscore, 0, 1) : jStat3.normal.cdf(-zscore, 0, 1) * 2;
           }
         });
-        jStat16.extend({
+        jStat3.extend({
           // 2 parameter lists
           // (value, mean, sd, n)
           // (value, array)
           tscore: function tscore() {
             var args = slice.call(arguments);
-            return args.length === 4 ? (args[0] - args[1]) / (args[2] / Math2.sqrt(args[3])) : (args[0] - jStat16.mean(args[1])) / (jStat16.stdev(args[1], true) / Math2.sqrt(args[1].length));
+            return args.length === 4 ? (args[0] - args[1]) / (args[2] / Math2.sqrt(args[3])) : (args[0] - jStat3.mean(args[1])) / (jStat3.stdev(args[1], true) / Math2.sqrt(args[1].length));
           },
           // 3 different paramter lists:
           // (value, mean, sd, n, sides)
@@ -3416,26 +3416,26 @@ var require_jstat = __commonJS({
             var args = slice.call(arguments);
             var tscore;
             if (args.length === 5) {
-              tscore = Math2.abs(jStat16.tscore(args[0], args[1], args[2], args[3]));
-              return args[4] === 1 ? jStat16.studentt.cdf(-tscore, args[3] - 1) : jStat16.studentt.cdf(-tscore, args[3] - 1) * 2;
+              tscore = Math2.abs(jStat3.tscore(args[0], args[1], args[2], args[3]));
+              return args[4] === 1 ? jStat3.studentt.cdf(-tscore, args[3] - 1) : jStat3.studentt.cdf(-tscore, args[3] - 1) * 2;
             }
             if (isNumber(args[1])) {
               tscore = Math2.abs(args[0]);
-              return args[2] == 1 ? jStat16.studentt.cdf(-tscore, args[1] - 1) : jStat16.studentt.cdf(-tscore, args[1] - 1) * 2;
+              return args[2] == 1 ? jStat3.studentt.cdf(-tscore, args[1] - 1) : jStat3.studentt.cdf(-tscore, args[1] - 1) * 2;
             }
-            tscore = Math2.abs(jStat16.tscore(args[0], args[1]));
-            return args[2] == 1 ? jStat16.studentt.cdf(-tscore, args[1].length - 1) : jStat16.studentt.cdf(-tscore, args[1].length - 1) * 2;
+            tscore = Math2.abs(jStat3.tscore(args[0], args[1]));
+            return args[2] == 1 ? jStat3.studentt.cdf(-tscore, args[1].length - 1) : jStat3.studentt.cdf(-tscore, args[1].length - 1) * 2;
           }
         });
-        jStat16.extend(jStat16.fn, {
+        jStat3.extend(jStat3.fn, {
           tscore: function tscore(value) {
             return (value - this.mean()) / (this.stdev(true) / Math2.sqrt(this.cols()));
           },
           ttest: function ttest(value, sides) {
-            return sides === 1 ? 1 - jStat16.studentt.cdf(Math2.abs(this.tscore(value)), this.cols() - 1) : jStat16.studentt.cdf(-Math2.abs(this.tscore(value)), this.cols() - 1) * 2;
+            return sides === 1 ? 1 - jStat3.studentt.cdf(Math2.abs(this.tscore(value)), this.cols() - 1) : jStat3.studentt.cdf(-Math2.abs(this.tscore(value)), this.cols() - 1) * 2;
           }
         });
-        jStat16.extend({
+        jStat3.extend({
           // Paramter list is as follows:
           // (array1, array2, array3, ...)
           // or it is an array of arrays
@@ -3453,15 +3453,15 @@ var require_jstat = __commonJS({
             for (i = 0; i < args.length; i++) {
               sample = sample.concat(args[i]);
             }
-            sampMean = jStat16.mean(sample);
+            sampMean = jStat3.mean(sample);
             expVar = 0;
             for (i = 0; i < args.length; i++) {
-              expVar = expVar + args[i].length * Math2.pow(jStat16.mean(args[i]) - sampMean, 2);
+              expVar = expVar + args[i].length * Math2.pow(jStat3.mean(args[i]) - sampMean, 2);
             }
             expVar /= args.length - 1;
             unexpVar = 0;
             for (i = 0; i < args.length; i++) {
-              sampSampMean = jStat16.mean(args[i]);
+              sampSampMean = jStat3.mean(args[i]);
               for (j = 0; j < args[i].length; j++) {
                 unexpVar += Math2.pow(args[i][j] - sampSampMean, 2);
               }
@@ -3475,24 +3475,24 @@ var require_jstat = __commonJS({
           anovaftest: function anovaftest() {
             var args = slice.call(arguments), df1, df2, n, i;
             if (isNumber(args[0])) {
-              return 1 - jStat16.centralF.cdf(args[0], args[1], args[2]);
+              return 1 - jStat3.centralF.cdf(args[0], args[1], args[2]);
             }
-            var anovafscore = jStat16.anovafscore(args);
+            var anovafscore = jStat3.anovafscore(args);
             df1 = args.length - 1;
             n = 0;
             for (i = 0; i < args.length; i++) {
               n = n + args[i].length;
             }
             df2 = n - df1 - 1;
-            return 1 - jStat16.centralF.cdf(anovafscore, df1, df2);
+            return 1 - jStat3.centralF.cdf(anovafscore, df1, df2);
           },
           ftest: function ftest(fscore, df1, df2) {
-            return 1 - jStat16.centralF.cdf(fscore, df1, df2);
+            return 1 - jStat3.centralF.cdf(fscore, df1, df2);
           }
         });
-        jStat16.extend(jStat16.fn, {
+        jStat3.extend(jStat3.fn, {
           anovafscore: function anovafscore() {
-            return jStat16.anovafscore(this.toArray());
+            return jStat3.anovafscore(this.toArray());
           },
           anovaftes: function anovaftes() {
             var n = 0;
@@ -3500,30 +3500,30 @@ var require_jstat = __commonJS({
             for (i = 0; i < this.length; i++) {
               n = n + this[i].length;
             }
-            return jStat16.ftest(this.anovafscore(), this.length - 1, n - this.length);
+            return jStat3.ftest(this.anovafscore(), this.length - 1, n - this.length);
           }
         });
-        jStat16.extend({
+        jStat3.extend({
           // 2 parameter lists
           // (mean1, mean2, n1, n2, sd)
           // (array1, array2, sd)
           qscore: function qscore() {
             var args = slice.call(arguments);
-            var mean1, mean22, n1, n2, sd2;
+            var mean1, mean2, n1, n2, sd;
             if (isNumber(args[0])) {
               mean1 = args[0];
-              mean22 = args[1];
+              mean2 = args[1];
               n1 = args[2];
               n2 = args[3];
-              sd2 = args[4];
+              sd = args[4];
             } else {
-              mean1 = jStat16.mean(args[0]);
-              mean22 = jStat16.mean(args[1]);
+              mean1 = jStat3.mean(args[0]);
+              mean2 = jStat3.mean(args[1]);
               n1 = args[0].length;
               n2 = args[1].length;
-              sd2 = args[2];
+              sd = args[2];
             }
-            return Math2.abs(mean1 - mean22) / (sd2 * Math2.sqrt((1 / n1 + 1 / n2) / 2));
+            return Math2.abs(mean1 - mean2) / (sd * Math2.sqrt((1 / n1 + 1 / n2) / 2));
           },
           // 3 different parameter lists:
           // (qscore, n, k)
@@ -3536,20 +3536,20 @@ var require_jstat = __commonJS({
               qscore = args[0];
               args = args.slice(1);
             } else if (args.length === 7) {
-              qscore = jStat16.qscore(args[0], args[1], args[2], args[3], args[4]);
+              qscore = jStat3.qscore(args[0], args[1], args[2], args[3], args[4]);
               args = args.slice(5);
             } else {
-              qscore = jStat16.qscore(args[0], args[1], args[2]);
+              qscore = jStat3.qscore(args[0], args[1], args[2]);
               args = args.slice(3);
             }
             var n = args[0];
             var k = args[1];
-            return 1 - jStat16.tukey.cdf(qscore, k, n - k);
+            return 1 - jStat3.tukey.cdf(qscore, k, n - k);
           },
           tukeyhsd: function tukeyhsd(arrays) {
-            var sd2 = jStat16.pooledstdev(arrays);
+            var sd = jStat3.pooledstdev(arrays);
             var means = arrays.map(function(arr) {
-              return jStat16.mean(arr);
+              return jStat3.mean(arr);
             });
             var n = arrays.reduce(function(n2, arr) {
               return n2 + arr.length;
@@ -3557,23 +3557,23 @@ var require_jstat = __commonJS({
             var results = [];
             for (var i = 0; i < arrays.length; ++i) {
               for (var j = i + 1; j < arrays.length; ++j) {
-                var p = jStat16.qtest(means[i], means[j], arrays[i].length, arrays[j].length, sd2, n, arrays.length);
+                var p = jStat3.qtest(means[i], means[j], arrays[i].length, arrays[j].length, sd, n, arrays.length);
                 results.push([[i, j], p]);
               }
             }
             return results;
           }
         });
-        jStat16.extend({
+        jStat3.extend({
           // 2 different parameter setups
           // (value, alpha, sd, n)
           // (value, alpha, array)
           normalci: function normalci() {
             var args = slice.call(arguments), ans = new Array(2), change;
             if (args.length === 4) {
-              change = Math2.abs(jStat16.normal.inv(args[1] / 2, 0, 1) * args[2] / Math2.sqrt(args[3]));
+              change = Math2.abs(jStat3.normal.inv(args[1] / 2, 0, 1) * args[2] / Math2.sqrt(args[3]));
             } else {
-              change = Math2.abs(jStat16.normal.inv(args[1] / 2, 0, 1) * jStat16.stdev(args[2]) / Math2.sqrt(args[2].length));
+              change = Math2.abs(jStat3.normal.inv(args[1] / 2, 0, 1) * jStat3.stdev(args[2]) / Math2.sqrt(args[2].length));
             }
             ans[0] = args[0] - change;
             ans[1] = args[0] + change;
@@ -3585,9 +3585,9 @@ var require_jstat = __commonJS({
           tci: function tci() {
             var args = slice.call(arguments), ans = new Array(2), change;
             if (args.length === 4) {
-              change = Math2.abs(jStat16.studentt.inv(args[1] / 2, args[3] - 1) * args[2] / Math2.sqrt(args[3]));
+              change = Math2.abs(jStat3.studentt.inv(args[1] / 2, args[3] - 1) * args[2] / Math2.sqrt(args[3]));
             } else {
-              change = Math2.abs(jStat16.studentt.inv(args[1] / 2, args[2].length - 1) * jStat16.stdev(args[2], true) / Math2.sqrt(args[2].length));
+              change = Math2.abs(jStat3.studentt.inv(args[1] / 2, args[2].length - 1) * jStat3.stdev(args[2], true) / Math2.sqrt(args[2].length));
             }
             ans[0] = args[0] - change;
             ans[1] = args[0] + change;
@@ -3597,12 +3597,12 @@ var require_jstat = __commonJS({
             return pvalue < alpha;
           }
         });
-        jStat16.extend(jStat16.fn, {
+        jStat3.extend(jStat3.fn, {
           normalci: function normalci(value, alpha) {
-            return jStat16.normalci(value, alpha, this.toArray());
+            return jStat3.normalci(value, alpha, this.toArray());
           },
           tci: function tci(value, alpha) {
-            return jStat16.tci(value, alpha, this.toArray());
+            return jStat3.tci(value, alpha, this.toArray());
           }
         });
         function differenceOfProportions(p1, n1, p2, n2) {
@@ -3613,29 +3613,29 @@ var require_jstat = __commonJS({
           var se = Math2.sqrt(pooled * (1 - pooled) * (1 / n1 + 1 / n2));
           return (p1 - p2) / se;
         }
-        jStat16.extend(jStat16.fn, {
+        jStat3.extend(jStat3.fn, {
           oneSidedDifferenceOfProportions: function oneSidedDifferenceOfProportions(p1, n1, p2, n2) {
             var z = differenceOfProportions(p1, n1, p2, n2);
-            return jStat16.ztest(z, 1);
+            return jStat3.ztest(z, 1);
           },
           twoSidedDifferenceOfProportions: function twoSidedDifferenceOfProportions(p1, n1, p2, n2) {
             var z = differenceOfProportions(p1, n1, p2, n2);
-            return jStat16.ztest(z, 2);
+            return jStat3.ztest(z, 2);
           }
         });
-      })(jStat15, Math);
-      jStat15.models = /* @__PURE__ */ (function() {
+      })(jStat2, Math);
+      jStat2.models = /* @__PURE__ */ (function() {
         function sub_regress(exog) {
           var var_count = exog[0].length;
-          var modelList = jStat15.arange(var_count).map(function(endog_index) {
-            var exog_index = jStat15.arange(var_count).filter(function(i) {
+          var modelList = jStat2.arange(var_count).map(function(endog_index) {
+            var exog_index = jStat2.arange(var_count).filter(function(i) {
               return i !== endog_index;
             });
             return ols(
-              jStat15.col(exog, endog_index).map(function(x) {
+              jStat2.col(exog, endog_index).map(function(x) {
                 return x[0];
               }),
-              jStat15.col(exog, exog_index)
+              jStat2.col(exog, exog_index)
             );
           });
           return modelList;
@@ -3644,18 +3644,18 @@ var require_jstat = __commonJS({
           var nobs = endog.length;
           var df_model = exog[0].length - 1;
           var df_resid = nobs - df_model - 1;
-          var coef = jStat15.lstsq(exog, endog);
-          var predict = jStat15.multiply(exog, coef.map(function(x) {
+          var coef = jStat2.lstsq(exog, endog);
+          var predict = jStat2.multiply(exog, coef.map(function(x) {
             return [x];
           })).map(function(p) {
             return p[0];
           });
-          var resid = jStat15.subtract(endog, predict);
-          var ybar = jStat15.mean(endog);
-          var SSE = jStat15.sum(predict.map(function(f) {
+          var resid = jStat2.subtract(endog, predict);
+          var ybar = jStat2.mean(endog);
+          var SSE = jStat2.sum(predict.map(function(f) {
             return Math.pow(f - ybar, 2);
           }));
-          var SSR = jStat15.sum(endog.map(function(y, i) {
+          var SSR = jStat2.sum(endog.map(function(y, i) {
             return Math.pow(y - predict[i], 2);
           }));
           var SST = SSE + SSR;
@@ -3688,10 +3688,10 @@ var require_jstat = __commonJS({
             return (coef - 0) / seBetaHat[i];
           });
           var pValue = tStatistic.map(function(t) {
-            var leftppf = jStat15.studentt.cdf(t, model.df_resid);
+            var leftppf = jStat2.studentt.cdf(t, model.df_resid);
             return (leftppf > 0.5 ? 1 - leftppf : leftppf) * 2;
           });
-          var c = jStat15.studentt.inv(0.975, model.df_resid);
+          var c = jStat2.studentt.inv(0.975, model.df_resid);
           var interval95 = model.coef.map(function(coef, i) {
             var d = c * seBetaHat[i];
             return [coef - d, coef + d];
@@ -3707,7 +3707,7 @@ var require_jstat = __commonJS({
         function F_test(model) {
           var F_statistic = model.R2 / model.df_model / ((1 - model.R2) / model.df_resid);
           var fcdf = function(x, n1, n2) {
-            return jStat15.beta.cdf(x / (n2 / n1 + x), n1 / 2, n2 / 2);
+            return jStat2.beta.cdf(x / (n2 / n1 + x), n1 / 2, n2 / 2);
           };
           var pvalue = 1 - fcdf(F_statistic, model.df_model, model.df_resid);
           return { F_statistic, pvalue };
@@ -3724,14 +3724,14 @@ var require_jstat = __commonJS({
         }
         return { ols: ols_wrap };
       })();
-      jStat15.extend({
+      jStat2.extend({
         buildxmatrix: function buildxmatrix() {
           var matrixRows = new Array(arguments.length);
           for (var i = 0; i < arguments.length; i++) {
             var array = [1];
             matrixRows[i] = array.concat(arguments[i]);
           }
-          return jStat15(matrixRows);
+          return jStat2(matrixRows);
         },
         builddxmatrix: function builddxmatrix() {
           var matrixRows = new Array(arguments[0].length);
@@ -3739,17 +3739,17 @@ var require_jstat = __commonJS({
             var array = [1];
             matrixRows[i] = array.concat(arguments[0][i]);
           }
-          return jStat15(matrixRows);
+          return jStat2(matrixRows);
         },
         buildjxmatrix: function buildjxmatrix(jMat) {
           var pass = new Array(jMat.length);
           for (var i = 0; i < jMat.length; i++) {
             pass[i] = jMat[i];
           }
-          return jStat15.builddxmatrix(pass);
+          return jStat2.builddxmatrix(pass);
         },
         buildymatrix: function buildymatrix(array) {
-          return jStat15(array).transpose();
+          return jStat2(array).transpose();
         },
         buildjymatrix: function buildjymatrix(jMat) {
           return jMat.transpose();
@@ -3769,7 +3769,7 @@ var require_jstat = __commonJS({
                   result[i][j] = sum;
                 }
               }
-              return jStat15(result);
+              return jStat2(result);
             }
             result = [];
             for (i = 0; i < A.rows(); i++) {
@@ -3782,34 +3782,34 @@ var require_jstat = __commonJS({
                 result[i][j] = sum;
               }
             }
-            return jStat15(result);
+            return jStat2(result);
           }
         },
         //regress and regresst to be fixed
         regress: function regress(jMatX, jMatY) {
-          var innerinv = jStat15.xtranspxinv(jMatX);
+          var innerinv = jStat2.xtranspxinv(jMatX);
           var xtransp = jMatX.transpose();
-          var next = jStat15.matrixmult(jStat15(innerinv), xtransp);
-          return jStat15.matrixmult(next, jMatY);
+          var next = jStat2.matrixmult(jStat2(innerinv), xtransp);
+          return jStat2.matrixmult(next, jMatY);
         },
         regresst: function regresst(jMatX, jMatY, sides) {
-          var beta2 = jStat15.regress(jMatX, jMatY);
+          var beta = jStat2.regress(jMatX, jMatY);
           var compile = {};
           compile.anova = {};
-          var jMatYBar = jStat15.jMatYBar(jMatX, beta2);
+          var jMatYBar = jStat2.jMatYBar(jMatX, beta);
           compile.yBar = jMatYBar;
           var yAverage = jMatY.mean();
-          compile.anova.residuals = jStat15.residuals(jMatY, jMatYBar);
-          compile.anova.ssr = jStat15.ssr(jMatYBar, yAverage);
+          compile.anova.residuals = jStat2.residuals(jMatY, jMatYBar);
+          compile.anova.ssr = jStat2.ssr(jMatYBar, yAverage);
           compile.anova.msr = compile.anova.ssr / (jMatX[0].length - 1);
-          compile.anova.sse = jStat15.sse(jMatY, jMatYBar);
+          compile.anova.sse = jStat2.sse(jMatY, jMatYBar);
           compile.anova.mse = compile.anova.sse / (jMatY.length - (jMatX[0].length - 1) - 1);
-          compile.anova.sst = jStat15.sst(jMatY, yAverage);
+          compile.anova.sst = jStat2.sst(jMatY, yAverage);
           compile.anova.mst = compile.anova.sst / (jMatY.length - 1);
           compile.anova.r2 = 1 - compile.anova.sse / compile.anova.sst;
           if (compile.anova.r2 < 0) compile.anova.r2 = 0;
           compile.anova.fratio = compile.anova.msr / compile.anova.mse;
-          compile.anova.pvalue = jStat15.anovaftest(
+          compile.anova.pvalue = jStat2.anovaftest(
             compile.anova.fratio,
             jMatX[0].length - 1,
             jMatY.length - (jMatX[0].length - 1) - 1
@@ -3818,31 +3818,31 @@ var require_jstat = __commonJS({
           compile.anova.r2adj = 1 - compile.anova.mse / compile.anova.mst;
           if (compile.anova.r2adj < 0) compile.anova.r2adj = 0;
           compile.stats = new Array(jMatX[0].length);
-          var covar = jStat15.xtranspxinv(jMatX);
+          var covar = jStat2.xtranspxinv(jMatX);
           var sds, ts, ps;
-          for (var i = 0; i < beta2.length; i++) {
+          for (var i = 0; i < beta.length; i++) {
             sds = Math.sqrt(compile.anova.mse * Math.abs(covar[i][i]));
-            ts = Math.abs(beta2[i] / sds);
-            ps = jStat15.ttest(ts, jMatY.length - jMatX[0].length - 1, sides);
-            compile.stats[i] = [beta2[i], sds, ts, ps];
+            ts = Math.abs(beta[i] / sds);
+            ps = jStat2.ttest(ts, jMatY.length - jMatX[0].length - 1, sides);
+            compile.stats[i] = [beta[i], sds, ts, ps];
           }
-          compile.regress = beta2;
+          compile.regress = beta;
           return compile;
         },
         xtranspx: function xtranspx(jMatX) {
-          return jStat15.matrixmult(jMatX.transpose(), jMatX);
+          return jStat2.matrixmult(jMatX.transpose(), jMatX);
         },
         xtranspxinv: function xtranspxinv(jMatX) {
-          var inner = jStat15.matrixmult(jMatX.transpose(), jMatX);
-          var innerinv = jStat15.inv(inner);
+          var inner = jStat2.matrixmult(jMatX.transpose(), jMatX);
+          var innerinv = jStat2.inv(inner);
           return innerinv;
         },
-        jMatYBar: function jMatYBar(jMatX, beta2) {
-          var yBar = jStat15.matrixmult(jMatX, beta2);
-          return new jStat15(yBar);
+        jMatYBar: function jMatYBar(jMatX, beta) {
+          var yBar = jStat2.matrixmult(jMatX, beta);
+          return new jStat2(yBar);
         },
         residuals: function residuals(jMatY, jMatYBar) {
-          return jStat15.matrixsubtract(jMatY, jMatYBar);
+          return jStat2.matrixsubtract(jMatY, jMatYBar);
         },
         ssr: function ssr(jMatYBar, yAverage) {
           var ssr2 = 0;
@@ -3873,19 +3873,16 @@ var require_jstat = __commonJS({
               ans[i][j] = A[i][j] - B[i][j];
             }
           }
-          return jStat15(ans);
+          return jStat2(ans);
         }
       });
-      jStat15.jStat = jStat15;
-      return jStat15;
+      jStat2.jStat = jStat2;
+      return jStat2;
     });
   }
 });
 
-// modist-css:styles.css
-var styles_default = ".mroot { font-family: var(--marimo-font, ui-sans-serif, system-ui, sans-serif); }\n.mroot svg { display: block; border-radius: 10px; }\n.mroot svg text { font-family: var(--marimo-font, ui-sans-serif, system-ui, sans-serif); }\n\n.mgrid { stroke: var(--m-grid, #e5e7eb); stroke-width: 1; opacity: 0.5; }\n.mgridm { stroke: var(--m-grid, #cbd5e1); stroke-width: 1; }\n.maxis { stroke: var(--m-mut, #9ca3af); stroke-width: 1.5; }\n.mtick { fill: var(--m-mut, #6b7280); font-size: 13px; font-variant-numeric: tabular-nums; }\n\n.mhitline { fill: transparent; cursor: ew-resize; }\n.mhitline:hover { fill: var(--m-mut, #d1d5db); opacity: 0.18; }\n.mhandle { pointer-events: none; }\n\n.mpan { fill: transparent; cursor: ew-resize; }\n.mpan:hover { fill: var(--m-mut, #d1d5db); opacity: 0.25; }\n.mpantip { fill: var(--m-mut, #9ca3af); font-size: 12px; font-weight: 600; pointer-events: none; }\n\n.mzoombtn { fill: var(--m-card, #eef2f7); stroke: var(--m-border, #cbd5e1); stroke-width: 1; }\n.mzoombtn:hover { fill: var(--m-acc, #bae6fd); }\n.mzoomtxt { fill: var(--m-mut, #475569); font-size: 16px; font-weight: 800; pointer-events: none; }\n\n.mresetbtn { fill: var(--m-card, #eef2f7); stroke: var(--m-border, #cbd5e1); stroke-width: 1; }\n.mresetbtn:hover { fill: var(--m-acc, #fecaca); }\n.mresetxt { fill: var(--m-mut, #475569); font-size: 16px; font-weight: 800; pointer-events: none; }\n\n.mfitbtn { fill: var(--m-card, #eef2f7); stroke: var(--m-border, #cbd5e1); stroke-width: 1; }\n.mfitbtn:hover { fill: var(--m-acc, #bae6fd); }\n.mfitxt { fill: var(--m-mut, #475569); font-size: 16px; font-weight: 800; pointer-events: none; }\n\n.mline { fill: none; stroke: var(--m-acc, #0891b2); stroke-width: 3.5; stroke-linejoin: round; stroke-linecap: round; }\n.marea { stroke: none; }\n\n.mmu { stroke: var(--m-mu, #0ea5e9); stroke-width: 2; stroke-dasharray: 5 4; opacity: 0.9; }\n.mstd { stroke: var(--m-std, #f97316); stroke-width: 2; stroke-dasharray: 3 3; opacity: 0.9; }\n\n.mlabeltxt { font-size: 14px; font-weight: 700; fill: #fff; }\n.mchipgroup { transition: opacity 0.15s ease; }\n.mchip-dim { opacity: 0.25; }\n.mchip { stroke: rgba(0,0,0,0.15); stroke-width: 1; }\n\n.mstem { stroke: var(--m-mut, #9ca3af); stroke-width: 1.5; stroke-dasharray: 2 2; }\n.mdot { fill: var(--m-acc, #0891b2); stroke: #fff; stroke-width: 2.5; }\n.msq { fill: var(--m-std, #f97316); stroke: #fff; stroke-width: 2.5; }\n.msqgrip { stroke: #fff; stroke-width: 2; }\n.mhandle:hover .mdot, .mhandle:hover .msq { filter: brightness(1.15); }\n\n/* vertical dial handle (non-location params, e.g. tails / nu) */\n.mdialtrack { stroke: var(--m-mut, #9ca3af); stroke-width: 2; opacity: 0.5; }\n.mdialref { stroke: var(--m-nu, #8b5cf6); stroke-width: 1.5; stroke-dasharray: 2 4; opacity: 0.35; }\n.mdialknob { fill: var(--m-nu, #8b5cf6); stroke: #fff; stroke-width: 2.5; }\n.mdialgrip { stroke: #fff; stroke-width: 2; }\n.mhandle:hover .mdialknob { filter: brightness(1.15); }\n.mhity { fill: transparent; cursor: ns-resize; }\n.mhity:hover { fill: var(--m-mut, #d1d5db); opacity: 0.18; }\n\n.mtip { margin-top: 8px; color: var(--m-mut, #6b7280); font-size: 12px; text-align: center; }\n\n@media (prefers-color-scheme: dark) {\n  .mgrid { stroke: var(--m-grid, #374151); opacity: 0.5; }\n  .mgridm { stroke: var(--m-grid, #4b5563); }\n  .maxis { stroke: var(--m-mut, #6b7280); }\n  .mtick { fill: var(--m-mut, #9ca3af); }\n  .mline { stroke: var(--m-acc, #22d3ee); }\n  .mmu { stroke: var(--m-mu, #38bdf8); }\n  .mstd { stroke: var(--m-std, #fb923c); }\n  .mdot { stroke: #0b1220; }\n  .msq { stroke: #0b1220; }\n  .msqgrip { stroke: #0b1220; }\n  .mdialknob { stroke: #0b1220; }\n  .mdialgrip { stroke: #0b1220; }\n  .mdialtrack { stroke: var(--m-mut, #6b7280); }\n  .mtip { color: var(--m-mut, #9ca3af); }\n  .mpan:hover { fill: var(--m-mut, #374151); }\n  .mhitline:hover { fill: var(--m-mut, #374151); }\n  .mhity:hover { fill: var(--m-mut, #374151); }\n  .mpantip { fill: var(--m-mut, #6b7280); }\n  .mzoombtn { fill: var(--m-card, #1f2937); stroke: var(--m-border, #374151); }\n  .mzoombtn:hover { fill: var(--m-acc, #164e63); }\n  .mzoomtxt { fill: var(--m-mut, #cbd5e1); }\n  .mresetbtn { fill: var(--m-card, #1f2937); stroke: var(--m-border, #374151); }\n  .mresetbtn:hover { fill: var(--m-acc, #7f1d1d); }\n  .mresetxt { fill: var(--m-mut, #cbd5e1); }\n  .mfitbtn { fill: var(--m-card, #1f2937); stroke: var(--m-border, #374151); }\n  .mfitbtn:hover { fill: var(--m-acc, #164e63); }\n  .mfitxt { fill: var(--m-mut, #cbd5e1); }\n}\n";
-
-// js/normal.js
+// js/laplace.js
 var import_jstat = __toESM(require_jstat(), 1);
 
 // js/base.js
@@ -3968,7 +3965,7 @@ function fmt(x, dp) {
     maximumFractionDigits: dp
   });
 }
-function createWidget(F16, opts) {
+function createWidget(F2, opts) {
   const {
     pins = "none",
     // "none" | "left" | "both"
@@ -4008,7 +4005,7 @@ function createWidget(F16, opts) {
       tip.className = "mtip";
       root.appendChild(tip);
       el.appendChild(root);
-      const traitNames = Object.keys(F16.defaults);
+      const traitNames = Object.keys(F2.defaults);
       const getParams = () => {
         const p = {};
         for (const k of traitNames) p[k] = model.get(k);
@@ -4022,7 +4019,7 @@ function createWidget(F16, opts) {
       };
       let view = null;
       function support(p) {
-        const s = F16.support(p);
+        const s = F2.support(p);
         return [s[0] === null ? -Infinity : s[0], s[1] === null ? Infinity : s[1]];
       }
       function clampDomain(lo, hi) {
@@ -4038,11 +4035,11 @@ function createWidget(F16, opts) {
         view = c;
       }
       function ensureFit(p) {
-        setDomain(F16.bounds(p)[0], F16.bounds(p)[1]);
+        setDomain(F2.bounds(p)[0], F2.bounds(p)[1]);
       }
       function fitTargetAfterDrag(p) {
         const cur = currentDomain();
-        const b = F16.bounds(p);
+        const b = F2.bounds(p);
         if (b[0] < cur[0] || b[1] > cur[1]) {
           return [Math.min(cur[0], b[0]), Math.max(cur[1], b[1])];
         }
@@ -4080,7 +4077,7 @@ function createWidget(F16, opts) {
         for (let i = 0; i <= n; i++) {
           const x = d[0] + i / n * (d[1] - d[0]);
           xs.push(x);
-          ys.push(F16.pdf(p, x));
+          ys.push(F2.pdf(p, x));
         }
         let peak = 0;
         for (let i = 1; i < n; i++) peak = Math.max(peak, ys[i]);
@@ -4164,7 +4161,7 @@ function createWidget(F16, opts) {
         const moved = Math.hypot(e.clientX - downAt.px, e.clientY - downAt.py);
         downAt = null;
         if (moved > 4) return;
-        const center = F16.handles.find((h) => h.kind === "center");
+        const center = F2.handles.find((h) => h.kind === "center");
         if (!center) return;
         const rect = svg.getBoundingClientRect();
         const px = (e.clientX - rect.left) / rect.width * W;
@@ -4258,8 +4255,8 @@ function createWidget(F16, opts) {
         const panTip = elNS("text", svg, { class: "mpantip", x: M_L + 5, y: base - 9 });
         panTip.textContent = "\u2194 drag axis to pan";
         const { xs, ys, peak } = mesh(p, dd);
-        const [il, ih] = F16.integ(p);
-        const norm = integrate(il, ih, (x) => F16.pdf(p, x));
+        const [il, ih] = F2.integ(p);
+        const norm = integrate(il, ih, (x) => F2.pdf(p, x));
         const pts = xs.map((x, i) => [xt(x, dd), yt(clamp(ys[i], 0, peak), peak)]);
         const area = elNS("path", svg, { class: "marea" });
         area.setAttribute("fill", `url(#${gradId})`);
@@ -4279,14 +4276,14 @@ function createWidget(F16, opts) {
         };
         const hitLayer = elNS("g", svg, { class: "mhitlayer" });
         const isY = (i) => {
-          const a = F16.handles[i].axes;
+          const a = F2.handles[i].axes;
           return a && a.length === 1 && a[0] === "y";
         };
-        const hxOf = F16.handles.map(
+        const hxOf = F2.handles.map(
           (h, i) => isY(i) ? null : clamp(xt(h.at(p), dd), M_L, W - M_R)
         );
-        const zones = new Array(F16.handles.length);
-        const idx = [...F16.handles.keys()].filter((i) => hxOf[i] != null).sort((a, b) => hxOf[a] - hxOf[b] || a - b);
+        const zones = new Array(F2.handles.length);
+        const idx = [...F2.handles.keys()].filter((i) => hxOf[i] != null).sort((a, b) => hxOf[a] - hxOf[b] || a - b);
         let zi = 0;
         while (zi < idx.length) {
           let zj = zi + 1;
@@ -4308,9 +4305,9 @@ function createWidget(F16, opts) {
           zi = zj;
         }
         const chipW = [];
-        const overlap = new Array(F16.handles.length).fill(false);
-        for (let i = 0; i < F16.handles.length; i++) {
-          const h = F16.handles[i];
+        const overlap = new Array(F2.handles.length).fill(false);
+        for (let i = 0; i < F2.handles.length; i++) {
+          const h = F2.handles[i];
           if (isY(i)) {
             const yf = clamp(h.yOf ? h.yOf(p) : 0.5, 0, 1);
             const yPx = DIAL_TOP + yf * (DIAL_BOT - DIAL_TOP);
@@ -4342,7 +4339,7 @@ function createWidget(F16, opts) {
             continue;
           }
           const hx = hxOf[i];
-          const hy = yt(clamp(F16.pdf(p, h.at(p)), 0, peak), peak);
+          const hy = yt(clamp(F2.pdf(p, h.at(p)), 0, peak), peak);
           const g = elNS("g", svg, { class: `mhandle ${h.icon}` });
           markerEls[i] = g;
           if (h.icon === "dot") {
@@ -4376,8 +4373,8 @@ function createWidget(F16, opts) {
           });
           attachDrag(hr, h);
         }
-        for (let i = 0; i < F16.handles.length; i++) {
-          for (let j = i + 1; j < F16.handles.length; j++) {
+        for (let i = 0; i < F2.handles.length; i++) {
+          for (let j = i + 1; j < F2.handles.length; j++) {
             if (hxOf[i] == null || hxOf[j] == null) continue;
             if (Math.abs(hxOf[i] - hxOf[j]) < chipW[i] + chipW[j]) {
               overlap[i] = overlap[j] = true;
@@ -4385,13 +4382,13 @@ function createWidget(F16, opts) {
           }
         }
         function applyHandleState() {
-          for (let i = 0; i < F16.handles.length; i++) {
-            const h = F16.handles[i];
+          for (let i = 0; i < F2.handles.length; i++) {
+            const h = F2.handles[i];
             const active = drag && drag.handle === h;
             chipEls[i].classList.toggle("mchip-dim", overlap[i] && hoverIdx !== i && !active);
           }
           if (drag) {
-            const di = F16.handles.indexOf(drag.handle);
+            const di = F2.handles.indexOf(drag.handle);
             if (di >= 0) raiseMarker(di);
           } else if (hoverIdx != null && hoverIdx >= 0) {
             raiseMarker(hoverIdx);
@@ -4424,7 +4421,7 @@ function createWidget(F16, opts) {
         zbtn("+", 27, 1 / 1.4);
         const reset = () => {
           const d2 = {};
-          for (const k of traitNames) d2[k] = F16.defaults[k];
+          for (const k of traitNames) d2[k] = F2.defaults[k];
           setParams(d2, "reset");
         };
         const rbtn = elNS("g", svg, { class: "mreset", cursor: "pointer" });
@@ -4436,7 +4433,7 @@ function createWidget(F16, opts) {
         elNS("rect", rbtn, { x: rcx - 12, y: M_T + 4, width: 24, height: 24, rx: 6, class: "mresetbtn" });
         const rt = elNS("text", rbtn, { class: "mresetxt", x: rcx, y: M_T + 16, "text-anchor": "middle", "dominant-baseline": "central" });
         rt.textContent = "\u21BA";
-        const fitView = () => animateView(F16.bounds(getParams()));
+        const fitView = () => animateView(F2.bounds(getParams()));
         const fbtn = elNS("g", svg, { class: "mfit", cursor: "pointer" });
         const fcx = rcx - 30;
         fbtn.addEventListener("click", (e) => {
@@ -4446,7 +4443,7 @@ function createWidget(F16, opts) {
         elNS("rect", fbtn, { x: fcx - 12, y: M_T + 4, width: 24, height: 24, rx: 6, class: "mfitbtn" });
         const ft = elNS("text", fbtn, { class: "mfitxt", x: fcx, y: M_T + 16, "text-anchor": "middle", "dominant-baseline": "central" });
         ft.textContent = "\u26F6";
-        tip.textContent = F16.tip(p, { norm, peak });
+        tip.textContent = F2.tip(p, { norm, peak });
         root.appendChild(tip);
       }
       for (const k of traitNames) model.on(`change:${k}`, () => redraw("param"));
@@ -4460,587 +4457,12 @@ function createWidget(F16, opts) {
   };
 }
 
-// js/normal.js
-var F = {
-  name: "normal",
-  label: "Normal",
-  defaults: { mu: 0, sigma: 1 },
-  support() {
-    return [null, null];
-  },
-  bounds(p) {
-    return [p.mu - 5.2 * p.sigma, p.mu + 5.2 * p.sigma];
-  },
-  integ(p) {
-    return [p.mu - 6 * p.sigma, p.mu + 6 * p.sigma];
-  },
-  pdf(p, x) {
-    return import_jstat.default.normal.pdf(x, p.mu, p.sigma);
-  },
-  handles: [
-    {
-      kind: "center",
-      icon: "dot",
-      color: "#0ea5e9",
-      lineCls: "mmu",
-      at(p) {
-        return p.mu;
-      },
-      chip() {
-        return "mean";
-      },
-      drag(p, x) {
-        return { mu: x };
-      }
-    },
-    {
-      kind: "spread",
-      icon: "sq",
-      color: "#f97316",
-      lineCls: "mstd",
-      at(p) {
-        return p.mu - p.sigma;
-      },
-      chip() {
-        return "\u22121\u03C3";
-      },
-      drag(p, x) {
-        return { sigma: Math.abs(x - p.mu) };
-      }
-    },
-    {
-      kind: "spread",
-      icon: "sq",
-      color: "#f97316",
-      lineCls: "mstd",
-      at(p) {
-        return p.mu + p.sigma;
-      },
-      chip() {
-        return "+1\u03C3";
-      },
-      drag(p, x) {
-        return { sigma: Math.abs(x - p.mu) };
-      }
-    }
-  ],
-  tip(p) {
-    return `${F.label} \u2022 drag mean line to reposition \u2022 drag \u25A0 to reshape \u2022 mu=${fmt(p.mu)} sigma=${fmt(p.sigma)}`;
-  }
-};
-var normal_default = createWidget(F, { pins: "none" });
-
-// js/beta.js
-var import_jstat2 = __toESM(require_jstat(), 1);
-var K_MIN = 0.02;
-var K_MAX = 400;
-var mean = (p) => p.alpha / (p.alpha + p.beta);
-var kappa = (p) => p.alpha + p.beta;
-function solveKappa(q, target, mu) {
-  const f = (k) => import_jstat2.default.beta.inv(q, k * mu, k * (1 - mu)) - target;
-  const dir = Math.sign(f(K_MAX) - f(K_MIN)) || 1;
-  const flow = f(K_MIN) * dir;
-  const fhigh = f(K_MAX) * dir;
-  if (flow > 0) return K_MIN;
-  if (fhigh < 0) return K_MAX;
-  let lo = K_MIN;
-  let hi = K_MAX;
-  for (let i = 0; i < 60; i++) {
-    const m = (lo + hi) / 2;
-    if (f(m) * dir > 0) hi = m;
-    else lo = m;
-  }
-  return (lo + hi) / 2;
-}
-function translateAtKappa(p, x) {
-  const k = kappa(p);
-  const mu = Math.min(0.999, Math.max(1e-3, x));
-  return { alpha: k * mu, beta: k * (1 - mu) };
-}
-function spreadAtKappa(p, q, x) {
-  const mu = mean(p);
-  const k = solveKappa(q, x, mu);
-  return { alpha: k * mu, beta: k * (1 - mu) };
-}
-var F2 = {
-  name: "beta",
-  label: "Beta",
-  defaults: { alpha: 2, beta: 2 },
-  support: () => [0, 1],
-  bounds: () => [0, 1],
-  integ: () => [0, 1],
-  pdf(p, x) {
-    if (x <= 0 || x >= 1) return 0;
-    return import_jstat2.default.beta.pdf(x, p.alpha, p.beta);
-  },
-  handles: [
-    {
-      kind: "center",
-      icon: "dot",
-      color: "#0ea5e9",
-      lineCls: "mmu",
-      at: (p) => mean(p),
-      chip: () => "mean",
-      drag: (p, x) => translateAtKappa(p, x)
-    },
-    {
-      kind: "spread",
-      icon: "sq",
-      color: "#8b5cf6",
-      lineCls: "miqr",
-      at: (p) => import_jstat2.default.beta.inv(0.25, p.alpha, p.beta),
-      chip: () => "q25",
-      drag: (p, x) => spreadAtKappa(p, 0.25, x)
-    },
-    {
-      kind: "spread",
-      icon: "sq",
-      color: "#8b5cf6",
-      lineCls: "miqr",
-      at: (p) => import_jstat2.default.beta.inv(0.75, p.alpha, p.beta),
-      chip: () => "q75",
-      drag: (p, x) => spreadAtKappa(p, 0.75, x)
-    }
-  ],
-  tip(p) {
-    return `${F2.label} (fixed [0,1]) \u2022 drag mean to translate \u2022 drag q25/q75 to concentrate \u2022 alpha=${fmt(p.alpha)} beta=${fmt(p.beta)}`;
-  }
-};
-var beta_default = createWidget(F2, { pins: "both" });
-
-// js/gamma.js
-var import_jstat3 = __toESM(require_jstat(), 1);
-var A_MIN = 0.01;
-var A_MAX = 400;
-var A_RES = 0.965;
-var Q75_PEAK = import_jstat3.default.gamma.inv(0.75, A_RES, 1 / A_RES);
-var Q75_FLOOR = import_jstat3.default.gamma.inv(0.75, A_MAX, 1 / A_MAX);
-var mean2 = (p) => p.alpha / p.beta;
-var scale = (p) => 1 / p.beta;
-function solveQ25(q, target, m) {
-  const f = (a) => import_jstat3.default.gamma.inv(q, a, m / a) - target;
-  const flow = f(A_MIN);
-  const fhigh = f(A_MAX);
-  if (flow > 0) return A_MIN;
-  if (fhigh < 0) return A_MAX;
-  let lo = A_MIN;
-  let hi = A_MAX;
-  for (let i = 0; i < 60; i++) {
-    const mid = (lo + hi) / 2;
-    if (f(mid) > 0) hi = mid;
-    else lo = mid;
-  }
-  return (lo + hi) / 2;
-}
-function bisectQ75(f, lo, hi, dir) {
-  const flow = f(lo) * dir;
-  const fhigh = f(hi) * dir;
-  if (flow > 0) return lo;
-  if (fhigh < 0) return hi;
-  for (let i = 0; i < 60; i++) {
-    const mid = (lo + hi) / 2;
-    if (f(mid) * dir > 0) hi = mid;
-    else lo = mid;
-  }
-  return (lo + hi) / 2;
-}
-function solveQ75(q, target, m, aCur) {
-  const f = (a) => import_jstat3.default.gamma.inv(q, a, m / a) - target;
-  const peak = Q75_PEAK * m;
-  if (target >= peak) return A_RES;
-  const floor = Q75_FLOOR * m;
-  const onFalling = aCur >= A_RES;
-  if (onFalling && target >= floor) {
-    return bisectQ75(f, A_RES, A_MAX, -1);
-  }
-  return bisectQ75(f, A_MIN, A_RES, 1);
-}
-function translateAtShape(p, x, d) {
-  const a = p.alpha;
-  const span = d ? Math.max(d[1] - d[0], 1e-9) : 1;
-  const m = Math.max(x, 0.01 * span);
-  return { alpha: a, beta: a / m };
-}
-function shapeAtFixedMean(p, q, x) {
-  const m = mean2(p);
-  const xc = Math.max(x, 1e-6);
-  const a = q === 0.25 ? solveQ25(q, xc, m) : solveQ75(q, xc, m, p.alpha);
-  return { alpha: a, beta: a / m };
-}
-var F3 = {
-  name: "gamma",
-  label: "Gamma",
-  defaults: { alpha: 2, beta: 2 },
-  support: () => [0, null],
-  // left edge pinned at 0
-  bounds(p) {
-    const m = mean2(p);
-    const sd2 = Math.sqrt(p.alpha) / p.beta;
-    return [0, m + 5.2 * sd2];
-  },
-  integ(p) {
-    const m = mean2(p);
-    const sd2 = Math.sqrt(p.alpha) / p.beta;
-    return [0, m + 9 * sd2];
-  },
-  pdf(p, x) {
-    if (x <= 0) return 0;
-    return import_jstat3.default.gamma.pdf(x, p.alpha, scale(p));
-  },
-  handles: [
-    {
-      kind: "center",
-      icon: "dot",
-      color: "#0ea5e9",
-      lineCls: "mmu",
-      at: (p) => mean2(p),
-      chip: () => "mean",
-      drag: (p, x, y, d) => translateAtShape(p, x, d)
-    },
-    {
-      kind: "spread",
-      icon: "sq",
-      color: "#8b5cf6",
-      lineCls: "miqr",
-      at: (p) => import_jstat3.default.gamma.inv(0.25, p.alpha, scale(p)),
-      chip: () => "q25",
-      drag: (p, x) => shapeAtFixedMean(p, 0.25, x)
-    },
-    {
-      kind: "spread",
-      icon: "sq",
-      color: "#8b5cf6",
-      lineCls: "miqr",
-      at: (p) => import_jstat3.default.gamma.inv(0.75, p.alpha, scale(p)),
-      chip: () => "q75",
-      drag: (p, x) => shapeAtFixedMean(p, 0.75, x)
-    }
-  ],
-  tip(p) {
-    return `${F3.label} (edge at 0) \u2022 drag mean to translate \u2022 drag q25/q75 to reshape around the mean \u2022 alpha=${fmt(p.alpha)} beta=${fmt(p.beta)}`;
-  }
-};
-var gamma_default = createWidget(F3, { pins: "left" });
-
-// js/studentt.js
-var import_jstat4 = __toESM(require_jstat(), 1);
-var NU_MIN = 2.01;
-var NU_MAX = 50;
-var NU_COLOR = "#8b5cf6";
-function t75(nu) {
-  return import_jstat4.default.studentt.inv(0.75, nu);
-}
-var TAIL_FACTOR = 5.2 / 1.96;
-function tBounds(p) {
-  return TAIL_FACTOR * p.sigma * import_jstat4.default.studentt.inv(0.975, p.nu);
-}
-var F4 = {
-  name: "studentt",
-  label: "StudentT",
-  defaults: { mu: 0, sigma: 1, nu: 5 },
-  support() {
-    return [null, null];
-  },
-  bounds(p) {
-    const w = tBounds(p);
-    return [p.mu - w, p.mu + w];
-  },
-  integ(p) {
-    const w = tBounds(p) * 1.15;
-    return [p.mu - w, p.mu + w];
-  },
-  pdf(p, x) {
-    const z = (x - p.mu) / p.sigma;
-    return import_jstat4.default.studentt.pdf(z, p.nu) / p.sigma;
-  },
-  handles: [
-    {
-      kind: "center",
-      icon: "dot",
-      color: "#0ea5e9",
-      lineCls: "mmu",
-      at(p) {
-        return p.mu;
-      },
-      chip() {
-        return "mean";
-      },
-      drag(p, x) {
-        return { mu: x };
-      }
-    },
-    {
-      kind: "spread",
-      icon: "sq",
-      color: "#f97316",
-      lineCls: "mstd",
-      at(p) {
-        return p.mu + p.sigma * t75(p.nu);
-      },
-      chip() {
-        return "q75";
-      },
-      drag(p, x) {
-        const t = t75(p.nu);
-        return { sigma: Math.abs((x - p.mu) / t) };
-      }
-    },
-    {
-      kind: "tails",
-      icon: "dial",
-      color: NU_COLOR,
-      axes: ["y"],
-      // dial position: top (0) = low nu (fatter tails), bottom (1) = high nu
-      yOf(p) {
-        return (p.nu - NU_MIN) / (NU_MAX - NU_MIN);
-      },
-      chip() {
-        return "tails";
-      },
-      // absolute mapping (base.js passes the pointer height across the dial
-      // band, 0 = top): dragging up fattens the tails (lower nu) immediately.
-      drag(p, x, y) {
-        const nu = NU_MIN + y * (NU_MAX - NU_MIN);
-        return { nu: Math.min(NU_MAX, Math.max(NU_MIN, nu)) };
-      }
-    }
-  ],
-  tip(p) {
-    return `${F4.label} \u2022 drag mean \u25CF to shift \u2022 drag \u25A0 left/right to spread \u2022 drag the tails dial up for fatter, down for thinner \u2022 mu=${fmt(p.mu)} sigma=${fmt(p.sigma)} nu=${fmt(p.nu)}`;
-  }
-};
-var studentt_default = createWidget(F4, { pins: "none" });
-
-// js/exponential.js
-var import_jstat5 = __toESM(require_jstat(), 1);
-var LAM_MIN = 1e-6;
-var LAM_MAX = 1e6;
-var F5 = {
-  name: "exponential",
-  label: "Exponential",
-  defaults: { lam: 1 },
-  support() {
-    return [0, null];
-  },
-  bounds(p) {
-    const m = 1 / p.lam;
-    return [0, m + 5.2 * m];
-  },
-  integ(p) {
-    const m = 1 / p.lam;
-    return [0, m + 9 * m];
-  },
-  pdf(p, x) {
-    if (x <= 0) return 0;
-    return import_jstat5.default.exponential.pdf(x, p.lam);
-  },
-  handles: [
-    {
-      kind: "center",
-      icon: "dot",
-      color: "#0ea5e9",
-      lineCls: "mmu",
-      at(p) {
-        return 1 / p.lam;
-      },
-      chip() {
-        return "mean";
-      },
-      drag(p, x, y, d) {
-        const span = (d ? d[1] - d[0] : 1) || 1;
-        const xc = Math.max(x, 0.01 * span);
-        return { lam: Math.min(LAM_MAX, Math.max(LAM_MIN, 1 / xc)) };
-      }
-    }
-  ],
-  tip(p) {
-    return `${F5.label} (edge at 0) \u2022 drag the mean line to change the rate \u2022 lam=${fmt(p.lam)}`;
-  }
-};
-var exponential_default = createWidget(F5, { pins: "left" });
-
-// js/halfnormal.js
-var import_jstat6 = __toESM(require_jstat(), 1);
-var SIG_MIN = 1e-6;
-var SIG_MAX = 1e6;
-var F6 = {
-  name: "halfnormal",
-  label: "HalfNormal",
-  defaults: { sigma: 1 },
-  support() {
-    return [0, null];
-  },
-  bounds(p) {
-    return [0, 5.2 * p.sigma];
-  },
-  integ(p) {
-    return [0, 6.5 * p.sigma];
-  },
-  pdf(p, x) {
-    if (x <= 0) return 0;
-    return 2 * import_jstat6.default.normal.pdf(x, 0, p.sigma);
-  },
-  handles: [
-    {
-      kind: "spread",
-      icon: "sq",
-      color: "#f97316",
-      lineCls: "mstd",
-      at(p) {
-        return p.sigma;
-      },
-      chip() {
-        return "1\u03C3";
-      },
-      drag(p, x) {
-        return { sigma: Math.min(SIG_MAX, Math.max(SIG_MIN, Math.abs(x))) };
-      }
-    }
-  ],
-  tip(p) {
-    return `${F6.label} (edge at 0) \u2022 drag the 1\u03C3 square to reshape \u2022 sigma=${fmt(p.sigma)}`;
-  }
-};
-var halfnormal_default = createWidget(F6, { pins: "left" });
-
-// js/lognormal.js
-var import_jstat7 = __toESM(require_jstat(), 1);
-var Z75 = 0.6744897501960817;
-var MU_MIN = -50;
-var MU_MAX = 50;
-var SIG_MIN2 = 0.02;
-var SIG_MAX2 = 5;
-var q75 = (p) => Math.exp(p.mu + Z75 * p.sigma);
-var VIS_EPS = 1e-3;
-var Z_VIS = Math.sqrt(-2 * Math.log(VIS_EPS));
-var HANDLE_MARGIN = 1.4;
-var xmax = (p) => Math.max(Math.exp(p.mu + (Z_VIS - p.sigma) * p.sigma), HANDLE_MARGIN * q75(p));
-var F7 = {
-  name: "lognormal",
-  label: "LogNormal",
-  defaults: { mu: 0, sigma: 1 },
-  support() {
-    return [0, null];
-  },
-  bounds(p) {
-    return [0, xmax(p)];
-  },
-  integ(p) {
-    return [0, 1.3 * xmax(p)];
-  },
-  pdf(p, x) {
-    if (x <= 0) return 0;
-    return import_jstat7.default.lognormal.pdf(x, p.mu, p.sigma);
-  },
-  handles: [
-    {
-      kind: "center",
-      icon: "dot",
-      color: "#0ea5e9",
-      lineCls: "mmu",
-      at(p) {
-        return Math.exp(p.mu);
-      },
-      chip() {
-        return "median";
-      },
-      drag(p, x, y, d) {
-        const span = (d ? d[1] - d[0] : 1) || 1;
-        const xc = Math.max(x, 0.01 * span);
-        return { mu: Math.min(MU_MAX, Math.max(MU_MIN, Math.log(xc))) };
-      }
-    },
-    {
-      kind: "spread",
-      icon: "sq",
-      color: "#f97316",
-      lineCls: "mstd",
-      at(p) {
-        return q75(p);
-      },
-      chip() {
-        return "q75";
-      },
-      drag(p, x, y, d) {
-        const span = (d ? d[1] - d[0] : 1) || 1;
-        const xc = Math.max(x, 0.01 * span);
-        const sigma = (Math.log(xc) - p.mu) / Z75;
-        return { sigma: Math.min(SIG_MAX2, Math.max(SIG_MIN2, sigma)) };
-      }
-    }
-  ],
-  tip(p) {
-    return `${F7.label} (edge at 0) \u2022 drag median to shift \u2022 drag q75 to reshape \u2022 mu=${fmt(p.mu)} sigma=${fmt(p.sigma)}`;
-  }
-};
-var lognormal_default = createWidget(F7, { pins: "left" });
-
-// js/cauchy.js
-var import_jstat8 = __toESM(require_jstat(), 1);
-var B_MIN = 1e-6;
-var B_MAX = 1e6;
-var F8 = {
-  name: "cauchy",
-  label: "Cauchy",
-  defaults: { alpha: 0, beta: 1 },
-  support() {
-    return [null, null];
-  },
-  bounds(p) {
-    return [p.alpha - 5.2 * p.beta, p.alpha + 5.2 * p.beta];
-  },
-  integ(p) {
-    return [p.alpha - 8 * p.beta, p.alpha + 8 * p.beta];
-  },
-  pdf(p, x) {
-    return import_jstat8.default.cauchy.pdf(x, p.alpha, p.beta);
-  },
-  handles: [
-    {
-      kind: "center",
-      icon: "dot",
-      color: "#0ea5e9",
-      lineCls: "mmu",
-      at(p) {
-        return p.alpha;
-      },
-      chip() {
-        return "median";
-      },
-      drag(p, x) {
-        return { alpha: x };
-      }
-    },
-    {
-      kind: "spread",
-      icon: "sq",
-      color: "#f97316",
-      lineCls: "mstd",
-      at(p) {
-        return p.alpha + p.beta;
-      },
-      chip() {
-        return "q75";
-      },
-      drag(p, x) {
-        const beta2 = Math.max(B_MIN, Math.min(B_MAX, Math.abs(x - p.alpha)));
-        return { beta: beta2 };
-      }
-    }
-  ],
-  tip(p) {
-    return `${F8.label} \u2022 drag median to shift \u2022 drag q75 to reshape \u2022 alpha=${fmt(p.alpha)} beta=${fmt(p.beta)}`;
-  }
-};
-var cauchy_default = createWidget(F8, { pins: "none" });
-
 // js/laplace.js
-var import_jstat9 = __toESM(require_jstat(), 1);
 var LN2 = Math.LN2;
 var SD_FACTOR = Math.SQRT2;
-var B_MIN2 = 1e-6;
-var B_MAX2 = 1e6;
-var F9 = {
+var B_MIN = 1e-6;
+var B_MAX = 1e6;
+var F = {
   name: "laplace",
   label: "Laplace",
   defaults: { mu: 0, b: 1 },
@@ -5056,7 +4478,7 @@ var F9 = {
     return [p.mu - w, p.mu + w];
   },
   pdf(p, x) {
-    return import_jstat9.default.laplace.pdf(x, p.mu, p.b);
+    return import_jstat.default.laplace.pdf(x, p.mu, p.b);
   },
   handles: [
     {
@@ -5086,622 +4508,16 @@ var F9 = {
         return "q75";
       },
       drag(p, x) {
-        const b = Math.max(B_MIN2, Math.min(B_MAX2, Math.abs(x - p.mu) / LN2));
+        const b = Math.max(B_MIN, Math.min(B_MAX, Math.abs(x - p.mu) / LN2));
         return { b };
       }
     }
   ],
   tip(p) {
-    return `${F9.label} \u2022 drag mean to shift \u2022 drag q75 to reshape \u2022 mu=${fmt(p.mu)} b=${fmt(p.b)}`;
+    return `${F.label} \u2022 drag mean to shift \u2022 drag q75 to reshape \u2022 mu=${fmt(p.mu)} b=${fmt(p.b)}`;
   }
 };
-var laplace_default = createWidget(F9, { pins: "none" });
-
-// js/logistic.js
-var LN3 = Math.log(3);
-var SD_FACTOR2 = Math.PI / Math.sqrt(3);
-var S_MIN = 1e-6;
-var S_MAX = 1e6;
-var F10 = {
-  name: "logistic",
-  label: "Logistic",
-  defaults: { mu: 0, s: 1 },
-  support() {
-    return [null, null];
-  },
-  bounds(p) {
-    const w = 5.2 * SD_FACTOR2 * p.s;
-    return [p.mu - w, p.mu + w];
-  },
-  integ(p) {
-    const w = 7.5 * SD_FACTOR2 * p.s;
-    return [p.mu - w, p.mu + w];
-  },
-  pdf(p, x) {
-    const z = (x - p.mu) / p.s;
-    const e = Math.exp(-z);
-    return e / (p.s * (1 + e) ** 2);
-  },
-  handles: [
-    {
-      kind: "center",
-      icon: "dot",
-      color: "#0ea5e9",
-      lineCls: "mmu",
-      at(p) {
-        return p.mu;
-      },
-      chip() {
-        return "mean";
-      },
-      drag(p, x) {
-        return { mu: x };
-      }
-    },
-    {
-      kind: "spread",
-      icon: "sq",
-      color: "#f97316",
-      lineCls: "mstd",
-      at(p) {
-        return p.mu + LN3 * p.s;
-      },
-      chip() {
-        return "q75";
-      },
-      drag(p, x) {
-        const s = Math.max(S_MIN, Math.min(S_MAX, Math.abs(x - p.mu) / LN3));
-        return { s };
-      }
-    }
-  ],
-  tip(p) {
-    return `${F10.label} \u2022 drag mean to shift \u2022 drag q75 to reshape \u2022 mu=${fmt(p.mu)} s=${fmt(p.s)}`;
-  }
-};
-var logistic_default = createWidget(F10, { pins: "none" });
-
-// js/weibull.js
-var import_jstat10 = __toESM(require_jstat(), 1);
-var A_MIN2 = 0.4;
-var A_MAX2 = 6;
-var B_MIN3 = 1e-6;
-var B_MAX3 = 1e6;
-var LN22 = Math.LN2;
-var mean3 = (p) => p.beta * import_jstat10.default.gammafn(1 + 1 / p.alpha);
-var sd = (p) => {
-  const g1 = import_jstat10.default.gammafn(1 + 1 / p.alpha);
-  const g2 = import_jstat10.default.gammafn(1 + 2 / p.alpha);
-  return p.beta * Math.sqrt(g2 - g1 * g1);
-};
-var median = (p) => p.beta * Math.pow(LN22, 1 / p.alpha);
-var F11 = {
-  name: "weibull",
-  label: "Weibull",
-  defaults: { alpha: 2, beta: 1 },
-  support() {
-    return [0, null];
-  },
-  bounds(p) {
-    return [0, mean3(p) + 5.2 * sd(p)];
-  },
-  integ(p) {
-    return [0, mean3(p) + 8 * sd(p)];
-  },
-  pdf(p, x) {
-    if (x <= 0) return 0;
-    return import_jstat10.default.weibull.pdf(x, p.beta, p.alpha);
-  },
-  handles: [
-    {
-      kind: "center",
-      icon: "dot",
-      color: "#0ea5e9",
-      lineCls: "mmu",
-      at(p) {
-        return median(p);
-      },
-      chip() {
-        return "median";
-      },
-      drag(p, x, y, d) {
-        const span = (d ? d[1] - d[0] : 1) || 1;
-        const xc = Math.max(x, 0.01 * span);
-        const beta2 = xc / Math.pow(LN22, 1 / p.alpha);
-        return { beta: Math.min(B_MAX3, Math.max(B_MIN3, beta2)) };
-      }
-    },
-    {
-      kind: "tails",
-      icon: "dial",
-      color: "#8b5cf6",
-      axes: ["y"],
-      // dial position: top (0) = fat tails (small alpha), bottom (1) = tight
-      yOf(p) {
-        return (p.alpha - A_MIN2) / (A_MAX2 - A_MIN2);
-      },
-      chip() {
-        return "shape";
-      },
-      drag(p, x, y) {
-        return { alpha: A_MIN2 + y * (A_MAX2 - A_MIN2) };
-      }
-    }
-  ],
-  tip(p) {
-    return `${F11.label} (edge at 0) \u2022 drag median to translate \u2022 drag the shape dial up for fatter tails, down for thinner \u2022 alpha=${fmt(p.alpha)} beta=${fmt(p.beta)}`;
-  }
-};
-var weibull_default = createWidget(F11, { pins: "left" });
-
-// js/halfstudentt.js
-var import_jstat11 = __toESM(require_jstat(), 1);
-var NU_MIN2 = 2.01;
-var NU_MAX2 = 50;
-var SIG_MIN3 = 1e-6;
-var SIG_MAX3 = 1e6;
-function t752(nu) {
-  return import_jstat11.default.studentt.inv(0.75, nu);
-}
-var TAIL_FACTOR2 = 5.2 / 1.96;
-function tBounds2(p) {
-  return TAIL_FACTOR2 * p.sigma * import_jstat11.default.studentt.inv(0.975, p.nu);
-}
-var F12 = {
-  name: "halfstudentt",
-  label: "HalfStudentT",
-  defaults: { nu: 5, sigma: 1 },
-  support() {
-    return [0, null];
-  },
-  bounds(p) {
-    return [0, tBounds2(p)];
-  },
-  integ(p) {
-    return [0, 1.15 * tBounds2(p)];
-  },
-  pdf(p, x) {
-    if (x <= 0) return 0;
-    return 2 * import_jstat11.default.studentt.pdf(x / p.sigma, p.nu) / p.sigma;
-  },
-  handles: [
-    {
-      kind: "center",
-      icon: "dot",
-      color: "#0ea5e9",
-      lineCls: "mmu",
-      at(p) {
-        return p.sigma * t752(p.nu);
-      },
-      chip() {
-        return "median";
-      },
-      drag(p, x, y, d) {
-        const span = (d ? d[1] - d[0] : 1) || 1;
-        const xc = Math.max(x, 0.01 * span);
-        const sigma = xc / t752(p.nu);
-        return { sigma: Math.min(SIG_MAX3, Math.max(SIG_MIN3, sigma)) };
-      }
-    },
-    {
-      kind: "tails",
-      icon: "dial",
-      color: "#8b5cf6",
-      axes: ["y"],
-      // dial position: top (0) = fat tails (low nu), bottom (1) = near-Normal
-      yOf(p) {
-        return (p.nu - NU_MIN2) / (NU_MAX2 - NU_MIN2);
-      },
-      chip() {
-        return "tails";
-      },
-      drag(p, x, y) {
-        return { nu: NU_MIN2 + y * (NU_MAX2 - NU_MIN2) };
-      }
-    }
-  ],
-  tip(p) {
-    return `${F12.label} (edge at 0) \u2022 drag median \u25CF to translate \u2022 drag the tails dial up for fatter, down for thinner \u2022 nu=${fmt(p.nu)} sigma=${fmt(p.sigma)}`;
-  }
-};
-var halfstudentt_default = createWidget(F12, { pins: "left" });
-
-// js/chisquared.js
-var import_jstat12 = __toESM(require_jstat(), 1);
-var NU_MIN3 = 0.25;
-var NU_MAX3 = 200;
-var F13 = {
-  name: "chisquared",
-  label: "ChiSquared",
-  defaults: { nu: 3 },
-  support() {
-    return [0, null];
-  },
-  bounds(p) {
-    return [0, p.nu + 5.2 * Math.sqrt(2 * p.nu)];
-  },
-  integ(p) {
-    return [0, p.nu + 8 * Math.sqrt(2 * p.nu)];
-  },
-  pdf(p, x) {
-    if (x <= 0) return 0;
-    return import_jstat12.default.chisquare.pdf(x, p.nu);
-  },
-  handles: [
-    {
-      kind: "center",
-      icon: "dot",
-      color: "#0ea5e9",
-      lineCls: "mmu",
-      at(p) {
-        return p.nu;
-      },
-      chip() {
-        return "mean";
-      },
-      drag(p, x, y, d) {
-        const span = (d ? d[1] - d[0] : 1) || 1;
-        const xc = Math.max(x, 0.01 * span);
-        return { nu: Math.min(NU_MAX3, Math.max(NU_MIN3, xc)) };
-      }
-    }
-  ],
-  tip(p) {
-    return `${F13.label} (edge at 0) \u2022 drag the mean line to change the degrees of freedom \u2022 nu=${fmt(p.nu)}`;
-  }
-};
-var chisquared_default = createWidget(F13, { pins: "left" });
-
-// js/inversegamma.js
-var import_jstat13 = __toESM(require_jstat(), 1);
-var A_MIN3 = 1.05;
-var A_MAX3 = 400;
-var A_RES2 = 4.94;
-var Q75_PEAK2 = import_jstat13.default.invgamma.inv(0.75, A_RES2, A_RES2 - 1);
-var Q75_FLOOR2 = import_jstat13.default.invgamma.inv(0.75, A_MAX3, A_MAX3 - 1);
-var mean4 = (p) => p.beta / (p.alpha - 1);
-var scale2 = (p) => p.beta;
-function solveQ252(q, target, m) {
-  const f = (a) => import_jstat13.default.invgamma.inv(q, a, (a - 1) * m) - target;
-  const flow = f(A_MIN3);
-  const fhigh = f(A_MAX3);
-  if (flow > 0) return A_MIN3;
-  if (fhigh < 0) return A_MAX3;
-  let lo = A_MIN3;
-  let hi = A_MAX3;
-  for (let i = 0; i < 60; i++) {
-    const mid = (lo + hi) / 2;
-    if (f(mid) > 0) hi = mid;
-    else lo = mid;
-  }
-  return (lo + hi) / 2;
-}
-function bisectQ752(f, lo, hi, dir) {
-  const flow = f(lo) * dir;
-  const fhigh = f(hi) * dir;
-  if (flow > 0) return lo;
-  if (fhigh < 0) return hi;
-  for (let i = 0; i < 60; i++) {
-    const mid = (lo + hi) / 2;
-    if (f(mid) * dir > 0) hi = mid;
-    else lo = mid;
-  }
-  return (lo + hi) / 2;
-}
-function solveQ752(q, target, m, aCur) {
-  const f = (a) => import_jstat13.default.invgamma.inv(q, a, (a - 1) * m) - target;
-  const peak = Q75_PEAK2 * m;
-  if (target >= peak) return A_RES2;
-  const floor = Q75_FLOOR2 * m;
-  const onFalling = aCur >= A_RES2;
-  if (onFalling && target >= floor) {
-    return bisectQ752(f, A_RES2, A_MAX3, -1);
-  }
-  return bisectQ752(f, A_MIN3, A_RES2, 1);
-}
-function translateAtShape2(p, x, d) {
-  const a = p.alpha;
-  const span = d ? Math.max(d[1] - d[0], 1e-9) : 1;
-  const m = Math.max(x, 0.01 * span);
-  return { alpha: a, beta: m * (a - 1) };
-}
-function shapeAtFixedMean2(p, q, x) {
-  const m = mean4(p);
-  const xc = Math.max(x, 1e-6);
-  const a = q === 0.25 ? solveQ252(q, xc, m) : solveQ752(q, xc, m, p.alpha);
-  return { alpha: a, beta: (a - 1) * m };
-}
-var BOUNDS_Q = 0.99;
-var INTEG_Q = 0.9995;
-var F14 = {
-  name: "inversegamma",
-  label: "InverseGamma",
-  defaults: { alpha: 3, beta: 1 },
-  support: () => [0, null],
-  // left edge pinned at 0
-  // sd is infinite for alpha <= 2, so use a quantile-based right edge.
-  bounds(p) {
-    return [0, 1.02 * import_jstat13.default.invgamma.inv(BOUNDS_Q, p.alpha, p.beta)];
-  },
-  integ(p) {
-    return [0, 1.05 * import_jstat13.default.invgamma.inv(INTEG_Q, p.alpha, p.beta)];
-  },
-  pdf(p, x) {
-    if (x <= 0) return 0;
-    return import_jstat13.default.invgamma.pdf(x, p.alpha, scale2(p));
-  },
-  handles: [
-    {
-      kind: "center",
-      icon: "dot",
-      color: "#0ea5e9",
-      lineCls: "mmu",
-      at: (p) => mean4(p),
-      chip: () => "mean",
-      drag: (p, x, y, d) => translateAtShape2(p, x, d)
-    },
-    {
-      kind: "spread",
-      icon: "sq",
-      color: "#8b5cf6",
-      lineCls: "miqr",
-      at: (p) => import_jstat13.default.invgamma.inv(0.25, p.alpha, scale2(p)),
-      chip: () => "q25",
-      drag: (p, x) => shapeAtFixedMean2(p, 0.25, x)
-    },
-    {
-      kind: "spread",
-      icon: "sq",
-      color: "#8b5cf6",
-      lineCls: "miqr",
-      at: (p) => import_jstat13.default.invgamma.inv(0.75, p.alpha, scale2(p)),
-      chip: () => "q75",
-      drag: (p, x) => shapeAtFixedMean2(p, 0.75, x)
-    }
-  ],
-  tip(p) {
-    return `${F14.label} (edge at 0) \u2022 drag mean to translate \u2022 drag q25/q75 to reshape at fixed mean \u2022 alpha=${fmt(p.alpha)} beta=${fmt(p.beta)}`;
-  }
-};
-var inversegamma_default = createWidget(F14, { pins: "left" });
-
-// js/kumaraswamy.js
-var import_jstat14 = __toESM(require_jstat(), 1);
-var A_MIN4 = 0.02;
-var A_MAX4 = 2e3;
-var B_MIN4 = 0.02;
-var B_MAX4 = 1e6;
-var EDGE = 1e-3;
-var mean5 = (p) => p.b * Math.exp(import_jstat14.default.gammaln(1 + 1 / p.a) + import_jstat14.default.gammaln(p.b) - import_jstat14.default.gammaln(1 + 1 / p.a + p.b));
-function solveAForMean(target, b) {
-  const f = (a) => import_jstat14.default.kumaraswamy.mean(a, b) - target;
-  const flow = f(A_MIN4);
-  const fhigh = f(A_MAX4);
-  if (flow > 0) return A_MIN4;
-  if (fhigh < 0) return A_MAX4;
-  let lo = A_MIN4;
-  let hi = A_MAX4;
-  for (let i = 0; i < 60; i++) {
-    const mid = (lo + hi) / 2;
-    if (f(mid) > 0) hi = mid;
-    else lo = mid;
-  }
-  return (lo + hi) / 2;
-}
-function solveBForQuantile(q, target, a) {
-  const t = Math.min(1 - EDGE, Math.max(EDGE, target));
-  const b = Math.log(1 - q) / Math.log(1 - Math.pow(t, a));
-  return Math.min(B_MAX4, Math.max(B_MIN4, b));
-}
-function translateAtB(p, x) {
-  const b = p.b;
-  const t = Math.min(1 - EDGE, Math.max(EDGE, x));
-  return { a: solveAForMean(t, b), b };
-}
-function reshapeAtA(p, q, x) {
-  const a = p.a;
-  return { a, b: solveBForQuantile(q, x, a) };
-}
-var F15 = {
-  name: "kumaraswamy",
-  label: "Kumaraswamy",
-  defaults: { a: 2, b: 2 },
-  support: () => [0, 1],
-  bounds: () => [0, 1],
-  integ: () => [0, 1],
-  pdf(p, x) {
-    if (x <= 0 || x >= 1) return 0;
-    return import_jstat14.default.kumaraswamy.pdf(x, p.a, p.b);
-  },
-  handles: [
-    {
-      kind: "center",
-      icon: "dot",
-      color: "#0ea5e9",
-      lineCls: "mmu",
-      at: (p) => mean5(p),
-      chip: () => "mean",
-      drag: (p, x) => translateAtB(p, x)
-    },
-    {
-      kind: "spread",
-      icon: "sq",
-      color: "#8b5cf6",
-      lineCls: "miqr",
-      at: (p) => import_jstat14.default.kumaraswamy.inv(0.25, p.a, p.b),
-      chip: () => "q25",
-      drag: (p, x) => reshapeAtA(p, 0.25, x)
-    },
-    {
-      kind: "spread",
-      icon: "sq",
-      color: "#8b5cf6",
-      lineCls: "miqr",
-      at: (p) => import_jstat14.default.kumaraswamy.inv(0.75, p.a, p.b),
-      chip: () => "q75",
-      drag: (p, x) => reshapeAtA(p, 0.75, x)
-    }
-  ],
-  tip(p) {
-    return `${F15.label} (fixed [0,1]) \u2022 drag mean to translate \u2022 drag q25/q75 to reshape \u2022 a=${fmt(p.a)} b=${fmt(p.b)}`;
-  }
-};
-var kumaraswamy_default = createWidget(F15, { pins: "both" });
-
-// js/dist/index.js
-var FAMILIES = {
-  normal: { widget: normal_default, defaults: { mu: 0, sigma: 1 } },
-  beta: { widget: beta_default, defaults: { alpha: 2, beta: 2 } },
-  gamma: { widget: gamma_default, defaults: { alpha: 2, beta: 2 } },
-  studentt: { widget: studentt_default, defaults: { mu: 0, sigma: 1, nu: 5 } },
-  exponential: { widget: exponential_default, defaults: { lam: 1 } },
-  halfnormal: { widget: halfnormal_default, defaults: { sigma: 1 } },
-  lognormal: { widget: lognormal_default, defaults: { mu: 0, sigma: 1 } },
-  cauchy: { widget: cauchy_default, defaults: { alpha: 0, beta: 1 } },
-  laplace: { widget: laplace_default, defaults: { mu: 0, b: 1 } },
-  logistic: { widget: logistic_default, defaults: { mu: 0, s: 1 } },
-  weibull: { widget: weibull_default, defaults: { alpha: 2, beta: 1 } },
-  halfstudentt: { widget: halfstudentt_default, defaults: { nu: 5, sigma: 1 } },
-  chisquared: { widget: chisquared_default, defaults: { nu: 3 } },
-  inversegamma: { widget: inversegamma_default, defaults: { alpha: 3, beta: 1 } },
-  kumaraswamy: { widget: kumaraswamy_default, defaults: { a: 2, b: 2 } }
-};
-var stylesInjected = false;
-function injectStyles() {
-  if (stylesInjected || typeof document === "undefined") return;
-  stylesInjected = true;
-  const style = document.createElement("style");
-  style.setAttribute("data-modist", "");
-  style.textContent = styles_default;
-  (document.head || document.documentElement).appendChild(style);
-}
-function makeModel(initial) {
-  const values = { ...initial };
-  const listeners = /* @__PURE__ */ new Map();
-  return {
-    values,
-    get: (k) => values[k],
-    set: (k, v) => {
-      values[k] = v;
-    },
-    on: (event, fn) => {
-      const bucket = listeners.get(event) || [];
-      bucket.push(fn);
-      listeners.set(event, bucket);
-    },
-    save_changes: () => {
-      const snapshot = { ...values };
-      for (const fns of listeners.values()) for (const fn of fns) fn(snapshot);
-    },
-    _listeners: listeners
-  };
-}
-function instantiate(family, el, params, name) {
-  injectStyles();
-  if (!el || typeof el.appendChild !== "function") {
-    throw new TypeError(
-      `modist.${name}: expected an element to mount into, got ${String(el)}`
-    );
-  }
-  const { widget, defaults } = FAMILIES[family];
-  const model = makeModel({ ...defaults, ...params || {} });
-  widget.render({ model, el });
-  return {
-    el,
-    // live snapshot: a fresh object on each read (consumers can't mutate state)
-    get params() {
-      return { ...model.values };
-    },
-    set(partial) {
-      let changed = false;
-      for (const k of Object.keys(partial || {})) {
-        if (!(k in model.values)) continue;
-        if (partial[k] !== model.values[k]) {
-          model.set(k, partial[k]);
-          changed = true;
-        }
-      }
-      if (changed) model.save_changes();
-      return this;
-    },
-    reset() {
-      return this.set(defaults);
-    },
-    onChange(fn) {
-      const bucket = model._listeners.get("__modist") || [];
-      bucket.push(fn);
-      model._listeners.set("__modist", bucket);
-      return () => {
-        const b = model._listeners.get("__modist");
-        if (!b) return;
-        const i = b.indexOf(fn);
-        if (i >= 0) b.splice(i, 1);
-      };
-    },
-    destroy() {
-      el.replaceChildren();
-    }
-  };
-}
-function normal(el, params) {
-  return instantiate("normal", el, params, "normal");
-}
-function beta(el, params) {
-  return instantiate("beta", el, params, "beta");
-}
-function gamma(el, params) {
-  return instantiate("gamma", el, params, "gamma");
-}
-function studentT(el, params) {
-  return instantiate("studentt", el, params, "studentT");
-}
-function exponential(el, params) {
-  return instantiate("exponential", el, params, "exponential");
-}
-function halfNormal(el, params) {
-  return instantiate("halfnormal", el, params, "halfNormal");
-}
-function logNormal(el, params) {
-  return instantiate("lognormal", el, params, "logNormal");
-}
-function cauchy(el, params) {
-  return instantiate("cauchy", el, params, "cauchy");
-}
-function laplace(el, params) {
-  return instantiate("laplace", el, params, "laplace");
-}
-function logistic(el, params) {
-  return instantiate("logistic", el, params, "logistic");
-}
-function weibull(el, params) {
-  return instantiate("weibull", el, params, "weibull");
-}
-function halfStudentT(el, params) {
-  return instantiate("halfstudentt", el, params, "halfStudentT");
-}
-function chiSquared(el, params) {
-  return instantiate("chisquared", el, params, "chiSquared");
-}
-function inverseGamma(el, params) {
-  return instantiate("inversegamma", el, params, "inverseGamma");
-}
-function kumaraswamy(el, params) {
-  return instantiate("kumaraswamy", el, params, "kumaraswamy");
-}
+var laplace_default = createWidget(F, { pins: "none" });
 export {
-  beta,
-  cauchy,
-  chiSquared,
-  exponential,
-  gamma,
-  halfNormal,
-  halfStudentT,
-  inverseGamma,
-  kumaraswamy,
-  laplace,
-  logNormal,
-  logistic,
-  normal,
-  studentT,
-  weibull
+  laplace_default as default
 };

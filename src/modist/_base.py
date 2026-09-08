@@ -48,8 +48,13 @@ class DistMixin:
         (``loc``/``scale``, ``tau``, ``df``, gamma's ``(mu, sigma)``, ...);
         resolution happens here so the synced traits (and every anywidget
         round-trip) stay canonical. Empty kwargs take a fast path untouched.
+        When every kwarg is already one of the family's canonical traits they
+        pass through as-is: the canonical names are modist's own, and a family's
+        distparams entry can give them a conflicting meaning (e.g. Weibull's
+        ``alpha``/``beta`` are the shape/scale in pymc but ``alpha`` also names
+        the scale in numpy's random convention).
         """
-        if kwargs:
+        if kwargs and not all(k in self._param_names for k in kwargs):
             resolved = resolve_parameters(self._registry_key, **kwargs)
             kwargs = {
                 self._registry_param_map.get(name, name): value

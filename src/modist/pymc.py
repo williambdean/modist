@@ -83,10 +83,20 @@ except ImportError:  # pragma: no cover - xtensor backend absent
 
 from ._base import DistMixin
 from .beta import Beta
+from .cauchy import Cauchy
+from .exponential import Exponential
 from .gamma import Gamma
+from .halfnormal import HalfNormal
+from .halfstudentt import HalfStudentT
+from .inversegamma import InverseGamma
+from .kumaraswamy import Kumaraswamy
+from .laplace import Laplace
+from .lognormal import LogNormal
+from .logistic import Logistic
 from .normal import Normal
 from .studentt import StudentT
 from .ui import _MIN_HEIGHT, _TAB_BAR_PX, Priors
+from .weibull import Weibull
 
 # Map a pymc distribution (op class name, minus the "RV" suffix) onto the
 # modist family whose support and roles best approximate it. Exact families
@@ -96,28 +106,41 @@ _DIST_REGISTRY: dict[str, type[DistMixin]] = {
     "StudentT": StudentT,
     "Beta": Beta,
     "Gamma": Gamma,
-    # positive / heavy-tailed -> Gamma
-    "HalfNormal": Gamma,
+    "Exponential": Exponential,
     # pymc's RV op class names diverge from its distribution class names for a
     # few families, so key both spellings (lookup is by op-derived name):
-    "Lognormal": Gamma,
-    "LogNormal": Gamma,  # op class is LogNormalRV
-    "Exponential": Gamma,
-    "HalfStudentT": Gamma,
+    "Lognormal": LogNormal,
+    "LogNormal": LogNormal,  # op class is LogNormalRV
+    "HalfNormal": HalfNormal,
+    "HalfStudentT": HalfStudentT,
+    "Cauchy": Cauchy,
+    "Laplace": Laplace,
+    "Logistic": Logistic,
+    "WeibullBeta": Weibull,  # pymc's Weibull uses a WeibullBetaRV op
+    # positive / heavy-tailed -> Gamma
     "HalfCauchy": Gamma,
-    "InverseGamma": Gamma,
-    "InvGamma": Gamma,  # op class is InvGammaRV
+    "InverseGamma": InverseGamma,
+    "InvGamma": InverseGamma,  # op class is InvGammaRV
     "ChiSquared": Gamma,
     "Wald": Gamma,
     # symmetric heavy-tailed -> StudentT
-    "Cauchy": StudentT,
-    "Laplace": StudentT,
-    "Logistic": StudentT,
     # bounded -> Beta
     "Uniform": Beta,
-    "Kumaraswamy": Beta,
+    "Kumaraswamy": Kumaraswamy,
     "Triangular": Beta,
 }
+
+# Registry names that route to a modist family *only as a fallback*: their op
+# inputs carry different distribution semantics (Uniform lower/upper, Wald
+# mu/lam, HalfCauchy alpha/beta, Triangular lower/c/upper) and must
+# **never** be zipped onto the target family's params — doing so lands valid
+# values on the wrong params (a Uniform(0,1) seeded Beta alpha=0, crashing
+# draw()). ChiSquared is deliberately absent: pymc implements it as a literal
+# GammaRV, so its op inputs genuinely are Gamma's (shape, scale) and seeding
+# stays faithful.
+_NO_SEED_NAMES: frozenset[str] = frozenset(
+    {"Uniform", "Triangular", "Wald", "HalfCauchy"}
+)
 
 
 def _dist_name(rv: Any) -> str:
@@ -212,16 +235,31 @@ def _op_param_seeds(
     pattern matching. A non-constant (an RV hyperparameter) seeds ``None`` and
     callers fall back to the family default. For a Gamma RV on pymc >= 6 the
     second op input is the *scale* — folded beneath the reciprocal to recover
-    the user-facing rate exactly (see :func:`_fold_beneath_reciprocal`).
+    the user-facing rate exactly (see :func:`_fold_beneath_reciprocal`). An
+    Exponential RV is likewise fed ``scale = Reciprocal(lam)``, and the same
+    descent recovers the user-facing ``lam``.
     """
-    name = md_cls._dist_name
+    name = _dist_name(rv)
     order = md_cls._op_param_order
-    if not order or _dist_name(rv) != name:
+    # Exact family matches only: the RV's op-derived name must map to this
+    # widget class in the registry (so Lognormal's "LogNormal" op reaches the
+    # "Lognormal"-named widget, and WeibullBeta reaches Weibull), and the name
+    # must not be a pure fallback whose op inputs differ from the target
+    # family's params (Uniform/Wald/etc. — see `_NO_SEED_NAMES`).
+    if (
+        not order
+        or _DIST_REGISTRY.get(name) is not md_cls
+        or name in _NO_SEED_NAMES
+    ):
         return {}
     inputs = rv.owner.inputs[-len(order) :]
     values = _fold_inputs(inputs)
     if name == "Gamma" and _gamma_op_param_is_scale():
         i = order.index("beta")
+        values[i] = _fold_beneath_reciprocal(inputs[i])
+    elif name == "Exponential":
+        # pymc feeds the op scale = Reciprocal(lam); recover the rate exactly
+        i = order.index("lam")
         values[i] = _fold_beneath_reciprocal(inputs[i])
     return dict(zip(order, values))
 
@@ -237,8 +275,9 @@ def _default_params(rv: Any, md_cls: type[DistMixin]) -> dict[str, float]:
     own rewriting so broadcasts and Gamma's rate→scale transform resolve to the
     user-facing value. A parameter that isn't a scalar constant (an RV
     hyperparameter, or an array for a dims-valued prior) falls back to the
-    family default. Remapped families (``HalfNormal→Gamma``) keep pure defaults
-    because their parameter semantics don't line up.
+    family default. Families with no exact op-input mapping (``ChiSquared``,
+    which pymc implements as a Gamma) keep pure defaults because their
+    parameter semantics don't line up.
     """
     fallback = {p: md_cls().params[p] for p in md_cls._param_names}
     if not md_cls._op_param_order:
@@ -620,7 +659,7 @@ def prior_spec(
         names: optional subset of root-prior RV names to include (default:
             every root prior).
         mapping: optional ``{dist_name: modist_class}`` overrides on top of the
-            built-in registry (e.g. ``{"HalfNormal": md.Gamma}``).
+            built-in registry (e.g. ``{"ChiSquared": md.Gamma}``).
 
     Returns:
         ``{name: PriorSpec}`` in ``names`` order (or root-prior order).
@@ -972,7 +1011,7 @@ def create_priors(
             internally.  Takes precedence over — and therefore conflicts with —
             ``names`` and ``mapping``.
         mapping: optional ``{dist_name: modist_class}`` overrides on top of the
-            built-in registry (e.g. ``{"HalfNormal": md.Gamma}``).
+            built-in registry (e.g. ``{"ChiSquared": md.Gamma}``).
         outputs: RVs to return from the compiled sampler (names or variables).
             Defaults to every model RV and deterministic (prior-predictive
             style).  Only RVs the chosen outputs depend on are wired into the

@@ -66,8 +66,7 @@ def test_replaced_and_inputs_named_correctly():
         "beta_b_sigma",
         "beta_c_mu",
         "beta_c_sigma",
-        "sigma_alpha",
-        "sigma_beta",
+        "sigma_sigma",  # HalfNormal -> HalfNormal
     }
     assert ui.rv_names == ["intercept_mu", "intercept", "beta", "sigma", "obs"]
 
@@ -79,7 +78,7 @@ def test_value_includes_all_replaced_priors():
     assert set(ui.value["beta"]) == {"a", "b", "c"}
     assert all(set(v) == {"mu", "sigma"} for v in ui.value["beta"].values())
     assert set(ui.value["beta"]["a"]) == {"mu", "sigma"}
-    assert set(ui.value["sigma"]) == {"alpha", "beta"}
+    assert set(ui.value["sigma"]) == {"sigma"}
 
 
 def test_draw_preserves_dims_shape_and_returns_all_rvs():
@@ -215,12 +214,12 @@ def test_draw_and_sample_prior_predictive_share_sample():
 def test_mapping_override_and_unknown_family():
     with pm.Model() as model:
         pm.Cauchy("c", alpha=0, beta=1)
-    # Cauchy -> StudentT by default (mu/sigma/nu)
+    # Cauchy -> Cauchy by default (median alpha, scale beta)
     ui = md.pymc.create_priors(model, names=["c"])
-    assert set(ui.inputs) == {"c_mu", "c_sigma", "c_nu"}
+    assert set(ui.inputs) == {"c_alpha", "c_beta"}
     # override the registry for this family
-    ui2 = md.pymc.create_priors(model, mapping={"Cauchy": md.Beta})
-    assert set(ui2.inputs) == {"c_alpha", "c_beta"}
+    ui2 = md.pymc.create_priors(model, mapping={"Cauchy": md.StudentT})
+    assert set(ui2.inputs) == {"c_mu", "c_sigma", "c_nu"}
 
 
 def test_unknown_family_raises():
@@ -316,15 +315,38 @@ def test_mapping_rescues_extras_distribution():
 def test_lognormal_and_inversegamma_map_out_of_the_box():
     """pymc's RV op class names diverge from its distribution class names for
     Lognormal (LogNormalRV) and InverseGamma (InvGammaRV). The registry is keyed
-    by op-derived names, so both resolve to Gamma without a manual mapping=."""
+    by op-derived names, so Lognormal maps to md.LogNormal and InverseGamma to
+    md.InverseGamma without a manual mapping="""
     with pm.Model() as model:
         pm.Lognormal("l", mu=0, sigma=1)
         pm.InverseGamma("ig", alpha=2, beta=1)
     ui = md.pymc.create_priors(model)
-    assert set(ui.inputs) == {"l_alpha", "l_beta", "ig_alpha", "ig_beta"}
+    assert set(ui.inputs) == {"l_mu", "l_sigma", "ig_alpha", "ig_beta"}
     draws = ui.draw(3)
     assert np.shape(draws["l"]) == (3,)
     assert np.shape(draws["ig"]) == (3,)
+
+
+def test_inversegamma_seeds_exact_family():
+    """InverseGamma is an exact family now, not a Gamma remap: seeded values
+    follow pymc's InvGammaRV op-input order (alpha, beta)."""
+    with pm.Model() as model:
+        pm.InverseGamma("ig", alpha=2, beta=1)
+    ui = md.pymc.create_priors(model)
+    spec = md.pymc.prior_spec(model)["ig"]
+    assert spec.family is md.InverseGamma
+    assert spec.params == [{"alpha": 2, "beta": 1}]
+
+
+def test_kumaraswamy_seeds_exact_family():
+    """Kumaraswamy is an exact family: seeded values follow pymc's
+    KumaraswamyRV op-input order (a, b)."""
+    with pm.Model() as model:
+        pm.Kumaraswamy("kw", a=2, b=3)
+    ui = md.pymc.create_priors(model)
+    spec = md.pymc.prior_spec(model)["kw"]
+    assert spec.family is md.Kumaraswamy
+    assert spec.params == [{"a": 2, "b": 3}]
 
 
 def test_mapping_uses_op_derived_names():
@@ -355,6 +377,7 @@ _REGISTRY_FAMILIES = {
     "Cauchy": dict(alpha=0, beta=1),
     "Laplace": dict(mu=0, b=1),
     "Logistic": dict(mu=0, s=1),
+    "Weibull": dict(alpha=2, beta=1),
     "Uniform": dict(lower=0, upper=1),
     "Kumaraswamy": dict(a=1, b=1),
     "Triangular": dict(lower=0, c=0.5, upper=1),
@@ -395,12 +418,12 @@ def test_dist_name_unwraps_core_op():
     assert _dist_name(wrapped) == "Beta"
 
 
-def test_laplace_maps_to_studentt_by_default():
+def test_laplace_maps_to_laplace_by_default():
     with pm.Model() as model:
         pm.Laplace("l", mu=0, b=1)
-    # Laplace (symmetric, heavy-tailed) -> StudentT (nu/mu/sigma)
+    # Laplace resolves to md.Laplace (mu/b) without a manual mapping=
     ui = md.pymc.create_priors(model, names=["l"])
-    assert set(ui.inputs) == {"l_nu", "l_mu", "l_sigma"}
+    assert set(ui.inputs) == {"l_mu", "l_b"}
 
 
 def test_is_scalar_size_handles_zero_dim_constants():
@@ -441,9 +464,143 @@ def test_constant_seeding_from_model():
     with pm.Model() as model:
         a = pm.Normal("a", mu=5, sigma=7)
         t = pm.StudentT("t", mu=1, sigma=2, nu=5)
+        e = pm.Exponential("e", lam=5)
+        hn = pm.HalfNormal("hn", sigma=2)
+        ln = pm.Lognormal("ln", mu=0.5, sigma=2)
+        c = pm.Cauchy("c", alpha=1, beta=2)
+        lp = pm.Laplace("lp", mu=1, b=2)
+        lo = pm.Logistic("lo", mu=1, s=2)
+        w = pm.Weibull("w", alpha=2, beta=3)
+        ht = pm.HalfStudentT("ht", nu=7, sigma=1.5)
     ui = md.pymc.create_priors(model)
     assert ui["a"].value == {"mu": 5.0, "sigma": 7.0}
     assert ui["t"].value == {"mu": 1.0, "sigma": 2.0, "nu": 5.0}
+    # Exponential's op stores scale = Reciprocal(lam); the seed must recover lam
+    assert ui["e"].value == {"lam": 5.0}
+    assert ui["hn"].value == {"sigma": 2.0}
+    assert ui["ln"].value == {"mu": 0.5, "sigma": 2.0}
+    assert ui["c"].value == {"alpha": 1.0, "beta": 2.0}
+    assert ui["lp"].value == {"mu": 1.0, "b": 2.0}
+    assert ui["lo"].value == {"mu": 1.0, "s": 2.0}
+    assert ui["w"].value == {"alpha": 2.0, "beta": 3.0}
+    assert ui["ht"].value == {"nu": 7.0, "sigma": 1.5}
+
+
+def test_chisquared_stays_gamma_fallback():
+    """pymc implements ChiSquared as a GammaRV, so it is indistinguishable from
+    a Gamma and keeps the Gamma family — whose seeding is still faithful:
+    ChiSquared(nu) is exactly Gamma(shape=nu/2, rate=1/2)."""
+    with pm.Model() as model:
+        pm.ChiSquared("cs", nu=4)
+    ui = md.pymc.create_priors(model)
+    assert ui["cs"].value == {"alpha": 2.0, "beta": 0.5}
+    assert "cs_alpha" in ui.inputs
+    assert "cs_beta" in ui.inputs
+
+
+# Remapped families whose pymc op-inputs do NOT line up with the target modist
+# family's params must seed family defaults, never the original op values
+# (which would land on the wrong param names and can be invalid — e.g. a Beta
+# with alpha=0 or a Gamma with rate=0 from Uniform/Wald, which crash draw()).
+_REMAPPED_FAMILIES = [
+    pytest.param(
+        lambda m: pm.Uniform("u", lower=0, upper=1),
+        md.Beta,
+        {"alpha": 2.0, "beta": 2.0},
+        id="Uniform-Beta",
+    ),
+    pytest.param(
+        lambda m: pm.Triangular("t", lower=0, c=0.5, upper=1),
+        md.Beta,
+        {"alpha": 2.0, "beta": 2.0},
+        id="Triangular-Beta",
+    ),
+    pytest.param(
+        lambda m: pm.Wald("w", mu=1, lam=1),
+        md.Gamma,
+        {"alpha": 2.0, "beta": 2.0},
+        id="Wald-Gamma",
+    ),
+    pytest.param(
+        lambda m: pm.HalfCauchy("hc", beta=1),
+        md.Gamma,
+        {"alpha": 2.0, "beta": 2.0},
+        id="HalfCauchy-Gamma",
+    ),
+]
+
+
+@pytest.mark.parametrize("build,family,defaults", _REMAPPED_FAMILIES)
+def test_remapped_families_seed_defaults(build, family, defaults):
+    """A family remapped onto a modist widget whose op-inputs don't match the
+    target params (Uniform/Triangular -> Beta lower/c/upper, Wald/HalfCauchy ->
+    Gamma mu/lam) must take the family defaults, never the pymc op values
+    (regression: Uniform(mu? no, lower/upper) seeded a Beta with alpha=0 and
+    Wald seeded a Gamma with rate=0, crashing draw())."""
+    with pm.Model() as model:
+        build(model)
+    spec = md.pymc.prior_spec(model)
+    name, rv = next(iter(spec.items()))
+    assert spec[name].family is family
+    assert spec[name].params == [defaults]
+
+
+@pytest.mark.parametrize("build,family,defaults", _REMAPPED_FAMILIES)
+def test_remapped_families_draw_finite_and_rebuild(build, family, defaults):
+    """Remapped priors draw finite samples (with the family-default params the
+    op-input seeding could corrupt) and set_distributions rebuilds them as the
+    widget family."""
+    with pm.Model() as model:
+        build(model)
+    ui = md.pymc.create_priors(model)
+    draws = ui.draw(3)
+    for arr in draws.values():
+        assert np.isfinite(np.asarray(arr)).all()
+    new_model = md.pymc.set_distributions(model, ui.value)
+    name = list(ui.value)[0]
+    assert type(new_model[name].owner.op).__name__ == f"{family._dist_name}RV"
+
+
+def test_beta_seeds_exact_family():
+    """Beta is an exact family: seeded values follow pymc's BetaRV op-input
+    order (alpha, beta) — a regression guard against any future reorder."""
+    with pm.Model() as model:
+        pm.Beta("b", alpha=0.5, beta=2.5)
+    ui = md.pymc.create_priors(model)
+    spec = md.pymc.prior_spec(model)["b"]
+    assert spec.family is md.Beta
+    assert spec.params == [{"alpha": 0.5, "beta": 2.5}]
+    assert ui["b"].value == {"alpha": 0.5, "beta": 2.5}
+    assert np.isfinite(np.asarray(ui.draw(3)["b"])).all()
+
+
+def test_nonconstant_params_fall_back_to_defaults():
+    """A root prior whose param is a shared (non-constant) variable can't be
+    constant-folded — the seed must fall back to the family default instead of
+    reading the un-fordable op input."""
+    import pytensor as pyt
+
+    mu_shared = pyt.shared(5.0)
+    with pm.Model() as model:
+        pm.Normal("n", mu=mu_shared, sigma=1.0)
+    spec = md.pymc.prior_spec(model)["n"]
+    assert spec.family is md.Normal
+    assert spec.params == [{"mu": 0.0, "sigma": 1.0}]
+    ui = md.pymc.create_priors(model)
+    assert ui["n"].value == {"mu": 0.0, "sigma": 1.0}
+
+
+def test_symbolic_size_keeps_single_widget():
+    """A symbolic (non-constant) size can't be resolved to an element count, so
+    the prior keeps a single broadcasting widget — not a per-element split."""
+    import pytensor as pyt
+
+    n_shared = pyt.shared(3)
+    with pm.Model() as model:
+        pm.Normal("n", size=n_shared)
+    ui = md.pymc.create_priors(model)
+    assert set(ui.inputs) == {"n_mu", "n_sigma"}  # one scalar widget
+    assert np.shape(ui.draw()["n"]) == (3,)
 
 
 def test_ui_element_and_update_wiring():
@@ -451,8 +608,8 @@ def test_ui_element_and_update_wiring():
     assert type(ui).__name__ == "ModelPriors"
     # value aggregation works like md.ui
     before = dict(ui.value)
-    ui._update({"sigma": {"alpha": 3.0, "beta": 4.0}})
-    assert ui.value["sigma"] == {"alpha": 3.0, "beta": 4.0}
+    ui._update({"sigma": {"sigma": 3.0}})
+    assert ui.value["sigma"] == {"sigma": 3.0}
     assert set(ui.value) == set(before)
 
 
@@ -540,13 +697,13 @@ def test_set_distributions_returns_new_model():
 
 
 def test_set_distributions_changes_family():
-    """HalfNormal("sigma") should become GammaRV in the new model."""
+    """HalfNormal("sigma") should become HalfNormalRV in the new model."""
     model = _nested_model()
     ui = md.pymc.create_priors(model)
     new_model = md.pymc.set_distributions(model, ui.value)
 
     op_name = type(new_model["sigma"].owner.op).__name__
-    assert op_name == "GammaRV"
+    assert op_name == "HalfNormalRV"
 
 
 def test_set_distributions_hierarchy_preserved():
@@ -590,11 +747,12 @@ def test_set_distributions_observed_model_sampled():
 
     values = {
         "intercept": {"mu": 2.0, "sigma": 0.25},
-        "sigma": {"alpha": 3.0, "beta": 2.0},
+        "sigma": {"sigma": 3.0},
     }
     new_model = md.pymc.set_distributions(model, values)
 
     assert [r.name for r in new_model.free_RVs] == ["intercept", "sigma"]
+    assert type(new_model["sigma"].owner.op).__name__ == "HalfNormalRV"
     assert [r.name for r in new_model.observed_RVs] == ["obs"]
     assert [r.name for r in new_model.deterministics] == ["mu"]
     assert len(new_model.potentials) == 1
@@ -650,9 +808,9 @@ def test_model_priors_set_distributions_method():
 
     assert new_model is not model
     assert {r.name for r in new_model.free_RVs} == {r.name for r in model.free_RVs}
-    # sigma family changed
+    # sigma family stays HalfNormal
     op_name = type(new_model["sigma"].owner.op).__name__
-    assert op_name == "GammaRV"
+    assert op_name == "HalfNormalRV"
 
 
 # ---------------------------------------------------------------------------
@@ -742,19 +900,18 @@ def test_split_without_constants_expands_per_element():
     assert np.shape(draws["beta"]) == (3,)
 
 
-def test_split_remapped_family_expands_per_element_with_defaults():
-    """A remapped 1-D family (HalfNormal -> Gamma) still splits per element,
-    but takes the family default for every element — the RV's original-op
-    params (HalfNormal's sigma) can't seed Gamma's alpha/beta."""
+def test_split_halfnormal_seeds_per_element():
+    """A 1-D HalfNormal family now maps to HalfNormal exactly, so each element
+    seeds from the RV's constant sigma (not the family defaults)."""
     with pm.Model(coords={"covariate": ["a", "b"]}) as model:
         pm.HalfNormal("h", sigma=2.0, dims="covariate")
     ui = md.pymc.create_priors(model)
-    # HalfNormal -> Gamma -> alpha/beta, one widget per element, default seeds
+    # HalfNormal -> HalfNormal -> sigma, one widget per element, seeded from 2.0
     assert ui.value["h"] == {
-        "a": {"alpha": 2.0, "beta": 2.0},
-        "b": {"alpha": 2.0, "beta": 2.0},
+        "a": {"sigma": 2.0},
+        "b": {"sigma": 2.0},
     }
-    assert "h_a_alpha" in ui.inputs
+    assert "h_a_sigma" in ui.inputs
     assert np.shape(ui.draw()["h"]) == (2,)
 
 
@@ -915,11 +1072,11 @@ def test_set_distributions_mixed_nested_flat():
         pm.Normal("obs", mu=mu, sigma=sigma)
     values = {
         "mu": {"a": {"mu": 5.0, "sigma": 1.0}, "b": {"mu": 6.0, "sigma": 1.0}},
-        "sigma": {"alpha": 3.0, "beta": 2.0},
+        "sigma": {"sigma": 3.0},
     }
     new_model = md.pymc.set_distributions(model, values)
     assert np.allclose(np.asarray(new_model["mu"].owner.inputs[2].data), [5.0, 6.0])
-    assert type(new_model["sigma"].owner.op).__name__ == "GammaRV"
+    assert type(new_model["sigma"].owner.op).__name__ == "HalfNormalRV"
 
 
 def test_set_distributions_grouped_wrong_params():
@@ -972,9 +1129,9 @@ def test_prior_spec_reports_families_and_labels():
     ]
 
     sigma = spec["sigma"]
-    assert sigma.family is md.Gamma  # HalfNormal -> Gamma
+    assert sigma.family is md.HalfNormal
     assert not sigma.split
-    assert sigma.params == [{"alpha": 2.0, "beta": 2.0}]
+    assert sigma.params == [{"sigma": 1.0}]
 
 
 def test_prior_spec_names_subset():
@@ -1087,11 +1244,11 @@ def _dims_model():
 
 
 def test_dims_scalar_prior_full_flow():
-    """A scalar pymc.dims prior maps, draws, and rebuilds (HalfNormal->Gamma)."""
+    """A scalar pymc.dims prior maps, draws, and rebuilds (HalfNormal->HalfNormal)."""
     pytest.importorskip("pymc.dims")
     model = _dims_model()
     ui = md.pymc.create_priors(model, names=["sigma"])
-    assert set(ui.inputs) == {"sigma_alpha", "sigma_beta"}
+    assert set(ui.inputs) == {"sigma_sigma"}
     draws = ui.draw(3)
     assert np.shape(draws["sigma"]) == (3,)
     new_model = md.pymc.set_distributions(model, ui.value)
