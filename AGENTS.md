@@ -19,7 +19,10 @@ Layout:
   `src/modist/static/*` bundles. Covered by `tests/js/standalone.test.mjs`; the
   showcase is `site/index.html`, which `build.js` rewrites to **inline** the
   bundle (so it runs from `file://` with no server) — rebuild after touching
-  `js/` or `site/`.
+  `js/` or `site/`. The showcase tabs/panes/wiring are **generated** from the
+  `SHOWCASE` list in `build.js`, so a new family needs no `site/` edits
+  (defaults are read from the factory at mount time). Regression-covered by
+  `tests/js/showcase.test.mjs`.
 - `src/modist/` — Python (`_base.py`, `normal.py`, ..., `ui.py`, `pymc.py`, `styles.css`)
 - `tests/` — Python (`tests/test_*.py`) and JS Playwright probes (`tests/js/*.test.mjs`)
 - `demos/` — marimo notebooks
@@ -78,8 +81,8 @@ with `target_commitish is invalid` if it isn't pushed yet.
 ## Adding a family
 
 A new widget family (e.g. `HalfNormal`) is a new `src/modist/<family>.py`
-class plus a `js/<family>.js` `F` object (register it in `js/index.js` /
-`js/dist/index.js`, then `npm run build:js`). Every Python family **must** set:
+class plus a `js/<family>.js` `F` object (register it in `js/dist/index.js`,
+then `npm run build:js`). Every Python family **must** set:
 
 - `_param_names` — canonical synced traits (JS syncs `Object.keys(F.defaults)`)
 - `_dist_name` — pymc spelling
