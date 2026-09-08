@@ -1,11 +1,39 @@
 # `modist`
 
-Interactive distribution widgets for [marimo](https://marimo.io), in the style
-of [`koaning/wigglystuff`](https://github.com/koaning/wigglystuff). Drag the
+Interactive distribution widgets for [marimo](https://marimo.io),
+[Jupyter](https://jupyter.org), and the web, in the style of
+[`koaning/wigglystuff`](https://github.com/koaning/wigglystuff). Drag the
 density curve to shape a distribution, then feed the params straight into a
 distribution constructor with a single splat.
 
 ![modist widget example](https://raw.githubusercontent.com/williambdean/modist/main/docs/widget-example.png)
+
+## Why modist?
+
+Interactive probability distributions you can drag. Shape the density curve,
+read off the parameters, and splat them into your ecosystem — no re-declaring
+the distribution, no unit conversions, no copy-paste:
+
+- **One spelling per family, all spellings accepted** — `md.Normal(mu=…)`,
+  `md.Gamma(alpha=…)`, `md.StudentT(df=…)`: scipy / PyMC / jStat parameter
+  names resolve through the
+  [distparams](https://github.com/williambdean/distparams) registry, and
+  `.params` is always the canonical synced set.
+- **Splat-ready output** — `.value` / `.params` feed `pm.*.dist(**…)` directly;
+  `.scipy` returns a frozen distribution with rate/scale handled for you.
+- **Runs anywhere** — marimo reactivity, plain Jupyter, or a standalone ESM
+  bundle on any web page, no Python needed.
+
+Use them anywhere you'd reach for a distribution — classroom demos, Monte Carlo
+simulations, parameter studies, or priors for a Bayesian model:
+
+```python
+w = md.Normal(mu=0, sigma=10)
+w.scipy.rvs(size=10_000)   # MC draws that follow the drag, live
+```
+
+One use case with more machinery:
+[Priors from a PyMC model](#priors-from-a-pymc-model).
 
 ## Install
 
@@ -74,6 +102,26 @@ Requires marimo (`modist[marimo]`). `import modist` itself stays marimo-free —
 > Requires `modist[marimo,pymc]`. `md.pymc` is imported lazily, so plain
 > `import modist` doesn't pull in pymc.
 
+Prior predictive checks — simulating from the model before fitting it — are a
+standard early step of the Bayesian workflow. There is no canonical check:
+design the plot that makes sense for your domain, with whatever toolset you
+like. modist just removes the friction of getting the draws:
+
+- **No re-declaration** — `create_priors(model)` reads the model object;
+  no wrapper function or re-specified model.
+- **Seeded from your priors** — widgets start at the values already in the
+  graph, not a blank slate.
+- **Whole model at once** — every root prior plus the likelihood in one panel,
+  so you check on the data scale, where domain knowledge lives.
+- **No copy-paste gap** — `set_distributions()` returns the rebuilt `pm.Model`,
+  ready for `pm.sample`: what you verified is what you fit.
+
+Not a replacement for [PreliZ](https://preliz.readthedocs.io), which helps you
+*choose* a distribution — modist skips to the model you already wrote. The
+usage norm: start before touching data, judge the draws against domain
+knowledge (not the dataset), stop when they're plausible — then fit, and let
+posterior predictive checks take over.
+
 The same idea, lifted from a built model. `md.pymc.create_priors(model)`
 finds the model's **root priors** — distributions whose parameters don't depend
 on other distributions — replaces each with a draggable widget, compiles a
@@ -89,7 +137,7 @@ y = x @ [1.0, -0.5, 2.0] + np.random.default_rng(1).normal(size=50)
 with pm.Model(coords={"covariate": ["retention", "content", "price"]}) as model:
     alpha = pm.Normal("alpha", mu=pm.Normal("alpha_mu", sigma=5), sigma=2)
     beta = pm.Normal("beta", dims="covariate")          # one widget per covariate
-    sigma = pm.HalfNormal("sigma")                      # auto-mapped to a Gamma widget
+    sigma = pm.HalfNormal("sigma")                      # auto-mapped to a HalfNormal widget
     pm.Normal("obs", mu=alpha + x @ beta, sigma=sigma, observed=y)
 
 ui = md.pymc.create_priors(model)   # tabs: alpha_mu, sigma, and a per-covariate beta group
@@ -105,6 +153,10 @@ ui.draw(1_000, beta_price_mu=1.5)       # ... with a named per-parameter overrid
 ui.sample_prior_predictive(1_000)       # -> xr.DataTree: prior / prior_predictive groups
 ```
 
+Feed the `DataTree` to `az.plot_ppc(dt, group="prior")` — it plots the draws
+with **no observed-data overlay by default**, so you judge against domain
+knowledge — or into whatever plot your domain calls for.
+
 Use the `set_distributions` method in order to define a new PyMC model.
 
 ```python
@@ -115,17 +167,34 @@ idata = pm.sample(model=new_model)    # ordinary pm.sample, ready for arviz
 
 ## Families
 
-| Widget                       | Params        | Domain            | Drag affordances          |
-| ---------------------------- | ------------- | ----------------- | ------------------------- |
-| [`Normal`](src/modist/normal.py)  | `mu`, `sigma`      | free             | mean line → `mu`, ±1σ squares → `sigma` |
-| [`Beta`](src/modist/beta.py)      | `alpha`, `beta`    | fixed `[0, 1]`    | mean line → translate, q25/q75 squares → concentrate |
-| [`Gamma`](src/modist/gamma.py)    | `alpha`, `beta`    | edge pinned at 0  | mean line → translate, q25/q75 squares → reshape |
-| [`StudentT`](src/modist/studentt.py) | `mu`, `sigma`, `nu` | free             | mean line → `mu`, q75 square → `sigma`, tails dial → `nu` |
+| Widget                       | Params           | Domain            | Drag affordances          |
+| ---------------------------- | ---------------- | ----------------- | ------------------------- |
+| [`Normal`](src/modist/normal.py) | `mu`, `sigma` | free | mean line → `mu`, ±1σ squares → `sigma` |
+| [`Beta`](src/modist/beta.py) | `alpha`, `beta` | fixed `[0, 1]` | mean line → translate, q25/q75 squares → concentrate |
+| [`Gamma`](src/modist/gamma.py) | `alpha`, `beta` | edge pinned at 0 | mean line → translate, q25/q75 squares → reshape |
+| [`StudentT`](src/modist/studentt.py) | `mu`, `sigma`, `nu` | free | mean line → `mu`, q75 square → `sigma`, tails dial → `nu` |
+| [`Exponential`](src/modist/exponential.py) | `lam` | edge pinned at 0 | mean dot → `lam` |
+| [`HalfNormal`](src/modist/halfnormal.py) | `sigma` | edge pinned at 0 | 1σ square → `sigma` |
+| [`LogNormal`](src/modist/lognormal.py) | `mu`, `sigma` | edge pinned at 0 | median line → translate, q75 square → reshape |
+| [`Cauchy`](src/modist/cauchy.py) | `alpha`, `beta` | free | median line → `alpha`, q75 square → `beta` |
+| [`Laplace`](src/modist/laplace.py) | `mu`, `b` | free | mean line → `mu`, q75 square → `b` |
+| [`Logistic`](src/modist/logistic.py) | `mu`, `s` | free | mean line → `mu`, q75 square → `s` |
+| [`Weibull`](src/modist/weibull.py) | `alpha`, `beta` | edge pinned at 0 | median line → `beta`, shape dial → `alpha` |
+| [`HalfStudentT`](src/modist/halfstudentt.py) | `nu`, `sigma` | edge pinned at 0 | median line → `sigma`, tails dial → `nu` |
+| [`ChiSquared`](src/modist/chisquared.py) | `nu` | edge pinned at 0 | mean dot → `nu` |
+| [`InverseGamma`](src/modist/inversegamma.py) | `alpha`, `beta` | edge pinned at 0 | mean line → translate at fixed `alpha`, q25/q75 squares → reshape |
+| [`Kumaraswamy`](src/modist/kumaraswamy.py) | `a`, `b` | fixed `[0, 1]` | mean line → translate, q25/q75 squares → reshape |
 
 `StudentT`'s third parameter is a **tails dial**: drag it up for fatter tails
 (lower `nu`) or down for thinner tails (higher `nu`). Because `nu` has no
 natural on-curve landmark, its drag is a separate 1-D slider rather than a
-point you move on the density curve.
+point you move on the density curve. `HalfStudentT` reuses the same tails dial,
+and `Weibull` has a **shape dial** that sets its `alpha` (drag up for fatter,
+more exponential-like tails).
+
+`InverseGamma`'s `beta` is the **scale** (pymc convention — unlike `Gamma`,
+whose `beta` is the rate). `Kumaraswamy` has no scipy equivalent — its `.scipy`
+raises `NotImplementedError`; use `.pymc`.
 
 `alpha`/`beta` follow the [PyMC](https://www.pymc.io) / statistics convention
 (`Gamma`'s `beta` is the **rate**, not scipy's `scale`). The lazy `.scipy` and
@@ -176,9 +245,10 @@ display(w)          # drag the curve to reshape it
 w.params            # {'mu': ..., 'sigma': ...}
 ```
 
-A full walkthrough notebook — all five families, live scipy stats, and a
-beta-prior combination example — lives at
-[`demos/jupyter_example.ipynb`](demos/jupyter_example.ipynb).
+A full walkthrough notebook — the original Normal / Beta / Gamma / StudentT
+widgets, live scipy stats, and a beta-prior combination example — lives at
+[`demos/jupyter_example.ipynb`](demos/jupyter_example.ipynb). Live demo
+notebooks for the newer families live in [`demos/`](demos/).
 
 From a checkout:
 
@@ -210,9 +280,12 @@ A taste:
 
 Each factory takes `(element, params?)` and returns a handle:
 `w.params` (live snapshot), `w.set({...})`, `w.reset()`, `w.onChange(fn)`
-(returns an unsubscribe), and `w.destroy()`. The four families export as
-`normal`, `beta`, `gamma`, `studentT`; styles are injected once, and the bundle
-uses CSS `var()` fallbacks so it doesn't need your theme.
+(returns an unsubscribe), and `w.destroy()`. Every family exports a factory:
+`normal`, `beta`, `gamma`, `studentT`, `exponential`, `halfNormal`, `logNormal`,
+`cauchy`, `laplace`, `logistic`, `weibull`, `halfStudentT`, `chiSquared`,
+`inverseGamma`, `kumaraswamy`; styles
+are injected once, and the bundle uses CSS `var()` fallbacks so it doesn't need
+your theme.
 
 **Not on npm.** The package is available through Python (PyPI) and as this
 plain ESM file — there's nothing to `npm install`. Import it by URL (below), or
