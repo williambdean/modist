@@ -13,6 +13,9 @@ keywords = [
     "statistics",
     "distribution",
     "visualization",
+    "pymc",
+    "bayesian",
+    "prior-elicitation",
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
