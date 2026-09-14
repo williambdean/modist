@@ -12,6 +12,6 @@
   "devDependencies": {
     "esbuild": "^0.28.2",
     "license-checker": "^25.0.1",
-    "playwright": "^1.62.1"
+    "playwright": "^1.63.0"
   }
 }
