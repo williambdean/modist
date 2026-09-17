@@ -74,6 +74,24 @@ def test_layout_wires_tabs():
         assert slot in ui.text
 
 
+def test_marimo_version_floor_for_tabs(monkeypatch):
+    import modist.ui as mui
+
+    monkeypatch.setattr(mui, "_pkg_version", lambda pkg: "0.23.2")
+    with pytest.raises(ImportError, match="marimo>=0.24"):
+        md.ui.create_tabs(_priors())
+
+
+def test_marimo_old_but_stack_still_works(monkeypatch):
+    # a stack layout doesn't go through `mo.ui.tabs(orientation=...)`, so it
+    # must keep working on the older marimo that lacks the keyword
+    import modist.ui as mui
+
+    monkeypatch.setattr(mui, "_pkg_version", lambda pkg: "0.23.2")
+    ui = md.ui.create_stack(_priors())
+    assert set(ui.value) == {"intercept", "slope", "sigma"}
+
+
 def test_layout_wires_stack():
     ui = md.ui.create_stack(_priors())
     expected = {

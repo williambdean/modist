@@ -1,4 +1,4 @@
-/*! modist v0.7.0 - MIT (c) 2026 Will Dean - https://github.com/williambdean/modist
+/*! modist v0.7.1 - MIT (c) 2026 Will Dean - https://github.com/williambdean/modist
  * Bundled: jstat v1.9.6 (MIT) - Copyright (c) 2013 jStat
  * https://github.com/jstat/jstat - https://opensource.org/licenses/MIT */
 var __create = Object.create;
@@ -4020,11 +4020,8 @@ function createWidget(F16, opts) {
         }
         model.save_changes(why);
       };
+      const initialParams = getParams();
       let view = null;
-      function support(p) {
-        const s = F16.support(p);
-        return [s[0] === null ? -Infinity : s[0], s[1] === null ? Infinity : s[1]];
-      }
       function clampDomain(lo, hi) {
         let a = Math.min(lo, hi);
         let b = Math.max(lo, hi);
@@ -4237,7 +4234,6 @@ function createWidget(F16, opts) {
       }
       function redraw(cause) {
         const p = getParams();
-        const d = currentDomain();
         if (!drag && (cause === "init" || cause === "param")) {
           cancelAnim();
           ensureFit(p);
@@ -4423,9 +4419,7 @@ function createWidget(F16, opts) {
         zbtn("\u2212", 0, 1.4);
         zbtn("+", 27, 1 / 1.4);
         const reset = () => {
-          const d2 = {};
-          for (const k of traitNames) d2[k] = F16.defaults[k];
-          setParams(d2, "reset");
+          setParams({ ...initialParams }, "reset");
         };
         const rbtn = elNS("g", svg, { class: "mreset", cursor: "pointer" });
         const rcx = W - M_R - 54 - 30;

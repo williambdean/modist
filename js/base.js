@@ -171,14 +171,14 @@ export function createWidget(F, opts) {
         }
         model.save_changes(why);
       };
+      // Snapshot the constructor-provided params at mount; the reset button
+      // restores these (e.g. `Normal(sigma=5)` resets to sigma=5, not to the
+      // family default sigma=1).
+      const initialParams = getParams();
 
       // ---- view domain lives in a closure (no x_min/x_max traits) ----
       let view = null; // [lo, hi]
 
-      function support(p) {
-        const s = F.support(p);
-        return [s[0] === null ? -Infinity : s[0], s[1] === null ? Infinity : s[1]];
-      }
       function clampDomain(lo, hi) {
         let a = Math.min(lo, hi);
         let b = Math.max(lo, hi);
@@ -429,7 +429,6 @@ export function createWidget(F, opts) {
 
       function redraw(cause) {
         const p = getParams();
-        const d = currentDomain();
 
         // re-fit on init or on a non-drag param change; a "view" redraw (pan /
         // zoom / wheel) keeps the current domain so the curve may sit off-center
@@ -658,11 +657,10 @@ export function createWidget(F, opts) {
         zbtn("\u2212", 0, 1.4);
         zbtn("+", 27, 1 / 1.4);
 
-        // reset button: restore the family defaults (param redraws re-fit the view)
+        // reset button: restore the widget's initial input params (param
+        // redraws re-fit the view to them)
         const reset = () => {
-          const d = {};
-          for (const k of traitNames) d[k] = F.defaults[k];
-          setParams(d, "reset");
+          setParams({ ...initialParams }, "reset");
         };
         const rbtn = elNS("g", svg, { class: "mreset", cursor: "pointer" });
         const rcx = W - M_R - 54 - 30;

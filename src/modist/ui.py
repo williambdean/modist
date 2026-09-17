@@ -26,6 +26,7 @@ Examples
 from __future__ import annotations
 
 from collections.abc import Callable
+from importlib.metadata import PackageNotFoundError, version as _pkg_version
 from typing import Any, Literal, TypeAlias
 
 import marimo as mo
@@ -34,6 +35,36 @@ from marimo._plugins.ui._impl.batch import _batch_base
 from ._base import DistMixin
 
 PriorsParams: TypeAlias = dict[str, dict[str, float]]
+
+# marimo's `ui.tabs` gained the ``orientation`` keyword in 0.24; before that it
+# crashed with a confusing TypeError deep inside `tabs.__init__`. Panels gate on
+# this floor so the failure is an actionable message instead.
+_MIN_MARIMO = (0, 24)
+
+
+def _marimo_version() -> tuple[int, int] | None:
+    try:
+        parts = _pkg_version("marimo").split(".")[:2]
+        return (int(parts[0]), int(parts[1]))
+    except (PackageNotFoundError, ValueError):
+        return None
+
+
+def _require_tabs_orientation() -> None:
+    """Raise a clear error when the installed marimo can't render tab layouts.
+
+    ``Priors`` panels build ``mo.ui.tabs(...)`` with an ``orientation`` arg, so
+    they need marimo>=0.24 (the version where ``orientation`` was added). Older
+    marimo should be upgraded rather than silently losing the requested layout.
+    """
+    v = _marimo_version()
+    if v is not None and v < _MIN_MARIMO:
+        raise ImportError(
+            "modist's grouped priors panels (md.ui.create_tabs, "
+            "md.pymc.create_priors) use marimo's tab layout, which requires "
+            f"marimo>={_MIN_MARIMO[0]}.{_MIN_MARIMO[1]}. Upgrade with "
+            "`pip install -U marimo`."
+        )
 
 # Widget aspect (width:height) from the bundled ESM; used to size the priors
 # panel so its rendered height matches `height` without distorting the plot.
@@ -167,6 +198,7 @@ class Priors(_batch_base):
         else:
             selected_top, selected_inner = selected, None
         if layout is Ellipsis:
+            _require_tabs_orientation()
             layout = mo.ui.tabs(
                 _cap_height(elements, height),
                 value=selected_top,

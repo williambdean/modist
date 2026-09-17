@@ -1552,7 +1552,7 @@ wheels = [
 
 [[package]]
 name = "modist"
-version = "0.7.0"
+version = "0.7.1"
 source = { editable = "." }
 dependencies = [
     { name = "anywidget" },
@@ -1572,6 +1572,7 @@ marimo = [
     { name = "marimo" },
 ]
 pymc = [
+    { name = "marimo" },
     { name = "pymc" },
     { name = "pymc-extras" },
 ]
@@ -1587,8 +1588,9 @@ requires-dist = [
     { name = "ipykernel", marker = "extra == 'dev'", specifier = ">=7.3.0" },
     { name = "jupyter", marker = "extra == 'dev'", specifier = ">=1.0" },
     { name = "jupytext", marker = "extra == 'dev'", specifier = ">=1.19.5" },
-    { name = "marimo", marker = "extra == 'dev'", specifier = ">=0.9" },
+    { name = "marimo", marker = "extra == 'dev'", specifier = ">=0.24" },
     { name = "marimo", marker = "extra == 'marimo'", specifier = ">=0.24" },
+    { name = "marimo", marker = "extra == 'pymc'", specifier = ">=0.24" },
     { name = "pymc", marker = "extra == 'pymc'", specifier = ">=5.10" },
     { name = "pymc-extras", marker = "extra == 'pymc'", specifier = ">=0.0.4" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8" },
