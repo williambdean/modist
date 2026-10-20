@@ -144,6 +144,8 @@ ui = md.pymc.create_priors(model)   # tabs: alpha_mu, sigma, and a per-covariate
 ui                                    # drag the density curves to reshape the priors
 ```
 
+![Priors panel generated from a PyMC model](https://raw.githubusercontent.com/williambdean/modist/main/docs/pymc-priors-ui.png)
+
 Then use for prior predictive, etc:
 
 ```python
